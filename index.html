@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="COS 333 Project Quail">
+    <meta name="author" content="Karen Feng">
+
+    <title>Quail</title>
+    <link rel="icon" 
+      type="image/png" 
+      href="content/quail.png">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/united/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="stylesheets/custom.css">
+
+    <!-- Custom Fonts -->
+    <link href="http://fonts.googleapis.com/css?family=Ubuntu:300italic,300,400italic,400,500italic,500,700italic,700" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+    <div>
+        <div class="page-header">
+            <a href="#" >
+                <h1>Quail</a>
+                    <small>[questions you ask in lecture]</small>
+                </h1>
+        </div>
+        <ul class="nav nav-pills center-pills">
+            <li role="presentation" class="active"><a href="#">Quail</a></li>
+            <li role="presentation"><a href="design.html">Design Document</a></li>
+        </ul>
+
+        <div class="box">
+            <h2>What is Quail?</h2>
+            <div class="row">
+                <div class="col-xs-2">
+                    <img src="content/quail.png" class="image">
+                </div>
+                <div class="col-xs-10">
+                    <p>Quail, or Questions You Ask in Lecture, is a web-based platform for live Q&A in the lecture setting. Using Quail, students may submit questions during the course of a lecture and self-moderate by upvoting questions they also want answered, or downvoting questions that are inappropriate. Unlike other Q&A apps on the market, Quail implements lexical analysis to minimize question redundancy by prompting students to compare their query to similar existing ones. At the end of class, the lecturer can choose to answer the top questions — determined by our ranking algorithm — and archive their answers for future reference, and students are prompted to provide feedback to facilitate even greater communication between course staff and students.</p>
+                    <p>We also anticipate that Quail can expand to the social setting as students answer each other’s questions about student life through crowdsourced information exchange.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <h2>Project Milestones</h2>
+            <div class="row">
+                <div class="col-xs-6">
+                    <ul>
+                        <li>Week 1: 03/13-03/19</li>
+                        <ul>
+                            <li>Create design document</li>
+                            <li>Create website</li>
+                            <li>During spring break, all group members will go through tutorials to understand the basics of working with the Django framework, and integration with a mongoDB database</li>
+                            <li>Solidify ideas of how the data should be represented in the database</li>
+                            <li>End of spring break: come up with pieces of preliminary code and algorithmic design needed for the base implementation</li>
+                        </ul>
+                        <li>Week 2: 03/20-03/26</li>
+                        <ul>
+                            <li>Complete a basic front-end design</li>
+                            <li>Putting pieces together: integrate Django framework with Heroku</li>
+                            <li>Create prototype: the base implementation</li>
+                        </ul>
+                        <li>Week 3: 03/27-04/02</li>
+                        <ul>
+                            <li>Be able to enroll into a class as a student/professor</li>
+                            <li>Be able to post, view, and upvote questions</li>
+                        </ul>
+                    </ul>
+                </div>
+                <div class="col-xs-6">
+                    <ul>
+                        <li>Week 4: 04/03-04/09</li>
+                        <ul>
+                            <li>Implement suggested similar questions/search questions using keywords</li>
+                            <li>Begin testing in a classroom</li>
+                            <li>Prototype for expanded implementation, with the topics organized by tags</li>
+                        </ul>
+                        <li>Week 5: 04/10-04/16</li>
+                        <ul>
+                            <li>Create alpha: working version of baseline implementation</li>
+                            <li>Thorough testing in a classroom</li>
+                        </ul>
+                        <li>Week 6: 04/17-04/23</li>
+                        <ul>
+                            <li>Create beta: working version of both baseline and expanded implementation</li>
+                            <li>Thorough testing in a classroom and around campus</li>
+                        </ul>
+                        <li>Week 7: 04/24-04/30</li>
+                        <ul>
+                            <li>More testing and bug fixes</li>
+                        </ul>
+                        <li>Week 8: 05/01-05/07</li>
+                            <ul>
+                                <li>Demo!</li>
+                            </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <h2>Contributors</h2>
+            <h3>???</h3>
+            <p>Project manager</p>
+            <div class="row">
+                <div class="col-xs-6 col-md-3">
+                    <a href="https://github.com/karenfeng" class="thumbnail">
+                        <img src="content/karen.jpg" alt="Karen"></a>
+                        <div class="caption">
+                            <h3>Karen Feng <small>(project leader)</small></h3>
+                            <a href="mailto:karenfeng@princeton.edu">karenfeng@princeton.edu</a>
+                            <p>COS '18</p>
+                        </div>
+                </div>
+                <div class="col-xs-6 col-md-3">
+                    <a href="https://github.com/ktho1" class="thumbnail">
+                        <img src="content/katy.jpg" alt="Katy" class="image"></a>
+                        <div class="caption">
+                            <h3>Katy Ho</h3>
+                            <a href="mailto:ktho@princeton.edu">ktho@princeton.edu</a>
+                            <p>ELE '17</p>
+                        </div>
+                </div>
+                <div class="col-xs-6 col-md-3">
+                    <a href="https://github.com/zachkendrick" class="thumbnail">
+                        <img src="content/zach.jpg" alt="Zach" class="image"></a>
+                        <div class="caption">
+                            <h3>Zachary Kendrick</h3>
+                            <a href="mailto:zacharyk@princeton.edu">zacharyk@princeton.edu</a>
+                            <p>ELE '17</p>
+                        </div>
+                </div>
+                <div class="col-xs-6 col-md-3">
+                    <a href="https://github.com/mwang221" class="thumbnail">
+                        <img src="content/margaret.jpg" alt="Margaret" class="image"></a>
+                        <div class="caption">
+                            <h3>Margaret Wang</h3>
+                            <a href="mailto:mw16@princeton.edu">mw16@princeton.edu</a>
+                            <p>NEU '17</p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        Made by Karen Feng.
+        Built using Twitter Bootstrap.
+    </footer>
+
+</body>
+
+</html>

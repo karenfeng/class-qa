@@ -1,0 +1,21 @@
+/*******************************************************************************
+Theme Styles
+*******************************************************************************/
+
+h1 {
+  text-transform: uppercase;
+}
+small {
+  text-transform: lowercase;
+}
+body {
+  margin: 25px 25px;
+}
+img {
+    width: 100%;
+}
+div.box {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #F5F5F5;
+}
