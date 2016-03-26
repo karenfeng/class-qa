@@ -1,0 +1,11 @@
+<h1>Quail</h1>
+<h2>Questions asked so far:</h2>
+<ul>
+{% for q in questions %}
+<li>
+Created on: {{ q.created_on }}<br>
+Text: {{ q.text }}<br>
+Votes: {{ q.votes }}
+</li>
+{% endfor %}
+</ul>
