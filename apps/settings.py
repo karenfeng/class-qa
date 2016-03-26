@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'apps.wsgi.application'
 DATABASES = {
    'default' : {
       'ENGINE' : 'django_mongodb_engine',
-      'NAME' : 'my_database',
+      'NAME' : 'quail_db',
    }
 }
 

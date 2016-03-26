@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'quailsite.wsgi.application'
+WSGI_APPLICATION = 'apps.wsgi.application'
 
 
 # Database
