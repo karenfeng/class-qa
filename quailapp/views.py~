@@ -17,7 +17,7 @@ def get_question(request):
             data = form.cleaned_data
             new_question = Question(created_on=datetime.datetime.now(), text=data['your_question'], votes=0)
             new_question.save()
-            return redirect('/crazy')
+            return redirect('/')
     else:
         form = QuestionForm()
     return render(request, 'question.html', {'form': form})

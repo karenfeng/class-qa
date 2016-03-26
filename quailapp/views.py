@@ -25,3 +25,6 @@ def get_question(request):
 def delete_questions(request):
     Question.objects.all().delete()
     return HttpResponse('All questions have been deleted!')
+
+def hello_world(request):
+    return HttpResponse('Hello world!')

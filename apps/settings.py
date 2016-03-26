@@ -77,6 +77,10 @@ DATABASES = {
    'default' : {
       'ENGINE' : 'django_mongodb_engine',
       'NAME' : 'quail_db',
+      'USER': 'karen',
+      'PASSWORD': 'karen123',
+      'HOST': 'ds025409.mlab.com',
+      'PORT': '25409',
    }
 }
 
