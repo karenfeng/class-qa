@@ -35,6 +35,8 @@ def login(request):
     # if you already logged in
     if 'ticket' in request.GET:
         netid = C.Authenticate()
+        if not netid:
+            return redirect(C.redirect_url())
         return HttpResponse(netid + ' logged in')
 
     # otherwise redirect to CAS login page appropriately
