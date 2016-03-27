@@ -5,7 +5,7 @@ from django.template import loader
 import datetime
 
 from .forms import QuestionForm
-from .models import Question
+from .models import Question, CASClient
 
 def index(request):
     return render(request, 'index.html', {'questions': Question.objects.all()})
@@ -28,3 +28,15 @@ def delete_questions(request):
 
 def hello_world(request):
     return HttpResponse('Hello world!')
+
+def login(request):
+
+    C = CASClient(request)
+    # if you already logged in
+    if 'ticket' in request.GET:
+        netid = C.Authenticate()
+        return HttpResponse(netid + ' logged in')
+
+    # otherwise redirect to CAS login page appropriately
+    else:
+        return redirect(C.redirect_url())
