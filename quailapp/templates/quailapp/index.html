@@ -1,0 +1,27 @@
+<h1>Quail</h1>
+<h2>Questions asked so far:</h2>
+<ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<h3><a href="{% url 'quailapp:get' %}">Post a Question!</a></h3>
+
+{% for q in questions %}
+	<li>
+	<a href="{% url 'quailapp:detail' q.id %}">{{ q.text }}</a>
+	Created on: {{ q.created_on }}<br>
+	Votes: {{ q.votes }}
+
+	<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+	{% csrf_token %}
+	<input type="radio" name="vote" id="upvote" value ="1" />
+	<label for="upvote">Upvote</label><break/>
+
+	<input type="radio" name="vote" id="downvote" value ="-1" />
+	<label for="downvote">Downvote</label><break/>
+
+	<input type="submit" value="Vote" />
+	</form>
+	</li>
+{% endfor %}
+</ul>
