@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from django.contrib import admin
+from django.contrib import admin    # enable admin for Django
+admin.autodiscover()
 
 urlpatterns = [
-    url(r'', include('quailapp.urls')),
+   url(r'', include('quailapp.urls', namespace="quailapp")),    # allow for more intuitive access to urls in templates
+   url(r'^admin/', include(admin.site.urls)),   # include admin link for Django
 ]
