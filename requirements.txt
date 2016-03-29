@@ -1,11 +1,7 @@
-Django==1.5.11
+Django
 South==1.0.2
-django-mongodb-engine==0.6.0
-djangotoolbox==1.8.0
+django-mongodb-engine
+djangotoolbox
 pymongo==3.2.2
 wsgiref==0.1.2
 gunicorn==19.4.5
-
-git+git://github.com/django-nonrel/mongodb-engine.git@master
-git+git://github.com/django-nonrel/django-nonrel.git@master
-git+git://github.com/django-nonrel/django-permission-backend-nonrel.git@master
