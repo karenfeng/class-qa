@@ -1,14 +1,11 @@
-Django==1.5.11
+git+https://github.com/django-nonrel/django@nonrel-1.5
+git+https://github.com/django-nonrel/djangotoolbox
+
 South==1.0.2
 django-mongodb-engine==0.6.0
 djangotoolbox==1.8.0
 pymongo==3.2.2
 wsgiref==0.1.2
 gunicorn==19.4.5
-bson==0.4.2
-setuptools==20.3.1
-wheel==0.29.0
 
-git+git://github.com/django-nonrel/django.git@nonrel-1.5
-git+git://github.com/django-nonrel/django-nonrel.git@master
-git+git://github.com/django-nonrel/django-permission-backend-nonrel.git@master
+#git+git://github.com/django-nonrel/django-permission-backend-nonrel.git@master
