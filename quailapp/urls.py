@@ -3,7 +3,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    rl(r'^$', views.IndexView.as_view(), name='index'), # use generic view
     url(r'^get$', views.get_question, name='get'),
     url(r'^delete$', views.delete_questions, name='delete'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/deleteans/$', views.delete_answers, name='deleteans'), # deletes answers assoc w/ question
