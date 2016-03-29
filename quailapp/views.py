@@ -65,7 +65,7 @@ def get_question(request):
             return redirect('/')
     else:
         form = QuestionForm()
-    return render(request, 'question.html', {'form': form})
+    return render(request, 'quailapp/question.html', {'form': form})
 
 def delete_questions(request):
     Question.objects.all().delete()
