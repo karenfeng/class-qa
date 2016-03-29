@@ -1,10 +1,26 @@
 from django.db import models
+from django.contrib.auth.models import User
 import sys, os, cgi, urllib, re
 
+# Create your models here.
 class Question(models.Model):
-    created_on = models.DateTimeField(auto_now_add=True, null=True)
+    created_on = models.DateTimeField(null=True)
     text = models.TextField()
-    votes = models.IntegerField()    
+    votes = models.IntegerField(default=0)
+    submitter = models.ForeignKey(User, null=True)
+    rank_score = models.FloatField(default=0.0)
+
+    def __unicode__(self):
+        return self.text
+
+class Answer(models.Model):
+	created_on = models.DateTimeField(auto_now_add=True, null=True)	
+	text = models.TextField()
+	submitter = models.ForeignKey(User, null=True)
+	question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
+
+	def __unicode__(self):
+		return self.text
 
 # for CAS login..
 class CASClient:
