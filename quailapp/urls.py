@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/answer/$', views.get_answer, name='answer'), # answer a specific question
     url(r'^hello$', views.hello_world, name='hello'),
     url(r'^login$', views.login, name='login'),
+    url(r'^(?P<netid>[a-zA-Z0-9]+)/create$', views.create_account, name='create'),
+    #url(r'^class$', views.register_class, name='class'),
 ]

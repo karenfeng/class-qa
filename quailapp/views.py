@@ -6,8 +6,8 @@ from django.views import generic
 
 import datetime
 
-from .forms import QuestionForm, AnswerForm
-from .models import Question, CASClient, Answer
+from .forms import QuestionForm, AnswerForm, RegisterForm
+from .models import Question, CASClient, Answer, QuailUser
 
 class IndexView(generic.ListView):
     template_name = 'quailapp/index.html'
@@ -88,8 +88,47 @@ def login(request):
         netid = C.Authenticate()
         if not netid:
             return redirect(C.redirect_url())
-        return HttpResponse(netid + ' logged in')
+        #form = UserCreationForm()
+        #return render(request, 'quailapp/register.html', {'netid':netid, 'form':form})
+        return redirect(netid+'/create')
 
     # otherwise redirect to CAS login page appropriately
     else:
         return redirect(C.redirect_url())
+
+# create a new account for a user 
+def create_account(request, netid):
+    # save new user in the database 
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],\
+             is_student=True if (data['is_student'] is "s") else False)
+            new_user.save()
+            return HttpResponseRedirect(reverse('quailapp:'))
+        else:
+            return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
+
+    # query for user with netid 
+    else: 
+        if QuailUser.objects.filter(netid=netid).count() == 0:
+            form = RegisterForm()
+            return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
+        else:
+            return redirect('/')
+     
+   
+# def register_class(request):
+#     if request.method == 'POST':
+#         form = ClassForm(request.POST)
+#         if form.is_valid():
+#             data = form.cleaned_data
+#             new_class = Class(name=data['your_class'], professor=data['your_professor'], \
+#                 starttime=data['start_time'], endtime=data['end_time'])
+#             new_class.save()
+#             return redirect('/')
+#     else:
+#         form = ClassForm()
+#     return render(request, 'quailapp/classes.html', {'form': form})
+

@@ -14,13 +14,33 @@ class Question(models.Model):
         return self.text
 
 class Answer(models.Model):
-	created_on = models.DateTimeField(auto_now_add=True, null=True)	
-	text = models.TextField()
-	submitter = models.ForeignKey(User, null=True)
-	question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
+  created_on = models.DateTimeField(auto_now_add=True, null=True) 
+  text = models.TextField()
+  submitter = models.ForeignKey(User, null=True)
+  question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
 
-	def __unicode__(self):
-		return self.text
+  def __unicode__(self):
+    return self.text
+
+class Course(models.Model):
+  name = models.TextField()
+  professor = models.TextField()
+  starttime = models.TimeField(null=False)
+  endtime = models.TimeField(null=False)
+
+  def __unicode__(self):
+    return self.name  
+
+class QuailUser(models.Model):
+  netid = models.TextField()
+  first_name = models.TextField()
+  last_name = models.TextField()
+  is_student = models.BooleanField()
+  #classes = models.ManyToManyField(Course, null=True)
+
+  def __unicode__(self):
+    return self.netid
+
 
 # for CAS login..
 class CASClient:
