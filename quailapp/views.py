@@ -106,7 +106,7 @@ def create_account(request, netid):
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],\
              is_student=True if (data['is_student'] is "s") else False)
             new_user.save()
-            return HttpResponseRedirect(reverse('quailapp:'))
+            return HttpResponseRedirect(reverse('quailapp:index'))
         else:
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
 
