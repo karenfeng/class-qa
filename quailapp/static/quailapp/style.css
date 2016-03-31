@@ -1,0 +1,22 @@
+
+li a {
+	color: blue;
+}
+
+body {
+	font-family: sans-serif;
+}
+
+h1 {
+    color: blue;
+    font-size: 250%;
+}
+
+h2 {
+    color: gray;
+    font-size: 150%;
+}
+
+p {
+    color:gray;
+}
