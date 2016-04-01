@@ -9,6 +9,8 @@ class Question(models.Model):
     votes = models.IntegerField(default=0)
     submitter = models.ForeignKey(User, null=True)
     rank_score = models.FloatField(default=0.0)
+    class Meta:
+      ordering = ['-votes']
 
     def __unicode__(self):
         return self.text
