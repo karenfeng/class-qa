@@ -4,4 +4,4 @@ staticfiles
 .env
 *~
 staticfiles/*
-!staticfiles/foo.txt
+!staticfiles/.gitkeep
