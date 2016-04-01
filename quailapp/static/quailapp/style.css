@@ -10,8 +10,28 @@ li {
    list-style: none;
 }
 
+form {
+   margin-bottom: 0px;
+}
+
 .box {
    margin: 10px 0px 10px 0px;
    padding: 5px 10px 5px 10px;
    background-color: #F5F5F5;
+}
+
+.form-group{
+	margin-bottom: 0px;
+}
+
+.voting {
+	float: right;
+}
+
+.votes {
+	text-align: center;
+}
+
+.question {
+	padding-top: 5px;
 }

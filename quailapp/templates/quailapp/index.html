@@ -11,22 +11,29 @@
 <ul>
 	{% for q in questions %}
 	<li>
-		<div class="box">
-			<a href="{% url 'quailapp:detail' q.id %}">{{ q.text }}</a><br>
-			Created on: {{ q.created_on }}<br>
-			Votes: {{ q.votes }}
-
-			<form action="{% url 'quailapp:vote' q.id %}" method="POST">
-				{% csrf_token %}
-				{% buttons %}
-				<button type="submit" class="btn btn-primary" name="vote" id="upvote" value="1">
-					{% bootstrap_icon "chevron-up" %}
-				</button>
-				<button type="submit" class="btn btn-primary" name="vote" id="downvote" value="-1">
-					{% bootstrap_icon "chevron-down" %}
-				</button>
-				{% endbuttons %}
-			</form>
+		<div class="box row">
+			<div class="col-xs-11">
+				<p class="question">
+					<a href="{% url 'quailapp:detail' q.id %}">{{ q.text }}</a><br>
+					Created on: {{ q.created_on }}<br>
+				</p>
+			</div>
+			<div class="col-xs-1">
+				<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+					{% csrf_token %}
+					{% buttons %}
+					<div class="btn-group-vertical btn-group-sm voting" role="group">
+						<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
+							{% bootstrap_icon "chevron-up" %}
+						</button>
+						<div class="votes">{{ q.votes }}</div>
+						<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
+							{% bootstrap_icon "chevron-down" %}
+						</button>
+					</div>
+					{% endbuttons %}
+				</form>
+			</div>
 		</div>
 	</li>
 	{% endfor %}
