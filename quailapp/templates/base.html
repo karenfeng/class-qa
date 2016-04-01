@@ -1,0 +1,17 @@
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+
+<html lang="en">
+<head>
+	<title>Quail</title>
+    <link rel="stylesheet" type="text/css" href="{% static "quailapp/style.css" %}" />
+</head>
+
+<body>
+	<h1>Quail</h1>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

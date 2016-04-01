@@ -1,11 +1,20 @@
-<h1>{{ question.text }}</h1>
+{% extends "base.html" %}
+{% load bootstrap3 %}
 
-<h2>Answers to Question</h2>
+{% block content %}
+<h2>{{ question.text }}</h2>
+
+<h3>Answers</h3>
 <ul>
 {% for answer in question.answer_set.all %}
-	<li>{{ answer.text }}</li>
+	<li>
+		<div class="box">
+			{{ answer.text }}
+		</div>
+	</li>
 {% endfor %}
 </ul>
 
 <h3><a href="{% url 'quailapp:answer' question.id %}">Submit an answer!</a></h3>
 <a href="{% url 'quailapp:index' %}">Go back to all questions</a>
+{% endblock %}

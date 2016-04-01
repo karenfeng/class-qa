@@ -1,10 +1,7 @@
-{% load staticfiles %}
+{% extends "base.html" %}
 {% load bootstrap3 %}
-{% bootstrap_css %}
 
-<link rel="stylesheet" type="text/css" href="{% static "quailapp/style.css" %}" />
-
-<h1>Quail</h1>
+{% block content %}
 <h2>Questions asked so far:</h2>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -34,3 +31,5 @@
 	</li>
 	{% endfor %}
 </ul>
+
+{% endblock %}
