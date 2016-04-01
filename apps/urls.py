@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin    # enable admin for Django
 admin.autodiscover()
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
    url(r'', include('quailapp.urls', namespace="quailapp")),    # allow for more intuitive access to urls in templates
    url(r'^admin/', include(admin.site.urls)),   # include admin link for Django
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,3 +1,15 @@
+body {
+  margin: 25px 25px;
+}
+
+ul {
+   padding: 0px 0px 0px 0px;
+}
+
+li {
+   list-style: none;
+}
+
 .box {
    margin: 10px 0px 10px 0px;
    padding: 5px 10px 5px 10px;
