@@ -1,5 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
 <form action="/get" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
+    <div class="input-group">
+      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-default" type="submit" value="Submit">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
 </form>
+
+<a href="{% url 'quailapp:index' %}">Go back to all questions</a>
+{% endblock %}
