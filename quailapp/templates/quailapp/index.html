@@ -2,11 +2,13 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<h3><a href="{% url 'quailapp:userinfo' %}">Get user information</a></h3>
+
 <h2>Questions asked so far:</h2>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<h3><a href="{% url 'quailapp:get' %}">Post a Question!</a></h3>
+<h3><a href="{% url 'quailapp:get' %}">Post a question!</a></h3>
 
 <ul>
 	{% for q in questions %}

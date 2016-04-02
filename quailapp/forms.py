@@ -12,7 +12,7 @@ class RegisterForm(forms.Form):
 	last_name = forms.CharField(label='Last Name:', max_length=100,
 		widget=forms.TextInput(attrs={'placeholder': ''}))
 	is_student = forms.ChoiceField(label='Are you a student?', \
-			choices=(('s','Student'), ('l', 'Lecturer')), widget=forms.RadioSelect())
+			choices=[('s','Student'), ('l', 'Lecturer')], widget=forms.RadioSelect())
 
 class ClassForm(forms.Form):
 	your_class = forms.CharField(label='Register class', max_length=50)

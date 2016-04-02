@@ -1,6 +1,7 @@
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
 
@@ -103,8 +104,11 @@ def create_account(request, netid):
         form = RegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],\
-             is_student=True if (data['is_student'] is "s") else False)
+            role_student = True
+            if data['is_student'] == 'l':
+                is_student = False
+            new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
+                is_student=role_student)
             new_user.save()
             return HttpResponseRedirect(reverse('quailapp:index'))
         else:
@@ -117,7 +121,24 @@ def create_account(request, netid):
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
         else:
             return redirect('/')
-     
+
+def user_info(request):
+    C = CASClient(request)
+    # if you already logged in
+    if 'ticket' in request.GET:
+        netid = C.Authenticate()
+        if not netid:
+            return redirect(C.redirect_url())
+        try:
+            user = QuailUser.objects.get(netid=netid)
+        except ObjectDoesNotExist:
+            form = RegisterForm()
+            return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
+        return render(request, 'quailapp/userinfo.html', {'user':user})
+
+    # otherwise redirect to CAS login page appropriately
+    else:
+        return redirect(C.redirect_url())
    
 # def register_class(request):
 #     if request.method == 'POST':

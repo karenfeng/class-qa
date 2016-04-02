@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h2>User information</h2>
+
+<span class="bold">NetID:</span> {{ user.netid }}<br>
+<span class="bold">Name:</span> {{ user.first_name }} {{ user.last_name }}<br>
+<span class="bold">Role:</span>
+{% if user.is_student %}
+	Student
+{% else %}
+	Lecturer
+{% endif %}
+<br>
+<a href="{% url 'quailapp:index' %}">Go back to all questions</a>
+{% endblock %}

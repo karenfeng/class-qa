@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^hello$', views.hello_world, name='hello'),
     url(r'^login$', views.login, name='login'),
     url(r'^(?P<netid>[a-zA-Z0-9]+)/create$', views.create_account, name='create'),
+    url(r'^userinfo$', views.user_info, name='userinfo'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

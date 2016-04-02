@@ -14,6 +14,10 @@ form {
    margin-bottom: 0px;
 }
 
+.bold{
+	font-weight: bold;
+}
+
 .box {
    margin: 10px 0px 10px 0px;
    padding: 5px 10px 5px 10px;
