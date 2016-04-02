@@ -1,0 +1,27 @@
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+
+<html lang="en">
+<head>
+	<title>Quail</title>
+    <link rel="stylesheet" type="text/css" href="{% static "quailapp/style.css" %}" />
+</head>
+
+<body>
+	<div class="centered">
+		<img src="{% static "quailapp/textlogo.png" %}" alt="Quail" align="middle">
+		<h1>
+			[questions you ask in lecture]
+		</h1>
+		<div class="unemph">
+			Built by Princeton students, for Princeton students.
+		</div><br>
+		<a href="{% url 'quailapp:login'%}" class="btn btn-primary btn-lg home-button" role="button">
+			Login with CAS
+		</a><br><br>
+		<a href="http://karenfeng.github.io/quail/">Learn</a> more about our project<br>
+		<a href="https://github.com/karenfeng/quail/">Contribute</a> to our code
+	</div>
+</body>
+</html>

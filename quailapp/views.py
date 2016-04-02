@@ -63,7 +63,7 @@ def get_question(request):
             data = form.cleaned_data
             new_question = Question(created_on=datetime.datetime.now(), text=data['your_question'], votes=0)
             new_question.save()
-            return redirect('/')
+            return redirect('/index')
     else:
         form = QuestionForm()
     return render(request, 'quailapp/question.html', {'form': form})
@@ -117,7 +117,7 @@ def create_account(request, netid):
             form = RegisterForm()
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
         else:
-            return redirect('/')
+            return redirect('/index')
 
 def user_info(request):
     C = CASClient(request)
@@ -136,6 +136,9 @@ def user_info(request):
     # otherwise redirect to CAS login page appropriately
     else:
         return redirect(C.redirect_url())
+
+def home(request):
+    return render(request, 'quailapp/home.html')
    
 # def register_class(request):
 #     if request.method == 'POST':

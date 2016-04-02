@@ -5,7 +5,8 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'), # use generic view
+    url(r'^$', views.home, name='home'),
+    url(r'^index$', views.IndexView.as_view(), name='index'),
     url(r'^get$', views.get_question, name='get'),
     url(r'^delete$', views.delete_questions, name='delete'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/deleteans/$', views.delete_answers, name='deleteans'), # deletes answers assoc w/ question

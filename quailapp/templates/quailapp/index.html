@@ -3,39 +3,39 @@
 
 {% block content %}
 <h3><a href="{% url 'quailapp:userinfo' %}">Get user information</a></h3>
+<h3><a href="{% url 'quailapp:get' %}">Post a question</a></h3>
 
 <h2>Questions asked so far:</h2>
-
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-<h3><a href="{% url 'quailapp:get' %}">Post a question!</a></h3>
 
 <ul>
 	{% for q in questions %}
 	<li>
 		<div class="box row">
-			<div class="col-xs-11">
-				<p class="question">
-					<a href="{% url 'quailapp:detail' q.id %}">{{ q.text }}</a><br>
-					Created on: {{ q.created_on }}<br>
-				</p>
-			</div>
-			<div class="col-xs-1">
-				<form action="{% url 'quailapp:vote' q.id %}" method="POST">
-					{% csrf_token %}
-					{% buttons %}
-					<div class="btn-group-vertical btn-group-sm voting" role="group">
-						<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
-							{% bootstrap_icon "chevron-up" %}
-						</button>
-						<div class="votes">{{ q.votes }}</div>
-						<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
-							{% bootstrap_icon "chevron-down" %}
-						</button>
-					</div>
-					{% endbuttons %}
-				</form>
-			</div>
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
+				<div class="col-xs-1">
+					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+						{% csrf_token %}
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
+								{% bootstrap_icon "chevron-up" %}
+							</button>
+							<div class="centered votes">{{ q.votes }}</div>
+							<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</form>
+				</div>
+				<div class="col-xs-11">
+					<p class="question">
+						{{ q.text }}<br>
+						<span class="unemph">{{ q.created_on }}</span><br>
+					</p>
+				</div>
+			</a>
 		</div>
 	</li>
 	{% endfor %}

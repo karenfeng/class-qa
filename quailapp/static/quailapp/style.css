@@ -14,28 +14,86 @@ form {
    margin-bottom: 0px;
 }
 
-.bold{
+img.centered {
+  display: block;
+  margin-left: auto;
+  margin-right: auto
+}
+
+.btn {
+    border: 0 none;
+    border-radius: 1px;
+}
+ 
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn-primary {
+  background: #00CCCC;
+  color: #FFFFFF;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+  background: #0ABAB5;
+}
+
+.btn-primary:active, .btn-primary.active {
+    background: #0ABAB5;
+    box-shadow: none;
+}
+
+.btn-link {
+  color: #00CCCC;
+}
+
+.btn-link:hover, .btn-link:focus, .btn-link:active, .btn-link.active, .open > .dropdown-toggle.btn-link {
+  color: #0ABAB5;
+}
+
+.centered {
+  text-align: center;
+}
+
+.bold {
 	font-weight: bold;
 }
 
 .box {
-   margin: 10px 0px 10px 0px;
-   padding: 5px 10px 5px 10px;
-   background-color: #F5F5F5;
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #F5F5F5;
+}
+
+.box:hover, .box:focus, .box:active, .box.active {
+  background-color: #E8E8E8;
+}
+
+.question-box {
+  color: #000000;
+}
+
+.question-box:hover, .question-box:focus, .question-box:active, .question-box.active {
+  color: #000000;
 }
 
 .form-group{
 	margin-bottom: 0px;
 }
 
-.voting {
-	float: right;
+.question {
+	padding-top: 5px;
 }
 
 .votes {
-	text-align: center;
+  color: #0ABAB5;
 }
 
-.question {
-	padding-top: 5px;
+.home-button {
+  padding: 20px 150px;
+}
+
+.unemph{
+  font-style: italic;
+  color: #7A7A7A;
 }
