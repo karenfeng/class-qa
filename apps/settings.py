@@ -127,4 +127,4 @@ STATICFILES_DIRS = (
 # custom user model
 AUTH_USER_MODEL = 'quailapp.QuailUser'
 
-AUTHENTICATION_BACKENDS = ('quailapp.custom_auth_backend.QuailCustomBackend',)
+AUTHENTICATION_BACKENDS = ('quailapp.quailauthbackend.QuailCustomBackend',)
