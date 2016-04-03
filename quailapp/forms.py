@@ -23,3 +23,12 @@ class ClassForm(forms.Form):
 	your_professor = forms.CharField(label='Professor', max_length=50)
 	start_time = forms.TimeField(label='Start time')
 	end_time = forms.TimeField(label='Start time')
+
+class EnrollForm(forms.Form):
+
+	def __init__(self, *args, **kwargs):
+		self.courses_available = kwargs.pop('courses_available')
+		super(EnrollForm,self).__init__(*args,**kwargs)
+		self.fields['courses'] = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple(), label='Select available courses', queryset=self.courses_available)
+
+

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h2>Enroll in courses</h2>
+<form action="/enroll" method="post">
+	{% csrf_token %}
+	{% bootstrap_form form %}
+	{% buttons %}
+	    	<button class="btn btn-primary" type="submit" value="Submit">Submit</button>
+	{% endbuttons %}
+</form>
+
+<span class="bold">Courses enrolled:</span>
+<ul>
+{% for course in courses_enrolled %}
+	<li>
+		<div class="box">
+			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course.name }} </a>
+		</div>
+	</li>
+{% endfor %}
+</ul>
+<a href="{% url 'quailapp:index' %}">Go back to all questions</a>
+{% endblock %}

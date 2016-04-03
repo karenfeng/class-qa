@@ -10,7 +10,7 @@ from django.contrib.auth import login, authenticate
 
 import datetime
 
-from .forms import QuestionForm, AnswerForm, RegisterForm
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm
 from .models import Question, CASClient, Answer, QuailUser, Course
 
 class IndexView(generic.ListView):
@@ -172,6 +172,30 @@ def user_info(request):
     else:
         return redirect('/login')
 
+# this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
+def enroll(request):
+    # if user isn't logged in 
+    if not request.user.is_authenticated():
+        return redirect('/login')
+
+    if request.method == 'POST':
+        courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
+        form = EnrollForm(request.POST, courses_available=courses_available)
+        if form.is_valid():
+            data = form.cleaned_data
+            # add new courses to existing ones
+            user = QuailUser.objects.get(netid=request.user.netid)
+            courses = user.courses_by_name + ','
+            for course in data['courses']:
+                courses = courses + course.name + ','
+            user.courses_by_name = courses[:len(courses)-1]
+            user.save()
+            return HttpResponseRedirect(reverse('quailapp:userinfo'))
+    else:
+        courses_enrolled = Course.objects.filter(name__in=request.user.courses_as_list())
+        courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
+        form = EnrollForm(courses_available=courses_available)
+        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
 
 def home(request):
     return render(request, 'quailapp/home.html')
