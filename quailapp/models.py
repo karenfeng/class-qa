@@ -63,7 +63,7 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
 
   def courses_as_list(self):
     course_list = self.courses_by_name.split(',')
-    return course_list[:len(course_list)-1]
+    return course_list
 
 class Course(models.Model):
   name = models.TextField()
