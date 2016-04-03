@@ -127,4 +127,8 @@ STATICFILES_DIRS = (
 # custom user model
 AUTH_USER_MODEL = 'quailapp.QuailUser'
 
+# custom authentication
 AUTHENTICATION_BACKENDS = ('quailapp.quailauthbackend.QuailCustomBackend',)
+
+# login page
+LOGIN_URL = '/login'

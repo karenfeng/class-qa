@@ -11,7 +11,7 @@ from django.contrib.auth import login, authenticate
 import datetime
 
 from .forms import QuestionForm, AnswerForm, RegisterForm
-from .models import Question, CASClient, Answer, QuailUser
+from .models import Question, CASClient, Answer, QuailUser, Course
 
 class IndexView(generic.ListView):
     template_name = 'quailapp/index.html'
@@ -52,12 +52,21 @@ def get_answer(request, question_id):
         form = AnswerForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_answer = Answer(created_on=datetime.datetime.now(), text=data['your_answer'], question=question)
+            new_answer = Answer(created_on=datetime.datetime.now(), 
+                text=data['your_answer'], question=question, submitter=request.user)
             new_answer.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
     else:
         form = AnswerForm()
     return render(request, 'quailapp/answer.html', {'question': question, 'form': form})
+
+
+# course detail view - shows all questions associated with the course
+class CourseDetailView(generic.DetailView):
+    model = Course
+    template_name = 'quailapp/coursepage.html'
+    #def get_queryset(self):
+    #    return Question.objects.all()
 
 # detail view = what you see when you click on a question (its answers, votes, etc)
 class DetailView(generic.DetailView):
@@ -77,8 +86,8 @@ def get_question(request):
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(created_on=datetime.datetime.now(), text=data['your_question'], votes=0)
-            request.user
+            new_question = Question(created_on=datetime.datetime.now(), 
+                text=data['your_question'], submitter=request.user, votes=0)
             new_question.save()
             return redirect('/index')
     else:
@@ -126,8 +135,11 @@ def create_account(request, netid):
         form = RegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
+            courses = ""
+            for course in data['courses']:
+                courses = courses + course.name + "," 
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
-                is_student=data['is_student'])
+                is_student=data['is_student'], courses_by_name=courses)
             new_user.save()
 
             # automatically log the user in 
@@ -153,28 +165,12 @@ def user_info(request):
             user = QuailUser.objects.get(netid=request.user.netid)
         except ObjectDoesNotExist:
             return redirect('/login')
-        render(request, 'quailapp/userinfo.html', {'user':user})
+        # course list as query set
+        courses = Course.objects.filter(name__in=request.user.courses_as_list())
+        return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
     
     else:
         return redirect('/login')
-    
-
-    C = CASClient(request)
-    # if you already logged in
-    if 'ticket' in request.GET:
-        netid = C.Authenticate()
-        if not netid:
-            return redirect(C.redirect_url())
-        try:
-            user = QuailUser.objects.get(netid=netid)
-        except ObjectDoesNotExist:
-            form = RegisterForm()
-            return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
-        return render(request, 'quailapp/userinfo.html', {'user':user})
-
-    # otherwise redirect to CAS login page appropriately
-    else:
-        return redirect(C.redirect_url())
 
 
 def home(request):

@@ -14,10 +14,10 @@ import sys, os, cgi, urllib, re
 #   def __unicode__(self):
 #     return self.netid
 class QuailUserManager(BaseUserManager):
-  def create_user(self, netid, first_name, last_name, is_student, password=None):
+  def create_user(self, netid, first_name, last_name, is_student, courses_by_name=None, password=None):
     if not netid:
       raise ValueError('User must have netid')
-    new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student)
+    new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student, courses_by_name=courses_by_name)
     new_user.set_password(password)
     new_user.save(using=self._db)
     return new_user
@@ -37,6 +37,8 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_admin = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
+
+  courses_by_name = models.TextField(max_length=10)
   #classes = models.ForeignKey(Course, null=True)
 
   USERNAME_FIELD = 'netid'
@@ -49,7 +51,7 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
 
   def get_short_name(self):
     return self.netid
-    
+
   def __unicode__(self):
     return self.netid
 
@@ -59,12 +61,26 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   def has_module_perms(self, app_label):
     return True
 
+  def courses_as_list(self):
+    course_list = self.courses_by_name.split(',')
+    return course_list[:len(course_list)-1]
+
+class Course(models.Model):
+  name = models.TextField()
+  professor = models.TextField()
+  starttime = models.TimeField(null=False)
+  endtime = models.TimeField(null=False)
+  def __unicode__(self):
+    return self.name  
+
 class Question(models.Model):
     created_on = models.DateTimeField(null=True)
     text = models.TextField()
     votes = models.IntegerField(default=0)
     submitter = models.ForeignKey(QuailUser, null=True)
     rank_score = models.FloatField(default=0.0)
+    course = models.ForeignKey(Course, null=True)
+
     class Meta:
       ordering = ['-votes']
 
@@ -79,15 +95,6 @@ class Answer(models.Model):
 
   def __unicode__(self):
     return self.text
-
-class Course(models.Model):
-  name = models.TextField()
-  professor = models.TextField()
-  starttime = models.TimeField(null=False)
-  endtime = models.TimeField(null=False)
-
-  def __unicode__(self):
-    return self.name  
 
 
 # for CAS login..

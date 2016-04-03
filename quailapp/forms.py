@@ -1,4 +1,5 @@
 from django import forms
+from .models import Course
 
 class QuestionForm(forms.Form):
     your_question = forms.CharField(label='Your question', max_length=100)
@@ -14,6 +15,8 @@ class RegisterForm(forms.Form):
 	is_student = forms.TypedChoiceField(label='Are you a student?',
 		coerce=lambda x: bool(int(x)), choices=[(0,'Lecturer'), (1,'Student')],
 		widget=forms.RadioSelect())
+	courseList = Course.objects.all()
+	courses = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple(), label='Select courses', queryset=courseList)
 
 class ClassForm(forms.Form):
 	your_class = forms.CharField(label='Register class', max_length=50)

@@ -13,5 +13,15 @@
 	Lecturer
 {% endif %}
 <br>
+<span class="bold">Courses:</span>
+<ul>
+{% for course in courses %}
+	<li>
+		<div class="box">
+			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course.name }} </a>
+		</div>
+	</li>
+{% endfor %}
+</ul>
 <a href="{% url 'quailapp:index' %}">Go back to all questions</a>
 {% endblock %}
