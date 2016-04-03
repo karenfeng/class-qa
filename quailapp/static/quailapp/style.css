@@ -1,3 +1,7 @@
+* {
+  border-radius: 0 !important;
+}
+
 body {
   margin: 25px 25px;
 }
@@ -14,6 +18,11 @@ form {
    margin-bottom: 0px;
 }
 
+img {
+  max-width:100%;
+  max-height:100%;
+}
+
 img.centered {
   display: block;
   margin-left: auto;
@@ -22,7 +31,6 @@ img.centered {
 
 .btn {
   border: 0 none;
-  border-radius: 1px;
 }
  
 .btn:focus, .btn:active:focus, .btn.active:focus {
@@ -173,8 +181,4 @@ fieldset[disabled] .btn-secondary.active {
 .unemph {
   font-style: italic;
   color: #7A7A7A;
-}
-
-.form-control {
-  border-radius: 0px;
 }
