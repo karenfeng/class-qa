@@ -9,7 +9,7 @@
 </head>
 
 <body>
-	<h1>Quail</h1>
+	<a href="{% url 'quailapp:index' %}"><img src="{% static "quailapp/logo.png" %}" alt="Quail"></a>
     <div id="content">
         {% block content %}{% endblock %}
     </div>
