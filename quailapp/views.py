@@ -21,6 +21,10 @@ class IndexView(generic.ListView):
 
 # handles what handles when a user uses the vote form on a question
 def vote(request, question_id):
+    # if user isn't logged in 
+    if not request.user.is_authenticated():
+        return redirect('/login')
+
     question = get_object_or_404(Question, pk=question_id)
     try:
         vote = request.POST['vote']
@@ -39,6 +43,10 @@ def vote(request, question_id):
 
 # handles when user inputs answer for a question through answer form
 def get_answer(request, question_id):
+    # if user isn't logged in 
+    if not request.user.is_authenticated():
+        return redirect('/login')
+
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
         form = AnswerForm(request.POST)
@@ -60,11 +68,17 @@ class DetailView(generic.DetailView):
         return Question.objects.all()
 
 def get_question(request):
+    # if user isn't logged in 
+    if not request.user.is_authenticated():
+        return redirect('/login')
+
+    # otherwise can post a question
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             new_question = Question(created_on=datetime.datetime.now(), text=data['your_question'], votes=0)
+            request.user
             new_question.save()
             return redirect('/index')
     else:
@@ -133,6 +147,18 @@ def create_account(request, netid):
         return redirect('/index')
 
 def user_info(request):
+
+    if request.user.is_authenticated():
+        try:
+            user = QuailUser.objects.get(netid=request.user.netid)
+        except ObjectDoesNotExist:
+            return redirect('/login')
+        render(request, 'quailapp/userinfo.html', {'user':user})
+    
+    else:
+        return redirect('/login')
+    
+
     C = CASClient(request)
     # if you already logged in
     if 'ticket' in request.GET:
@@ -149,6 +175,7 @@ def user_info(request):
     # otherwise redirect to CAS login page appropriately
     else:
         return redirect(C.redirect_url())
+
 
 def home(request):
     return render(request, 'quailapp/home.html')

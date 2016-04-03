@@ -1,4 +1,5 @@
 from .models import QuailUser, CASClient
+from django.core.exceptions import ObjectDoesNotExist
 
 ## TODO: inline the CAS authentication here, since this essentially does nothing right now. 
 class QuailCustomBackend(object):

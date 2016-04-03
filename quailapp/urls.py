@@ -1,16 +1,17 @@
 from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_required
 
 from . import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^index$', views.IndexView.as_view(), name='index'),
+    url(r'^index$', login_required(views.IndexView.as_view()), name='index'),
     url(r'^get$', views.get_question, name='get'),
     url(r'^delete$', views.delete_questions, name='delete'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/deleteans/$', views.delete_answers, name='deleteans'), # deletes answers assoc w/ question
-    url(r'^(?P<pk>[0-9][a-zA-Z0-9]+)/$', views.DetailView.as_view(), name='detail'), # messy solution; question ids too long
+    url(r'^(?P<pk>[0-9][a-zA-Z0-9]+)/$', login_required(views.DetailView.as_view()), name='detail'), # messy solution; question ids too long
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/vote/$', views.vote, name='vote'), # vote for a specific question
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/answer/$', views.get_answer, name='answer'), # answer a specific question
     url(r'^hello$', views.hello_world, name='hello'),
