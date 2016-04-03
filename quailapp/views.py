@@ -5,6 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
 
+from django.contrib.auth import login, authenticate
+#from .custom_auth_backend import QuailCustomBackend
+
 import datetime
 
 from .forms import QuestionForm, AnswerForm, RegisterForm
@@ -81,7 +84,7 @@ def delete_answers(request, question_id):
 def hello_world(request):
     return HttpResponse('Hello world!')
 
-def login(request):
+def login_CAS(request):
 
     C = CASClient(request)
     # if you already logged in
@@ -89,9 +92,14 @@ def login(request):
         netid = C.Authenticate()
         if not netid:
             return redirect(C.redirect_url())
-        #form = UserCreationForm()
-        #return render(request, 'quailapp/register.html', {'netid':netid, 'form':form})
-        return redirect(netid+'/create')
+
+        # log user in, if account already created
+        user = authenticate(username=netid)
+        if user is not None:
+            login(request, user)
+            return redirect('/index')
+        else:
+            return redirect(netid+'/create')
 
     # otherwise redirect to CAS login page appropriately
     else:
@@ -107,17 +115,22 @@ def create_account(request, netid):
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
                 is_student=data['is_student'])
             new_user.save()
+
+            # automatically log the user in 
+            user = authenticate(username=netid)
+            login(request, user)
             return HttpResponseRedirect(reverse('quailapp:index'))
         else:
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
 
     # query for user with netid 
     else: 
-        if QuailUser.objects.filter(netid=netid).count() == 0:
+        try:
+            user = QuailUser.objects.get(netid=netid)
+        except ObjectDoesNotExist:
             form = RegisterForm()
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
-        else:
-            return redirect('/index')
+        return redirect('/index')
 
 def user_info(request):
     C = CASClient(request)

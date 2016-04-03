@@ -103,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -124,3 +123,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
     "quailapp/static",
 )
+
+# custom user model
+AUTH_USER_MODEL = 'quailapp.QuailUser'
+
+AUTHENTICATION_BACKENDS = ('quailapp.custom_auth_backend.QuailCustomBackend',)

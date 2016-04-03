@@ -1,13 +1,69 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import sys, os, cgi, urllib, re
 
 # Create your models here.
+
+# class QuailUser(models.Model):
+#   netid = models.TextField()
+#   first_name = models.TextField()
+#   last_name = models.TextField()
+#   is_student = models.BooleanField()
+#   #classes = models.ForeignField(Course, null=True)
+
+#   def __unicode__(self):
+#     return self.netid
+class QuailUserManager(BaseUserManager):
+  def create_user(self, netid, first_name, last_name, is_student, password=None):
+    if not netid:
+      raise ValueError('User must have netid')
+    new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student)
+    new_user.set_password(password)
+    new_user.save(using=self._db)
+    return new_user
+
+  def create_superuser(self, netid, first_name, last_name, is_student, password):
+    user = self.create_user(netid, first_name, last_name, is_student, password=password)
+    user.is_admin = True
+    user.is_staff = True
+    user.save(using=self._db)
+    return user
+
+class QuailUser(AbstractBaseUser, PermissionsMixin):
+  netid = models.TextField(unique=True)
+  first_name = models.TextField()
+  last_name = models.TextField()
+  is_student = models.BooleanField()
+  is_admin = models.BooleanField(default=False)
+  is_staff = models.BooleanField(default=False)
+  is_active = models.BooleanField(default=True)
+  #classes = models.ForeignKey(Course, null=True)
+
+  USERNAME_FIELD = 'netid'
+  REQUIRED_FIELDS = ['first_name', 'last_name', 'is_student']
+
+  objects = QuailUserManager()
+
+  def get_full_name(self):
+    return self.netid
+
+  def get_short_name(self):
+    return self.netid
+    
+  def __unicode__(self):
+    return self.netid
+
+  def has_perm(self, perm, obj=None):
+    return True
+
+  def has_module_perms(self, app_label):
+    return True
+
 class Question(models.Model):
     created_on = models.DateTimeField(null=True)
     text = models.TextField()
     votes = models.IntegerField(default=0)
-    submitter = models.ForeignKey(User, null=True)
+    submitter = models.ForeignKey(QuailUser, null=True)
     rank_score = models.FloatField(default=0.0)
     class Meta:
       ordering = ['-votes']
@@ -18,7 +74,7 @@ class Question(models.Model):
 class Answer(models.Model):
   created_on = models.DateTimeField(auto_now_add=True, null=True) 
   text = models.TextField()
-  submitter = models.ForeignKey(User, null=True)
+  submitter = models.ForeignKey(QuailUser, null=True)
   question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
 
   def __unicode__(self):
@@ -32,16 +88,6 @@ class Course(models.Model):
 
   def __unicode__(self):
     return self.name  
-
-class QuailUser(models.Model):
-  netid = models.TextField()
-  first_name = models.TextField()
-  last_name = models.TextField()
-  is_student = models.BooleanField()
-  #classes = models.ManyToManyField(Course, null=True)
-
-  def __unicode__(self):
-    return self.netid
 
 
 # for CAS login..
