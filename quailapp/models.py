@@ -130,10 +130,16 @@ class CASClient:
          if netid != None:
             return netid
    
+
    def redirect_url(self):
       login_url = self.cas_url + 'login' + '?service=' + urllib.quote(self.ServiceURL())
       return login_url
       
+   def redirect_url_logout(self):
+      logout_url = self.cas_url + 'logout' + '?service=' + urllib.quote(self.ServiceURL_logout())
+      return logout_url
+
+
    def Validate(self, ticket):
       val_url = self.cas_url + "validate" + \
          '?service=' + urllib.quote(self.ServiceURL()) + \
@@ -142,6 +148,13 @@ class CASClient:
       if len(r) == 2 and re.match("yes", r[0]) != None:
          return r[1].strip()
       return None
+
+   def ServiceURL_logout(self):
+      ret = 'http://' + self.request.META['HTTP_HOST'] + "/"
+      ret = re.sub(r'ticket=[^&]*&?', '', ret)
+      ret = re.sub(r'\?&?$|&$', '', ret)
+      return ret
+
    def ServiceURL(self):
       ret = 'http://' + self.request.META['HTTP_HOST'] + self.request.META['PATH_INFO']
       ret = re.sub(r'ticket=[^&]*&?', '', ret)

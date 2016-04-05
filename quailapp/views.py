@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
 
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
 
 import datetime
@@ -21,9 +21,6 @@ class IndexView(generic.ListView):
 
 # handles what handles when a user uses the vote form on a question
 def vote(request, question_id):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -43,9 +40,6 @@ def vote(request, question_id):
 
 # handles when user inputs answer for a question through answer form
 def get_answer(request, question_id):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
@@ -77,9 +71,6 @@ class DetailView(generic.DetailView):
         return Question.objects.all()
 
 def get_question(request):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     # otherwise can post a question
     if request.method == 'POST':
@@ -117,7 +108,7 @@ def login_CAS(request):
             return redirect(C.redirect_url())
 
         # log user in, if account already created
-        user = authenticate(username=netid)
+        user = authenticate(username=netid, request=request)
         if user is not None:
             login(request, user)
             return redirect('/index')
@@ -127,6 +118,15 @@ def login_CAS(request):
     # otherwise redirect to CAS login page appropriately
     else:
         return redirect(C.redirect_url())
+
+def logout_CAS(request):
+    # log out of django
+    logout(request)
+
+    # log out of CAS
+    C = CASClient(request)
+    return redirect(C.redirect_url_logout())
+
 
 # create a new account for a user 
 def create_account(request, netid):
@@ -145,7 +145,7 @@ def create_account(request, netid):
             new_user.save()
 
             # automatically log the user in 
-            user = authenticate(username=netid)
+            user = authenticate(username=netid, request=request)
             login(request, user)
             return HttpResponseRedirect(reverse('quailapp:index'))
         else:
@@ -161,25 +161,17 @@ def create_account(request, netid):
         return redirect('/index')
 
 def user_info(request):
-
-    if request.user.is_authenticated():
-        try:
-            user = QuailUser.objects.get(netid=request.user.netid)
-        except ObjectDoesNotExist:
-            return redirect('/login')
-        # course list as query set
-        courses = Course.objects.filter(courseid__in=request.user.course_id_list)
-        #courses = Course.objects.filter(name__in=request.user.courses_as_list())
-        return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
-    
-    else:
+    try:
+        user = QuailUser.objects.get(netid=request.user.netid)
+    except ObjectDoesNotExist:
         return redirect('/login')
+    # course list as query set
+    courses = Course.objects.filter(courseid__in=request.user.course_id_list)
+    #courses = Course.objects.filter(name__in=request.user.courses_as_list())
+    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     if request.method == 'POST':
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
