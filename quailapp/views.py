@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
 
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
 
 import datetime
@@ -117,7 +117,7 @@ def login_CAS(request):
             return redirect(C.redirect_url())
 
         # log user in, if account already created
-        user = authenticate(username=netid)
+        user = authenticate(username=netid, request=request)
         if user is not None:
             login(request, user)
             return redirect('/index')
@@ -127,6 +127,15 @@ def login_CAS(request):
     # otherwise redirect to CAS login page appropriately
     else:
         return redirect(C.redirect_url())
+
+def logout_CAS(request):
+    # log out of django
+    logout(request)
+
+    # log out of CAS
+    C = CASClient(request)
+    return redirect(C.redirect_url_logout())
+
 
 # create a new account for a user 
 def create_account(request, netid):
@@ -143,7 +152,7 @@ def create_account(request, netid):
             new_user.save()
 
             # automatically log the user in 
-            user = authenticate(username=netid)
+            user = authenticate(username=netid, request=request)
             login(request, user)
             return HttpResponseRedirect(reverse('quailapp:index'))
         else:
