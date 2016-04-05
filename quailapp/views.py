@@ -21,9 +21,6 @@ class IndexView(generic.ListView):
 
 # handles what handles when a user uses the vote form on a question
 def vote(request, question_id):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -43,9 +40,6 @@ def vote(request, question_id):
 
 # handles when user inputs answer for a question through answer form
 def get_answer(request, question_id):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
@@ -77,9 +71,6 @@ class DetailView(generic.DetailView):
         return Question.objects.all()
 
 def get_question(request):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     # otherwise can post a question
     if request.method == 'POST':
@@ -169,23 +160,17 @@ def create_account(request, netid):
 
 def user_info(request):
 
-    if request.user.is_authenticated():
-        try:
-            user = QuailUser.objects.get(netid=request.user.netid)
-        except ObjectDoesNotExist:
-            return redirect('/login')
-        # course list as query set
-        courses = Course.objects.filter(name__in=request.user.courses_as_list())
-        return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
-    
-    else:
+    try:
+        user = QuailUser.objects.get(netid=request.user.netid)
+    except ObjectDoesNotExist:
         return redirect('/login')
+    # course list as query set
+    courses = Course.objects.filter(name__in=request.user.courses_as_list())
+    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
+
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
-    # if user isn't logged in 
-    if not request.user.is_authenticated():
-        return redirect('/login')
 
     if request.method == 'POST':
         courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
