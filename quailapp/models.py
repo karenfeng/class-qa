@@ -14,10 +14,12 @@ import sys, os, cgi, urllib, re
 #   def __unicode__(self):
 #     return self.netid
 class QuailUserManager(BaseUserManager):
-  def create_user(self, netid, first_name, last_name, is_student, courses_by_name=None, password=None):
+  #def create_user(self, netid, first_name, last_name, is_student, courses_by_name=None, password=None):
+  def create_user(self, netid, first_name, last_name, is_student, courses_by_id=None, password=None):
     if not netid:
       raise ValueError('User must have netid')
-    new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student, courses_by_name=courses_by_name)
+    #new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student, courses_by_name=courses_by_name)
+    new_user = self.model(netid=netid, first_name=first_name, last_name=last_name, is_student=is_student, courses_by_id=courses_by_id)
     new_user.set_password(password)
     new_user.save(using=self._db)
     return new_user
@@ -38,7 +40,8 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
 
-  courses_by_name = models.TextField(max_length=10)
+  courses_by_id = models.TextField(max_length=10)
+  #courses_by_name = models.TextField(max_length=10)
   #classes = models.ForeignKey(Course, null=True)
 
   USERNAME_FIELD = 'netid'
@@ -61,17 +64,35 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   def has_module_perms(self, app_label):
     return True
 
+  def course_id_list(self):
+    return self.courses_by_id.split('|')
+
   def courses_as_list(self):
-    course_list = self.courses_by_name.split(',')
+    #course_list = self.courses_by_name.split('|')
+    course_list = []
+    course_ids = self.courses_by_id.split('|')
+    for i in range(len(course_ids)):
+      course_list.append(Course.objects.get(courseid=course_ids[i]))
     return course_list
 
 class Course(models.Model):
-  name = models.TextField()
+  dept = models.TextField(max_length=3) # new
+  num = models.TextField(max_length=3)  # new
+  title = models.TextField()  # new
+  #name = models.TextField()
+  courseid = models.TextField() # new
   professor = models.TextField()
   starttime = models.TimeField(null=False)
   endtime = models.TimeField(null=False)
+
   def __unicode__(self):
-    return self.name  
+    depts = self.dept.split('/')
+    nums = self.num.split('/')
+    name = ""
+    for i in range(len(depts)):
+      name += depts[i] + " " + nums[i] + '/'
+    name = name[:len(name)-1]
+    return '%s: %s' % (name, self.title)  
 
 class Question(models.Model):
     created_on = models.DateTimeField(null=True)
@@ -88,7 +109,7 @@ class Question(models.Model):
         return self.text
 
 class Answer(models.Model):
-  created_on = models.DateTimeField(auto_now_add=True, null=True) 
+  created_on = models.DateTimeField(null=True) 
   text = models.TextField()
   submitter = models.ForeignKey(QuailUser, null=True)
   question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)

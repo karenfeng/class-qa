@@ -18,7 +18,7 @@
 {% for course in courses %}
 	<li>
 		<div class="box">
-			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course.name }} </a>
+			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
 		</div>
 	</li>
 {% endfor %}

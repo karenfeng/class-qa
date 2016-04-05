@@ -137,9 +137,11 @@ def create_account(request, netid):
             data = form.cleaned_data
             courses = ""
             for course in data['courses']:
-                courses = courses + course.name + "," 
+                #courses = courses + course.name + "|" 
+                courses = courses + course.courseid + "|" 
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
-                is_student=data['is_student'], courses_by_name=courses[:len(courses)-1])
+                is_student=data['is_student'], courses_by_id=courses[:len(courses)-1])
+                #is_student=data['is_student'], courses_by_name=courses[:len(courses)-1])
             new_user.save()
 
             # automatically log the user in 
@@ -166,7 +168,8 @@ def user_info(request):
         except ObjectDoesNotExist:
             return redirect('/login')
         # course list as query set
-        courses = Course.objects.filter(name__in=request.user.courses_as_list())
+        courses = Course.objects.filter(courseid__in=request.user.course_id_list)
+        #courses = Course.objects.filter(name__in=request.user.courses_as_list())
         return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
     
     else:
@@ -179,27 +182,33 @@ def enroll(request):
         return redirect('/login')
 
     if request.method == 'POST':
-        courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
+        courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
+        #courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
         form = EnrollForm(request.POST, courses_available=courses_available)
         if form.is_valid():
             data = form.cleaned_data
             # add new courses to existing ones
             user = QuailUser.objects.get(netid=request.user.netid)
-            courses = user.courses_by_name + ','
+            #courses = user.courses_by_name + ','
+            courses = user.courses_by_id + '|'
             for course in data['courses']:
-                courses = courses + course.name + ','
-            user.courses_by_name = courses[:len(courses)-1]
+                courses = courses + course.courseid + '|'
+                #courses = courses + course.name + ','
+            #user.courses_by_name = courses[:len(courses)-1]
+            user.courses_by_id = courses[:len(courses)-1]
             user.save()
             return HttpResponseRedirect(reverse('quailapp:userinfo'))
     else:
-        courses_enrolled = Course.objects.filter(name__in=request.user.courses_as_list())
-        courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
+        courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
+        #courses_enrolled = Course.objects.filter(name__in=request.user.courses_as_list())
+        courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
+        #courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
         form = EnrollForm(courses_available=courses_available)
         return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
 
 def home(request):
     return render(request, 'quailapp/home.html')
-   
+
 # def register_class(request):
 #     if request.method == 'POST':
 #         form = ClassForm(request.POST)
