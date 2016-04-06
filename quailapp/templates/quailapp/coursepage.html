@@ -4,4 +4,52 @@
 {% block content %}
 <h2>{{ course }}</h2>
 
+<h1>Questions:</h1>
+<ul>
+	{% for q in course.question_set.all %}
+	<li>
+		<div class="box row">
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
+				<div class="col-xs-1">
+					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+						{% csrf_token %}
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
+								{% bootstrap_icon "chevron-up" %}
+							</button>
+							<div class="centered votes">{{ q.votes }}</div>
+							<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</form>
+				</div>
+				<div class="col-xs-11">
+					<p class="question">
+						{{ q.text }}<br>
+						<span class="unemph">{{ q.created_on }}</span><br>
+					</p>
+				</div>
+			</a>
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+
+
+<h3>Post a question!</h3>
+<form action="{% url 'quailapp:coursepage' course.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
+
 {% endblock %}

@@ -23,6 +23,19 @@
 	</li>
 {% endfor %}
 </ul>
+
+<span class="bold">Your Questions:</span>
+<ul>
+{% for q in user.question_set.all %}
+	<li>
+		<div class="box">
+			<a href="{% url 'quailapp:detail' q.id %}"> {{ q.text }} </a>
+		</div>
+	</li>
+{% endfor %}
+</ul>
+
+
 <h3><a href="{% url 'quailapp:enroll' %}">Enroll in more courses</a></h3>
 
 {% endblock %}

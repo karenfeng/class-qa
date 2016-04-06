@@ -36,7 +36,7 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-    return HttpResponseRedirect(reverse('quailapp:index'))
+    return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
 
 # handles when user inputs answer for a question through answer form
 def get_answer(request, question_id):
@@ -56,9 +56,19 @@ def get_answer(request, question_id):
 
 
 # course detail view - shows all questions associated with the course
-class CourseDetailView(generic.DetailView):
-    model = Course
-    template_name = 'quailapp/coursepage.html'
+def coursepage(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            new_question = Question(created_on=datetime.datetime.now(), 
+                text=data['your_question'], course=course, submitter=request.user, votes=0)
+            new_question.save()
+            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
+    else:
+        form = QuestionForm()
+    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course})
     #def get_queryset(self):
     #    return Question.objects.all()
 
@@ -111,7 +121,7 @@ def login_CAS(request):
         user = authenticate(username=netid, request=request)
         if user is not None:
             login(request, user)
-            return redirect('/index')
+            return redirect('/userinfo')
         else:
             return redirect(netid+'/create')
 
@@ -137,17 +147,15 @@ def create_account(request, netid):
             data = form.cleaned_data
             courses = ""
             for course in data['courses']:
-                #courses = courses + course.name + "|" 
                 courses = courses + course.courseid + "|" 
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
                 is_student=data['is_student'], courses_by_id=courses[:len(courses)-1])
-                #is_student=data['is_student'], courses_by_name=courses[:len(courses)-1])
             new_user.save()
 
             # automatically log the user in 
             user = authenticate(username=netid, request=request)
             login(request, user)
-            return HttpResponseRedirect(reverse('quailapp:index'))
+            return HttpResponseRedirect(reverse('quailapp:userinfo'))
         else:
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
 
@@ -158,7 +166,7 @@ def create_account(request, netid):
         except ObjectDoesNotExist:
             form = RegisterForm()
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
-        return redirect('/index')
+        return redirect('/userinfo')
 
 def user_info(request):
     try:

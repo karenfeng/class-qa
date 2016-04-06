@@ -41,7 +41,6 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_active = models.BooleanField(default=True)
 
   courses_by_id = models.TextField(max_length=10)
-  #courses_by_name = models.TextField(max_length=10)
   #classes = models.ForeignKey(Course, null=True)
 
   USERNAME_FIELD = 'netid'
@@ -68,7 +67,6 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
     return self.courses_by_id.split('|')
 
   def courses_as_list(self):
-    #course_list = self.courses_by_name.split('|')
     course_list = []
     course_ids = self.courses_by_id.split('|')
     for i in range(len(course_ids)):
@@ -112,11 +110,21 @@ class Answer(models.Model):
   created_on = models.DateTimeField(null=True) 
   text = models.TextField()
   submitter = models.ForeignKey(QuailUser, null=True)
-  question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
+  question = models.OneToOneField(Question, null=True, on_delete=models.CASCADE)
 
   def __unicode__(self):
     return self.text
 
+'''
+class Comment(models.Model):
+  created_on = models.DateTimeField(null=True) 
+  text = models.TextField()
+  submitter = models.ForeignKey(QuailUser, null=True)
+  question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
+
+  def __unicode__(self):
+    return self.text
+'''
 
 # for CAS login..
 class CASClient:

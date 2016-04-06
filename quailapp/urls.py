@@ -20,6 +20,6 @@ urlpatterns = [
     url(r'^(?P<netid>[a-zA-Z0-9]+)/create$', views.create_account, name='create'),
     url(r'^userinfo$', login_required(views.user_info), name='userinfo'),
     url(r'^enroll$', login_required(views.enroll), name='enroll'),
-    url(r'^(?P<pk>[a-zA-Z0-9]+)/coursepage/$', login_required(views.CourseDetailView.as_view()), name='coursepage'),
+    url(r'^(?P<course_id>[a-zA-Z0-9]+)/coursepage/$', login_required(views.coursepage), name='coursepage'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
