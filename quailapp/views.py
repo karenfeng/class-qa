@@ -8,7 +8,7 @@ from django.views import generic
 from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
 
-import datetime
+import datetime, re
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm
 from .models import Question, CASClient, Answer, QuailUser, Course
@@ -19,7 +19,7 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return Question.objects.all()
 
-# handles what handles when a user uses the vote form on a question
+# handles what happens when a user uses the vote form on a question
 def vote(request, question_id):
 
     question = get_object_or_404(Question, pk=question_id)
@@ -167,34 +167,50 @@ def user_info(request):
         return redirect('/login')
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
-    #courses = Course.objects.filter(name__in=request.user.courses_as_list())
     return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
+    # searching classes
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET['q']
+        terms = query_string.split()
+        courses_found = Course.objects.exclude(courseid__in=request.user.course_id_list)
+        for term in terms:
+            course_ids_found = []
+            for course in courses_found:
+                if (re.search(term, course.dept, re.I)):
+                    course_ids_found.append(course.courseid)
+                    continue
+                if (re.search(term, course.num, re.I)):
+                    course_ids_found.append(course.courseid)
+                    continue
+                if (re.search(term, course.title, re.I)):
+                    course_ids_found.append(course.courseid)
+                    continue
+            courses_found = courses_found.filter(courseid__in=course_ids_found)
+
+        found_entries = Course.objects.filter(courseid__in=course_ids_found).order_by('dept')
+        form = EnrollForm(courses_available=found_entries)
+        courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
+        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
 
     if request.method == 'POST':
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
-        #courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
         form = EnrollForm(request.POST, courses_available=courses_available)
         if form.is_valid():
             data = form.cleaned_data
             # add new courses to existing ones
             user = QuailUser.objects.get(netid=request.user.netid)
-            #courses = user.courses_by_name + ','
             courses = user.courses_by_id + '|'
             for course in data['courses']:
                 courses = courses + course.courseid + '|'
-                #courses = courses + course.name + ','
-            #user.courses_by_name = courses[:len(courses)-1]
             user.courses_by_id = courses[:len(courses)-1]
             user.save()
             return HttpResponseRedirect(reverse('quailapp:userinfo'))
     else:
         courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
-        #courses_enrolled = Course.objects.filter(name__in=request.user.courses_as_list())
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
-        #courses_available = Course.objects.exclude(name__in=request.user.courses_as_list())
         form = EnrollForm(courses_available=courses_available)
         return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
 
