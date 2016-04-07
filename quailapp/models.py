@@ -115,7 +115,6 @@ class Answer(models.Model):
   def __unicode__(self):
     return self.text
 
-'''
 class Comment(models.Model):
   created_on = models.DateTimeField(null=True) 
   text = models.TextField()
@@ -124,7 +123,6 @@ class Comment(models.Model):
 
   def __unicode__(self):
     return self.text
-'''
 
 # for CAS login..
 class CASClient:

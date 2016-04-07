@@ -24,4 +24,26 @@
 
 <h3>Looks like there are no answers... submit an answer!</h3>
 {% endif %}
+
+<span class="bold">Comments:</span>
+<ul>
+{% for comment in question.comment_set.all %}
+	<li>{{ comment }}</li>
+{% endfor %}
+</ul>
+
+<br>
+<form action="{% url 'quailapp:detail' question.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_comment" name="your_comment" type="text" class="form-control" placeholder="Comment here">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
+
+
 {% endblock %}

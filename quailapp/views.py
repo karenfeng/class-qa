@@ -11,8 +11,8 @@ from django.contrib.auth import login, logout, authenticate
 
 import datetime, re
 
-from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm
-from .models import Question, CASClient, Answer, QuailUser, Course
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment
 
 def index(request):
     try:
@@ -64,15 +64,23 @@ def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     if request.method == 'POST':
         form = AnswerForm(request.POST)
+        comment_form = CommentForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
                 text=data['your_answer'], question=question, submitter=request.user)
             new_answer.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
+        if comment_form.is_valid():
+            data = comment_form.cleaned_data
+            new_comment = Comment(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
+                text=data['your_comment'], question=question, submitter=request.user)
+            new_comment.save()
+            return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
     else:
         form = AnswerForm()
-    return render(request, 'quailapp/detail.html', {'question': question, 'form': form})
+        comment_form = CommentForm()
+    return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form})
 
 def get_question(request):
     # otherwise can post a question

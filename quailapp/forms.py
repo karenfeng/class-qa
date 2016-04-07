@@ -7,6 +7,9 @@ class QuestionForm(forms.Form):
 class AnswerForm(forms.Form):
     your_answer = forms.CharField(label='Your answer', max_length=200)
 
+class CommentForm(forms.Form):
+    your_comment = forms.CharField(label='Your answer', max_length=300)
+
 class RegisterForm(forms.Form):
 	first_name = forms.CharField(label='First Name:', max_length=100,
 		widget=forms.TextInput(attrs={'placeholder': ''}))
