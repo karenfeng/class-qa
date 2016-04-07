@@ -201,7 +201,7 @@ def enroll(request):
         found_entries = Course.objects.filter(courseid__in=course_ids_found).order_by('dept')
         form = EnrollForm(courses_available=found_entries)
         courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
-        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
+        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled, 'query_string':query_string})
 
     if request.method == 'POST':
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)

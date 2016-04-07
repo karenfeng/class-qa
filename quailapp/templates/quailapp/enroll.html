@@ -4,29 +4,42 @@
 {% block content %}
 <h2>Enroll in courses</h2>
 
-<form method="get" action="/enroll">
-	<label for="id_q">Search:</label>
-	<input type="text" name="q" id="id_q"/>
-	<input type="submit" value="Submit"/>
-</form>
+<div class="row">
+	<div class="col-xs-6">
+		<span class="bold">Enrolled</span>
+		<ul>
+		{% for course in courses_enrolled %}
+			<li>
+				<div class="box">
+					<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
+				</div>
+			</li>
+		{% endfor %}
+		</ul>
+	</div>
+	<div class="col-xs-6">
+		<span class="bold">Add</span>
+		<form method="get" action="/enroll">
+			<div class="input-group">
+				<input type="text" name="q" id="id_q" class="form-control" placeholder="COS 333" value="{{ query_string }}">
+				<span class="input-group-btn">
+					{% buttons %}
+			        	<button class="btn btn-secondary" type="submit" value="Submit">Search</button>
+					{% endbuttons %}
+			    </span>
+			</div>
+		</form>
 
-<form action="/enroll" method="post">
-	{% csrf_token %}
-	{% bootstrap_form form %}
-	{% buttons %}
-	    	<button class="btn btn-primary" type="submit" value="Submit">Submit</button>
-	{% endbuttons %}
-</form>
-
-<span class="bold">Courses enrolled:</span>
-<ul>
-{% for course in courses_enrolled %}
-	<li>
-		<div class="box">
-			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
-		</div>
-	</li>
-{% endfor %}
-</ul>
+		<form action="/enroll" method="post">
+			{% csrf_token %}
+			<div class="scrollbox">
+				{% bootstrap_form form %}
+			</div>
+			{% buttons %}
+			    <button class="btn btn-primary right" type="submit" value="Submit">Submit</button>
+			{% endbuttons %}
+		</form>
+	</div>
+</div>
 
 {% endblock %}

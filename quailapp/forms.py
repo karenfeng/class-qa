@@ -29,6 +29,6 @@ class EnrollForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.courses_available = kwargs.pop('courses_available')
 		super(EnrollForm,self).__init__(*args,**kwargs)
-		self.fields['courses'] = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple(), label='Select available courses', queryset=self.courses_available)
+		self.fields['courses'] = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple(), label='', queryset=self.courses_available)
 
 
