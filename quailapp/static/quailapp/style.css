@@ -27,6 +27,11 @@ img {
   max-height:100%;
 }
 
+img.small {
+  max-width:60%;
+  max-height:60%;
+}
+
 img.centered {
   display: block;
   margin-left: auto;

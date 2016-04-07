@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load bootstrap3 %}
 
 {% block content %}
@@ -42,26 +43,28 @@
 						{% endbuttons %}
 					</form>
 				</div>
-				<div class="col-xs-11">
+				<div class="col-xs-10">
 					<p class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
-						{% if q.is_pinned %}
+					</p>
+				</div>
+				<div class="col-xs-1">
+					{% if q.is_pinned %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 							{% csrf_token %}
-							<button type="submit" name="pin" id="unpin" value="0">
-								Unpin
+							<button class="btn btn-link" type="submit" name="pin" id="unpin" value="0">
+								<img class="small" src="{% static "quailapp/unpin.png" %}" alt="Unpin">
 							</button>
 						</form>
 						{% else %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 							{% csrf_token %}
-							<button type="submit" name="pin" id="pin" value="1">
-								Pin
+							<button class="btn btn-link" type="submit" name="pin" id="pin" value="1">
+								<img class="small" src="{% static "quailapp/pin.png" %}" alt="Pin">
 							</button>
 						</form>
-						{% endif %}
-					</p>
+					{% endif %}
 				</div>
 			</a>
 		</div>
@@ -96,26 +99,28 @@
 						{% endbuttons %}
 					</form>
 				</div>
-				<div class="col-xs-11">
+				<div class="col-xs-10">
 					<p class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
-						{% if q.is_pinned %}
+					</p>
+				</div>
+				<div class="col-xs-1">
+					{% if q.is_pinned %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 							{% csrf_token %}
-							<button type="submit" name="pin" id="unpin" value="0">
-								Unpin
+							<button class="btn btn-link" type="submit" name="pin" id="unpin" value="0">
+								<img class="small" src="{% static "quailapp/unpin.png" %}" alt="Unpin">
 							</button>
 						</form>
 						{% else %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 							{% csrf_token %}
-							<button type="submit" name="pin" id="pin" value="1">
-								Pin
+							<button class="btn btn-link" type="submit" name="pin" id="pin" value="1">
+								<img class="small" src="{% static "quailapp/pin.png" %}" alt="Pin">
 							</button>
 						</form>
-						{% endif %}
-					</p>
+					{% endif %}
 				</div>
 			</a>
 		</div>
