@@ -16,7 +16,7 @@
       <input id="id_your_answer" name="your_answer" type="text" class="form-control" placeholder="Your answer">
       <span class="input-group-btn">
 		{% buttons %}
-        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
 		{% endbuttons %}
       </span>
     </div>
@@ -39,11 +39,10 @@
       <input id="id_your_comment" name="your_comment" type="text" class="form-control" placeholder="Comment here">
       <span class="input-group-btn">
 		{% buttons %}
-        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
 		{% endbuttons %}
       </span>
     </div>
 </form>
-
 
 {% endblock %}
