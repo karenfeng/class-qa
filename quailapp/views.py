@@ -98,18 +98,11 @@ def get_question(request):
         form = QuestionForm()
     return render(request, 'quailapp/question.html', {'form': form})
 
-def delete_questions(request):
-    Question.objects.all().delete()
-    return HttpResponse('All questions have been deleted!')
-
 # delete all the answers associated with a specific question
 def delete_answers(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     question.answer_set.all().delete()
     return HttpResponse('All answers have been deleted!')
-
-def hello_world(request):
-    return HttpResponse('Hello world!')
 
 def login_CAS(request):
 
