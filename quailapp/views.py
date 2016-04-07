@@ -71,7 +71,7 @@ def coursepage(request, course_id):
             return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
     else:
         form = QuestionForm()
-    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course})
+    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 'netid': request.user.netid})
     #def get_queryset(self):
     #    return Question.objects.all()
 

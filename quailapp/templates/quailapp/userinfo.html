@@ -28,8 +28,31 @@
 <ul>
 {% for q in user.question_set.all %}
 	<li>
-		<div class="box">
-			<a href="{% url 'quailapp:detail' q.id %}"> {{ q.text }} </a>
+		<div class="box-blue row">
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
+				<div class="col-xs-1">
+					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+						{% csrf_token %}
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
+								{% bootstrap_icon "chevron-up" %}
+							</button>
+							<div class="centered votes">{{ q.votes }}</div>
+							<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</form>
+				</div>
+				<div class="col-xs-11">
+					<p class="question">
+						{{ q.text }}<br>
+						<span class="unemph">{{ q.created_on }}</span><br>
+					</p>
+				</div>
+			</a>
 		</div>
 	</li>
 {% endfor %}

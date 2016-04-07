@@ -158,6 +158,16 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #E8E8E8;
 }
 
+.box-blue {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #C4EFF1;
+}
+
+.box-blue:hover, .box-blue:focus, .box-blue:active, .box-blue.active {
+  background-color: #ACE9EC;
+}
+
 .box-static {
   padding: 5px 10px 5px 10px;
   background-color: #F5F5F5;
