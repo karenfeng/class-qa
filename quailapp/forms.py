@@ -15,8 +15,6 @@ class RegisterForm(forms.Form):
 	is_student = forms.TypedChoiceField(label='Are you a student?',
 		coerce=lambda x: bool(int(x)), choices=[(0,'Lecturer'), (1,'Student')],
 		widget=forms.RadioSelect())
-	courseList = Course.objects.all()
-	courses = forms.ModelMultipleChoiceField(widget=forms.SelectMultiple(), label='Select courses', queryset=courseList)
 
 class ClassForm(forms.Form):
 	your_class = forms.CharField(label='Register class', max_length=50)

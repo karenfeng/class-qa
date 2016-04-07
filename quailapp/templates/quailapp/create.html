@@ -6,9 +6,21 @@
 
 <form action="/{{netid}}/create" method="post">
     {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
-    	<button class="btn btn-primary" type="submit" value="Submit">Submit</button>
+    <label class="control-label">Name</label>
+    <div class="row">
+    	<div class="col-xs-6">
+    		<input class="form-control" id="id_first_name" maxlength="100" name="first_name" placeholder="First" required="required" title="" type="text">
+    	</div>
+    	<div class="col-xs-6">
+    		<input class="form-control" id="id_last_name" maxlength="100" name="last_name" placeholder="Last" required="required" title="" type="text">
+    	</div>
+	</div>
+	<br>
+	<label class="control-label">Who are you?</label>
+	<div class="radio"><label for="id_is_student_0"><input class="" id="id_is_student_0" name="is_student" required="required" title="" type="radio" value="0"> Lecturer</label></div>
+	<div class="radio"><label for="id_is_student_1"><input class="" id="id_is_student_1" name="is_student" required="required" title="" type="radio" value="1"> Student</label></div>
+	{% buttons %}
+    	<button class="btn btn-primary right" type="submit" value="Submit">Submit</button>
     {% endbuttons %}
 </form>
 {% endblock %}

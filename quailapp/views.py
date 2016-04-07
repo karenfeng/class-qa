@@ -145,11 +145,8 @@ def create_account(request, netid):
         form = RegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            courses = ""
-            for course in data['courses']:
-                courses = courses + course.courseid + "|" 
             new_user = QuailUser(netid=netid, first_name=data['first_name'], last_name=data['last_name'],
-                is_student=data['is_student'], courses_by_id=courses[:len(courses)-1])
+                is_student=data['is_student'])
             new_user.save()
 
             # automatically log the user in 
