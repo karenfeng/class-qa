@@ -191,8 +191,22 @@ def user_info(request):
         user = QuailUser.objects.get(netid=request.user.netid)
     except ObjectDoesNotExist:
         return redirect('/login')
+    
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
+
+    # handle unenroll requests
+    if request.method == 'POST':
+        new_course_ids = ''
+        course_list = user.courses_by_id.split('|')
+        course_to_unenroll = Course.objects.get(pk=request.POST['courseid'])
+        for course in course_list:
+            if (course != course_to_unenroll.courseid):
+                new_course_ids += course + '|'
+        new_course_ids = new_course_ids[:len(new_course_ids)-1]
+        user.courses_by_id = new_course_ids
+        user.save()
+        return HttpResponseRedirect(reverse('quailapp:userinfo'))
     return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
