@@ -4,18 +4,11 @@
 {% block content %}
 <a href="{% url 'quailapp:coursepage' question.course.id %}">Go back to {{question.course}}</a>
 
-<h2>{{ question.text }}</h2>
+<h2>Question: {{ question.text }}</h2>
 
-<h3>Answers</h3>
-<ul>
-{% for answer in question.answer_set.all %}
-	<li>
-		<div class="box">
-			{{ answer.text }}
-		</div>
-	</li>
-{% endfor %}
-</ul>
-
+{% if question.answer %}
+<h3>Answer: {{ question.answer }}</h3>
+{% else %}
 <h3><a href="{% url 'quailapp:answer' question.id %}">Submit an answer!</a></h3>
+{% endif %}
 {% endblock %}
