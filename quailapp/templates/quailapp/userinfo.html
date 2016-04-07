@@ -18,13 +18,13 @@
 {% for course in courses %}
 	<li>
 		<div class="box">
+			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
 			<form action="{% url 'quailapp:userinfo' %}" method="POST">
 				{% csrf_token %}
 				<button class="btn btn-link" type="submit" name="courseid" id="unenroll{{ forloop.counter }}" value="{{ course.id }}">
 					Unenroll
 				</button>
 			</form>
-			<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
 		</div>
 	</li>
 {% endfor %}
