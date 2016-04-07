@@ -77,8 +77,7 @@ def coursepage(request, course_id):
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
-                text=data['your_question'], course=course, submitter=request.user, votes=0)
+            new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0)
             new_question.save()
             return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
     else:
@@ -97,15 +96,13 @@ def question_detail(request, question_id):
         # if an answer is posted
         if form.is_valid():
             data = form.cleaned_data
-            new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
-                text=data['your_answer'], question=question, submitter=request.user)
+            new_answer = Answer(text=data['your_answer'], question=question, submitter=request.user)
             new_answer.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
         # if a comment is posted
         if comment_form.is_valid():
             data = comment_form.cleaned_data
-            new_comment = Comment(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
-                text=data['your_comment'], question=question, submitter=request.user)
+            new_comment = Comment(text=data['your_comment'], question=question, submitter=request.user)
             new_comment.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
     else:
@@ -119,8 +116,7 @@ def get_question(request):
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
-                text=data['your_question'], submitter=request.user, votes=0)
+            new_question = Question(text=data['your_question'], submitter=request.user, votes=0)
             new_question.save()
             return redirect('/index')
     else:

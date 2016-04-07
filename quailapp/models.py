@@ -93,7 +93,7 @@ class Course(models.Model):
     return '%s: %s' % (name, self.title)  
 
 class Question(models.Model):
-    created_on = models.DateTimeField(null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
     votes = models.IntegerField(default=0)
     submitter = models.ForeignKey(QuailUser, null=True)
@@ -108,7 +108,7 @@ class Question(models.Model):
         return self.text
 
 class Answer(models.Model):
-  created_on = models.DateTimeField(null=True) 
+  created_on = models.DateTimeField(auto_now_add=True) 
   text = models.TextField()
   submitter = models.ForeignKey(QuailUser, null=True)
   question = models.OneToOneField(Question, null=True, on_delete=models.CASCADE)
@@ -117,7 +117,7 @@ class Answer(models.Model):
     return self.text
 
 class Comment(models.Model):
-  created_on = models.DateTimeField(null=True) 
+  created_on = models.DateTimeField(auto_now_add=True) 
   text = models.TextField()
   submitter = models.ForeignKey(QuailUser, null=True)
   question = models.ForeignKey(Question, null=True, on_delete=models.CASCADE)
