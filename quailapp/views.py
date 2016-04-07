@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
+from django.utils import timezone
 
 from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
@@ -49,7 +50,7 @@ def get_answer(request, question_id):
         form = AnswerForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_answer = Answer(created_on=datetime.datetime.now(), 
+            new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
                 text=data['your_answer'], question=question, submitter=request.user)
             new_answer.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
@@ -65,7 +66,7 @@ def coursepage(request, course_id):
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(created_on=datetime.datetime.now(), 
+            new_question = Question(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
                 text=data['your_question'], course=course, submitter=request.user, votes=0)
             new_question.save()
             return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
@@ -90,7 +91,7 @@ def get_question(request):
         form = QuestionForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(created_on=datetime.datetime.now(), 
+            new_question = Question(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
                 text=data['your_question'], submitter=request.user, votes=0)
             new_question.save()
             return redirect('/index')
