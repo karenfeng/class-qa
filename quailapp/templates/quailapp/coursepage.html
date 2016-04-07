@@ -31,11 +31,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1">
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
+							<button type="submit" class="btn btn-link {% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1">
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>

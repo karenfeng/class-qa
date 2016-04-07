@@ -140,6 +140,14 @@ fieldset[disabled] .btn-secondary.active {
   color: #0ABAB5;
 }
 
+.btn-link.disabled {
+  color: #607D8B;
+}
+
+.btn-link.disabled:hover, .btn-link.disabled:focus, .btn-link.disabled:active, .btn-link.disabled.active, .open > .dropdown-toggle.btn-link.disabled {
+  color: #607D8B;
+}
+
 .centered {
   text-align: center;
 }
