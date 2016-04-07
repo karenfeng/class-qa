@@ -2,9 +2,21 @@
 {% load bootstrap3 %}
 
 {% block content %}
-<h2>{{ course }}</h2>
+<h1>{{ course }}</h1>
 
-<h1>Questions:</h1>
+<h3>Post a question!</h3>
+<form action="{% url 'quailapp:coursepage' course.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
+
 <ul>
 	{% for q in course.question_set.all %}
 	<li>
@@ -37,19 +49,5 @@
 	</li>
 	{% endfor %}
 </ul>
-
-
-<h3>Post a question!</h3>
-<form action="{% url 'quailapp:coursepage' course.id %}" method="post">
-    {% csrf_token %}
-    <div class="input-group">
-      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
-      <span class="input-group-btn">
-		{% buttons %}
-        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
-		{% endbuttons %}
-      </span>
-    </div>
-</form>
 
 {% endblock %}
