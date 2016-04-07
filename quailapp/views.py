@@ -42,9 +42,22 @@ def vote(request, question_id):
         # user hits the Back button.
     return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
 
+# handles what happens when someone pins a question to the coursepage
+def pin(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    is_pinned = int(request.POST['pin'])
+    if (is_pinned == 1):
+        question.is_pinned = True
+    else:
+        question.is_pinned = False
+    question.save()
+    return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
+
 # course detail view - shows all questions associated with the course
 def coursepage(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
+    questions_pinned = course.question_set.all().filter(is_pinned=True)
+    questions_unpinned = course.question_set.all().exclude(is_pinned=True)
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
@@ -55,7 +68,8 @@ def coursepage(request, course_id):
             return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
     else:
         form = QuestionForm()
-    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 'netid': request.user.netid})
+    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
+        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'netid': request.user.netid})
     #def get_queryset(self):
     #    return Question.objects.all()
 

@@ -99,6 +99,7 @@ class Question(models.Model):
     submitter = models.ForeignKey(QuailUser, null=True)
     rank_score = models.FloatField(default=0.0)
     course = models.ForeignKey(Course, null=True)
+    is_pinned = models.BooleanField(default=False)
 
     class Meta:
       ordering = ['-votes']
