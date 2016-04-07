@@ -69,8 +69,10 @@
 	{% endfor %}
 </ul>
 
+<br>
+<br>
 <ul>
-	{% for q in questions_unpinned %}
+	{% for q in questions %}
 	<li>
 		{% if q.submitter.netid == netid %}
 		<div class="box-blue row">
@@ -120,5 +122,21 @@
 	</li>
 	{% endfor %}
 </ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if questions.has_previous %}
+            <a href="?page={{ questions.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ questions.number }} of {{ questions.paginator.num_pages }}
+        </span>
+
+        {% if questions.has_next %}
+            <a href="?page={{ questions.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 
 {% endblock %}

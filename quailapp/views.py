@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views import generic
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
@@ -58,6 +59,20 @@ def coursepage(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     questions_pinned = course.question_set.all().filter(is_pinned=True)
     questions_unpinned = course.question_set.all().exclude(is_pinned=True)
+    
+    # view (unpinned) questions 5 at a time
+    paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
+    page = request.GET.get('page')
+    try:
+        questions = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        questions = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        questions = paginator.page(paginator.num_pages)
+    
+    # if a question is posted
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
@@ -69,7 +84,7 @@ def coursepage(request, course_id):
     else:
         form = QuestionForm()
     return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
-        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'netid': request.user.netid})
+        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'questions': questions, 'netid': request.user.netid})
     #def get_queryset(self):
     #    return Question.objects.all()
 
@@ -79,12 +94,14 @@ def question_detail(request, question_id):
     if request.method == 'POST':
         form = AnswerForm(request.POST)
         comment_form = CommentForm(request.POST)
+        # if an answer is posted
         if form.is_valid():
             data = form.cleaned_data
             new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
                 text=data['your_answer'], question=question, submitter=request.user)
             new_answer.save()
             return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
+        # if a comment is posted
         if comment_form.is_valid():
             data = comment_form.cleaned_data
             new_comment = Comment(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
