@@ -9,6 +9,19 @@
 {% if question.answer %}
 <h3>Answer: {{ question.answer }}</h3>
 {% else %}
-<h3><a href="{% url 'quailapp:answer' question.id %}">Submit an answer!</a></h3>
+
+<form action="{% url 'quailapp:detail' question.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_answer" name="your_answer" type="text" class="form-control" placeholder="Your answer">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Submit">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
+
+<h3>Looks like there are no answers... submit an answer!</h3>
 {% endif %}
 {% endblock %}

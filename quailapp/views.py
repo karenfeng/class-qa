@@ -42,23 +42,6 @@ def vote(request, question_id):
         # user hits the Back button.
     return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
 
-# handles when user inputs answer for a question through answer form
-def get_answer(request, question_id):
-
-    question = get_object_or_404(Question, pk=question_id)
-    if request.method == 'POST':
-        form = AnswerForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
-                text=data['your_answer'], question=question, submitter=request.user)
-            new_answer.save()
-            return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
-    else:
-        form = AnswerForm()
-    return render(request, 'quailapp/answer.html', {'question': question, 'form': form})
-
-
 # course detail view - shows all questions associated with the course
 def coursepage(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
@@ -77,15 +60,21 @@ def coursepage(request, course_id):
     #    return Question.objects.all()
 
 # detail view = what you see when you click on a question (its answers, votes, etc)
-class DetailView(generic.DetailView):
-    model = Question
-    template_name = 'quailapp/detail.html'
-    form = AnswerForm()
-    def get_queryset(self):
-        return Question.objects.all()
+def question_detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            new_answer = Answer(created_on=timezone.make_aware(timezone.now(), timezone.get_default_timezone()), 
+                text=data['your_answer'], question=question, submitter=request.user)
+            new_answer.save()
+            return HttpResponseRedirect(reverse('quailapp:detail', args=(question.id,)))
+    else:
+        form = AnswerForm()
+    return render(request, 'quailapp/detail.html', {'question': question, 'form': form})
 
 def get_question(request):
-
     # otherwise can post a question
     if request.method == 'POST':
         form = QuestionForm(request.POST)
