@@ -2,42 +2,47 @@
 {% load bootstrap3 %}
 
 {% block content %}
-<h3><a href="{% url 'quailapp:get' %}">Post a question</a></h3>
 
-<h2>Questions asked so far:</h2>
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<h1>Welcome, {{ user.first_name }}</h1>
 
-<ul>
-	{% for q in questions %}
-	<li>
-		<div class="box row">
-			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
-				<div class="col-xs-1">
-					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
-						{% csrf_token %}
-						{% buttons %}
-						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link" name="vote" id="upvote" value="1">
-								{% bootstrap_icon "chevron-up" %}
-							</button>
-							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link" name="vote" id="downvote" value="-1">
-								{% bootstrap_icon "chevron-down" %}
-							</button>
-						</div>
-						{% endbuttons %}
-					</form>
-				</div>
-				<div class="col-xs-11">
-					<p class="question">
-						{{ q.text }}<br>
-						<span class="unemph">{{ q.created_on }}</span><br>
-					</p>
-				</div>
-			</a>
+<div class="row">
+	<div class="col-xs-4">
+		<div class="box-static-dark">
+			<h3 class="centered">User information</h3>
 		</div>
-	</li>
-	{% endfor %}
-</ul>
+		<div class="box-static">
+			<span class="bold">NetID:</span> {{ user.netid }}<br>
+			<span class="bold">Name:</span> {{ user.first_name }} {{ user.last_name }}<br>
+			<span class="bold">Role:</span>
+			{% if user.is_student %}
+				Student
+			{% else %}
+				Lecturer
+			{% endif %}
+			<br>
+			<span class="bold">Courses:</span>
+			<ul>
+			{% for course in courses %}
+				<li>{{ course }}</li>
+			{% endfor %}
+			</ul>
+
+			<span class="bold">Your Questions:</span>
+			<ul>
+			{% for q in user.question_set.all %}
+				<li>{{ q.text }}</li>
+			{% endfor %}
+			</ul>
+			<a class="btn btn-primary right" role="button" href="{% url 'quailapp:userinfo' %}">Edit</a>
+		</div>
+	</div>
+	<div class="col-xs-8">
+		{% for course in courses %}
+			<div class="box">
+				<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
+			</div>
+		{% endfor %}
+	</div>
+</div>
 
 {% endblock %}

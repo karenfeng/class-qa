@@ -158,6 +158,17 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #E8E8E8;
 }
 
+.box-static {
+  padding: 5px 10px 5px 10px;
+  background-color: #F5F5F5;
+  overflow: auto;
+}
+
+.box-static-dark {
+  padding: 5px 10px 5px 10px;
+  background-color: #DCDCDC;
+}
+
 .question-box {
   color: #000000;
 }

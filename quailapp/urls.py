@@ -7,7 +7,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^index$', login_required(views.IndexView.as_view()), name='index'),
+    url(r'^index$', login_required(views.index), name='index'),
     url(r'^get$', login_required(views.get_question), name='get'),
     url(r'^delete$', login_required(views.delete_questions), name='delete'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/deleteans/$', login_required(views.delete_answers), name='deleteans'), # deletes answers assoc w/ question

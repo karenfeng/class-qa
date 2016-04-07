@@ -13,11 +13,14 @@ import datetime, re
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm
 from .models import Question, CASClient, Answer, QuailUser, Course
 
-class IndexView(generic.ListView):
-    template_name = 'quailapp/index.html'
-    context_object_name = 'questions'
-    def get_queryset(self):
-        return Question.objects.all()
+def index(request):
+    try:
+        user = QuailUser.objects.get(netid=request.user.netid)
+    except ObjectDoesNotExist:
+        return redirect('/login')
+    # course list as query set
+    courses = Course.objects.filter(courseid__in=request.user.course_id_list)
+    return render(request, 'quailapp/index.html', {'user':user, 'courses':courses})
 
 # handles what happens when a user uses the vote form on a question
 def vote(request, question_id):
@@ -121,7 +124,7 @@ def login_CAS(request):
         user = authenticate(username=netid, request=request)
         if user is not None:
             login(request, user)
-            return redirect('/userinfo')
+            return redirect('/index')
         else:
             return redirect(netid+'/create')
 
@@ -163,7 +166,7 @@ def create_account(request, netid):
         except ObjectDoesNotExist:
             form = RegisterForm()
             return render(request, 'quailapp/create.html', {'form':form, 'netid':netid})
-        return redirect('/userinfo')
+        return redirect('/index')
 
 def user_info(request):
     try:
