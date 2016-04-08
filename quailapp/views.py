@@ -26,7 +26,6 @@ def index(request):
 
 # handles what happens when a user uses the vote form on a question
 def vote(request, question_id):
-
     question = get_object_or_404(Question, pk=question_id)
     try:
         vote = request.POST['vote']
@@ -37,7 +36,10 @@ def vote(request, question_id):
             })
     else:
         question.votes += int(vote)
-        question.save()
+        if (question.votes < -10):  # deletes question if it's downvoted to oblivion
+            question.delete()
+        else:
+            question.save()
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
@@ -83,7 +85,7 @@ def coursepage(request, course_id):
     else:
         form = QuestionForm()
     return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
-        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'questions': questions, 'netid': request.user.netid})
+        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'questions': questions, 'user': request.user})
     #def get_queryset(self):
     #    return Question.objects.all()
 
@@ -101,6 +103,7 @@ def delete_from_userinfo(request, question_id):
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
+    user = request.user
     if request.method == 'POST':
         form = AnswerForm(request.POST)
         comment_form = CommentForm(request.POST)
@@ -119,7 +122,7 @@ def question_detail(request, question_id):
     else:
         form = AnswerForm()
         comment_form = CommentForm()
-    return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form})
+    return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user})
 
 def get_question(request):
     # otherwise can post a question
@@ -135,10 +138,11 @@ def get_question(request):
     return render(request, 'quailapp/question.html', {'form': form})
 
 # delete all the answers associated with a specific question
-def delete_answers(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    question.answer_set.all().delete()
-    return HttpResponse('All answers have been deleted!')
+def delete_answer(request, answer_id):
+    answer = get_object_or_404(Answer, pk=answer_id)
+    question = answer.question
+    answer.delete()
+    return HttpResponseRedirect(reverse('quailapp:detail',args=(question.id,)))
 
 def login_CAS(request):
 

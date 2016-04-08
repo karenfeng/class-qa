@@ -25,7 +25,7 @@
 <ul>
 	{% for q in questions_pinned %}
 	<li>
-		{% if q.submitter.netid == netid %}
+		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
 		<div class="box row">
@@ -36,11 +36,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == netid %}disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == netid %}disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -54,10 +54,11 @@
 					</p>
 				</div>
 				<div class="col-xs-20">
-					{% if q.submitter.netid == netid %}
+					{% if q.submitter.netid == user.netid %}
 					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
 					{% endif %}
 				</div>
+				{% if not user.is_student %}
 				<div class="col-xs-1">
 					{% if q.is_pinned %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
@@ -75,6 +76,7 @@
 						</form>
 					{% endif %}
 				</div>
+				{% endif %}
 			</a>
 		</div>
 	</li>
@@ -83,10 +85,14 @@
 
 <br>
 <h4>Submitted Questions</h4>
+{% if questions|length == 0 %}
+There doesn't appear to be any questions for this class... :(
+<br>
+{% endif %}
 <ul>
 	{% for q in questions %}
 	<li>
-		{% if q.submitter.netid == netid %}
+		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
 		<div class="box row">
@@ -97,11 +103,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == netid %} disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == netid %} disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -115,10 +121,11 @@
 					</p>
 				</div>
 				<div class="col-xs-20">
-					{% if q.submitter.netid == netid %}
+					{% if q.submitter.netid == user.netid %}
 					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
 					{% endif %}
 				</div>
+				{% if not user.is_student %}
 				<div class="col-xs-1">
 					{% if q.is_pinned %}
 						<form action="{% url 'quailapp:pin' q.id %}" method="POST">
@@ -136,6 +143,7 @@
 						</form>
 					{% endif %}
 				</div>
+				{% endif %}
 			</a>
 		</div>
 	</li>

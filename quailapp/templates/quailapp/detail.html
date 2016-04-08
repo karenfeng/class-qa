@@ -8,8 +8,13 @@
 
 {% if question.answer %}
 <h3>Answer: {{ question.answer }}</h3>
-{% else %}
 
+{% if question.answer.submitter == user %}
+<a href="{% url 'quailapp:deleteans' question.answer.id %}">Delete Your Answer</a><br>
+{% endif %}
+
+{% else %}
+{% if not user.is_student %}
 <form action="{% url 'quailapp:detail' question.id %}" method="post">
     {% csrf_token %}
     <div class="input-group">
@@ -21,8 +26,11 @@
       </span>
     </div>
 </form>
-
 <h3>Looks like there are no answers... submit an answer!</h3>
+{% else %}
+<br>
+<h4>Looks like there are no answers... but you're not a lecturer... so you can't answer hahahaha</h4>
+{% endif %}
 {% endif %}
 
 <span class="bold">Comments:</span>

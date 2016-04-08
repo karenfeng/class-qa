@@ -29,7 +29,8 @@
 	</li>
 {% endfor %}
 </ul>
-
+<h4><a href="{% url 'quailapp:enroll' %}">Enroll in more courses</a></h4>
+<br>
 <span class="bold">Your Questions:</span>
 <ul>
 {% for q in user.question_set.all %}
@@ -63,8 +64,5 @@
 	</li>
 {% endfor %}
 </ul>
-
-
-<h3><a href="{% url 'quailapp:enroll' %}">Enroll in more courses</a></h3>
 
 {% endblock %}
