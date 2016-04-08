@@ -10,8 +10,9 @@
 	<h3>Answer:</h3>
 	<div class="box-blue row">
 		<h4>{{ question.answer }}</h4>
-		<span class="unemph">Submitted on: {{ question.answer.created_on }}</span>
+		<span class="unemph">Submitted on: {{ question.answer.created_on }}
 		{% if not user.is_student %}by {{ user.first_name }} {{ user.last_name }} {% endif %}
+		</span>
 		{% if question.answer.submitter == user %}
 		<br>
 		<a href="{% url 'quailapp:deleteans' question.answer.id %}">Delete Your Answer</a><br>

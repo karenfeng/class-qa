@@ -28,8 +28,8 @@ img {
 }
 
 img.small {
-  max-width:60%;
-  max-height:60%;
+  max-width: 45%;
+  max-height: 45%;
 }
 
 img.centered {
@@ -142,7 +142,15 @@ fieldset[disabled] .btn-secondary.active {
 }
 
 .btn-link:hover, .btn-link:focus, .btn-link:active, .btn-link.active, .open > .dropdown-toggle.btn-link {
-  color: #0ABAB5;
+  color: #009191;
+}
+
+.btn-link-red {
+  color: #CC4B00;
+}
+
+.btn-link-red:hover, .btn-link-red:focus, .btn-link-red:active, .btn-link-red.active, .open > .dropdown-toggle.btn-link-red {
+  color: #913500;
 }
 
 .btn-link.disabled {
@@ -150,6 +158,14 @@ fieldset[disabled] .btn-secondary.active {
 }
 
 .btn-link.disabled:hover, .btn-link.disabled:focus, .btn-link.disabled:active, .btn-link.disabled.active, .open > .dropdown-toggle.btn-link.disabled {
+  color: #607D8B;
+}
+
+.btn-link-red.disabled {
+  color: #607D8B;
+}
+
+.btn-link-red.disabled:hover, .btn-link-red.disabled:focus, .btn-link-red.disabled:active, .btn-link-red.disabled.active, .open > .dropdown-toggle.btn-link-red.disabled {
   color: #607D8B;
 }
 
@@ -206,10 +222,6 @@ fieldset[disabled] .btn-secondary.active {
 
 .question {
 	padding-top: 5px;
-}
-
-.votes {
-  color: #0ABAB5;
 }
 
 .home-button {
