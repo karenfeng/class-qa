@@ -7,11 +7,17 @@
 <h2>Question: {{ question.text }}</h2>
 
 {% if question.answer %}
-<h3>Answer: {{ question.answer }}</h3>
+	<h3>Answer:</h3>
+	<div class="box-blue row">
+		<h4>{{ question.answer }}</h4>
+		<span class="unemph">Submitted on: {{ question.answer.created_on }}</span>
+		{% if not user.is_student %}by {{ user.first_name }} {{ user.last_name }} {% endif %}
+		{% if question.answer.submitter == user %}
+		<br>
+		<a href="{% url 'quailapp:deleteans' question.answer.id %}">Delete Your Answer</a><br>
+		{% endif %}
+	</div>
 
-{% if question.answer.submitter == user %}
-<a href="{% url 'quailapp:deleteans' question.answer.id %}">Delete Your Answer</a><br>
-{% endif %}
 
 {% else %}
 {% if not user.is_student %}
@@ -36,7 +42,10 @@
 <span class="bold">Comments:</span>
 <ul>
 {% for comment in question.comment_set.all %}
-	<li>{{ comment }}</li>
+	<div class="box">
+		<li>{{ comment }}</li>
+	</div>
+	
 {% endfor %}
 </ul>
 
