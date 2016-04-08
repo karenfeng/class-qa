@@ -54,7 +54,7 @@
 					</p>
 				</div>
 				<div class="col-xs-20">
-					{% if q.submitter.netid == user.netid %}
+					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
 					{% endif %}
 				</div>
@@ -121,7 +121,7 @@ There doesn't appear to be any questions for this class... :(
 					</p>
 				</div>
 				<div class="col-xs-20">
-					{% if q.submitter.netid == user.netid %}
+					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
 					{% endif %}
 				</div>
