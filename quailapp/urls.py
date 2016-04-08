@@ -20,5 +20,7 @@ urlpatterns = [
     url(r'^userinfo$', login_required(views.user_info), name='userinfo'),
     url(r'^enroll$', login_required(views.enroll), name='enroll'),
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/coursepage/$', login_required(views.coursepage), name='coursepage'),
+    url(r'^(?P<question_id>[a-zA-Z0-9]+)/delete_from_coursepage/$', login_required(views.delete_from_coursepage), name='delete_from_coursepage'), # a little hacky.
+    url(r'^(?P<question_id>[a-zA-Z0-9]+)/delete_from_info/$', login_required(views.delete_from_userinfo), name='delete_from_userinfo'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

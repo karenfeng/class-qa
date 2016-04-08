@@ -52,8 +52,11 @@
 				<div class="col-xs-11">
 					<p class="question">
 						{{ q.text }}<br>
-						<span class="unemph">{{ q.created_on }}</span><br>
+						<span class="unemph">{{ q.created_on }}</span>
 					</p>
+				</div>
+				<div class="col-xs-1">
+					<a href="{% url 'quailapp:delete_from_userinfo' q.id %}">Delete</a>
 				</div>
 			</a>
 		</div>

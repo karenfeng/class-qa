@@ -18,6 +18,10 @@
     </div>
 </form>
 
+{% if questions_pinned|length > 0 %}
+<br>
+<h4>Pinned questions</h4>
+{% endif %}
 <ul>
 	{% for q in questions_pinned %}
 	<li>
@@ -32,11 +36,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1">
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link {% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1">
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -48,6 +52,11 @@
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
 					</p>
+				</div>
+				<div class="col-xs-20">
+					{% if q.submitter.netid == netid %}
+					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
+					{% endif %}
 				</div>
 				<div class="col-xs-1">
 					{% if q.is_pinned %}
@@ -73,7 +82,7 @@
 </ul>
 
 <br>
-<br>
+<h4>Submitted Questions</h4>
 <ul>
 	{% for q in questions %}
 	<li>
@@ -88,11 +97,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1">
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered votes">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link {% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1">
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -104,6 +113,11 @@
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
 					</p>
+				</div>
+				<div class="col-xs-20">
+					{% if q.submitter.netid == netid %}
+					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
+					{% endif %}
 				</div>
 				<div class="col-xs-1">
 					{% if q.is_pinned %}

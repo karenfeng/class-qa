@@ -87,6 +87,17 @@ def coursepage(request, course_id):
     #def get_queryset(self):
     #    return Question.objects.all()
 
+def delete_from_coursepage(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    course = question.course
+    question.delete()
+    return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
+
+def delete_from_userinfo(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    question.delete()
+    return HttpResponseRedirect(reverse('quailapp:userinfo'))
+
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
