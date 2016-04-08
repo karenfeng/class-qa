@@ -95,7 +95,7 @@
 </ul>
 
 <br>
-<h4>Submitted Questions</h4>
+<h4>Submitted questions</h4>
 {% if questions|length == 0 %}
 There doesn't appear to be any questions for this class... :(
 <br>
@@ -174,8 +174,14 @@ There doesn't appear to be any questions for this class... :(
 
 <div class="pagination">
     <span class="step-links">
-        {% if questions.has_previous %}
-            <a href="?page={{ questions.previous_page_number }}">previous</a>
+    	{% if questions.has_previous %}
+    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.previous_page_number }}">
+	    		{% bootstrap_icon "chevron-left" %}
+			</a>
+		{% else %}
+		    <a class="btn btn-link btn-link-gray disabled">
+	    		{% bootstrap_icon "chevron-left" %}
+			</a>
         {% endif %}
 
         <span class="current">
@@ -183,7 +189,13 @@ There doesn't appear to be any questions for this class... :(
         </span>
 
         {% if questions.has_next %}
-            <a href="?page={{ questions.next_page_number }}">next</a>
+    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.next_page_number }}">
+	    		{% bootstrap_icon "chevron-right" %}
+			</a>
+		{% else %}
+		    <a class="btn btn-link btn-link-gray disabled">
+	    		{% bootstrap_icon "chevron-right" %}
+			</a>
         {% endif %}
     </span>
 </div>
