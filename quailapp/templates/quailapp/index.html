@@ -8,7 +8,9 @@
 <div class="row">
 	<div class="col-xs-4">
 		<div class="box-static-dark">
-			<h3 class="centered">User information</h3>
+			<a href="{% url 'quailapp:userinfo' %}">
+				<h4 class="centered">User information</h3>
+			</a>
 		</div>
 		<div class="box-static">
 			<span class="bold">NetID:</span> {{ user.netid }}<br>
@@ -33,14 +35,21 @@
 				<li>{{ q.text }}</li>
 			{% endfor %}
 			</ul>
-			<a class="btn btn-primary right" role="button" href="{% url 'quailapp:userinfo' %}">Edit</a>
 		</div>
 	</div>
 	<div class="col-xs-8">
 		{% for course in courses %}
-			<div class="box">
-				<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
+			<div class="box-static-dark">
+				<a href="{% url 'quailapp:coursepage' course.id %}">
+					<h5>{{ course }}</h5>
+				</a>
 			</div>
+			<div class="box-static">
+				Professor: {{ course.professor }}<br>
+				Class times: {{ course.starttime}} - {{ course.endtime }}
+				</a>
+			</div>
+			<br>
 		{% endfor %}
 	</div>
 </div>

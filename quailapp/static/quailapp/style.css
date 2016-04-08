@@ -27,6 +27,14 @@ img {
   max-height:100%;
 }
 
+a {
+  color: #007F7F;
+}
+
+a:focus, a:hover {
+  color: #004c4c;
+}
+
 img.small {
   max-width: 45%;
   max-height: 45%;
