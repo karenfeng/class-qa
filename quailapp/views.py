@@ -85,7 +85,7 @@ def coursepage(request, course_id):
     else:
         form = QuestionForm()
     return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
-        'questions_pinned': questions_pinned, 'questions_unpinned': questions_unpinned, 'questions': questions, 'user': request.user})
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
     #def get_queryset(self):
     #    return Question.objects.all()
 

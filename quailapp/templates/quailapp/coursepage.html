@@ -51,9 +51,12 @@
 					<p class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
+						{% if not user.is_student %}
+						<h6>Submitted by: {{ q.submitter.first_name }} {{ q.submitter.last_name }}</h6>
+						{% endif %}
 					</p>
 				</div>
-				<div class="col-xs-20">
+				<div class="col-xs-1">
 					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<a href="{% url 'quailapp:delete_from_coursepage' q.id %}">Delete</a>
 					{% endif %}
@@ -118,6 +121,9 @@ There doesn't appear to be any questions for this class... :(
 					<p class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}</span><br>
+						{% if not user.is_student %}
+						<h6>Submitted by: {{ q.submitter.first_name }} {{ q.submitter.last_name }}</h6>
+						{% endif %}
 					</p>
 				</div>
 				<div class="col-xs-20">
