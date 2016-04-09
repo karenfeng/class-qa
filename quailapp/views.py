@@ -37,7 +37,14 @@ def vote(request, question_id):
             'error_message': "You didn't select a vote.",
             })
     else:
-        question.votes += int(vote)
+        if not question.users_voted:
+            question.users_voted = request.user.netid
+            question.votes += int(vote)
+        elif not request.user.netid in question.users_voted:
+            question.votes += int(vote)
+            users_voted = question.users_voted + '|' + request.user.netid
+            question.users_voted = users_voted
+
         if (question.votes < -10):  # deletes question if it's downvoted to oblivion
             question.delete()
         else:

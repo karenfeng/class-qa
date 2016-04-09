@@ -41,7 +41,6 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_active = models.BooleanField(default=True)
 
   courses_by_id = models.TextField(max_length=10)
-  #classes = models.ForeignKey(Course, null=True)
 
   USERNAME_FIELD = 'netid'
   REQUIRED_FIELDS = ['first_name', 'last_name', 'is_student']
@@ -101,11 +100,14 @@ class Question(models.Model):
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
 
+    users_voted = models.TextField(null=True, blank=True)
+
     class Meta:
       ordering = ['-votes']
 
     def __unicode__(self):
         return self.text
+
 
 class Answer(models.Model):
   created_on = models.DateTimeField(auto_now_add=True) 
