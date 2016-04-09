@@ -12,6 +12,8 @@ from django.contrib.auth import login, logout, authenticate
 
 import datetime, re
 
+import json
+
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
 from .models import Question, CASClient, Answer, QuailUser, Course, Comment
 
@@ -43,7 +45,9 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-    return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
+    
+    return HttpResponse(question.votes)
+    #return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
 
 # handles what happens when someone pins a question to the coursepage
 def pin(request, question_id):
@@ -268,6 +272,23 @@ def enroll(request):
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
         form = EnrollForm(courses_available=courses_available)
         return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
+
+def hello(request):
+    try:
+        user = QuailUser.objects.get(netid='ktho')
+    except ObjectDoesNotExist:
+        user = ""
+    #user.first_name = "Zach";
+    #user.save(); 
+    return HttpResponse(user.first_name)
+    return HttpResponse("SLDJ")
+
+def test(request):
+    try:
+        user = QuailUser.objects.get(netid='ktho')
+    except ObjectDoesNotExist:
+        user = "" 
+    return render(request, 'quailapp/test.html', {'user': user})
 
 def home(request):
     return render(request, 'quailapp/home.html')

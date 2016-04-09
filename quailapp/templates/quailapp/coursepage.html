@@ -3,8 +3,8 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <h1>{{ course }}</h1>
-
 <h3>Post a question!</h3>
 <form action="{% url 'quailapp:coursepage' course.id %}" method="post">
     {% csrf_token %}
@@ -24,6 +24,72 @@
 {% endif %}
 <ul>
 	{% for q in questions_pinned %}
+	<script>
+	$(document).ready(function() {
+		$('[name=vote{{q.id}}]').click(function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:vote' q.id %}",
+				data : {vote : $(this).attr("value") },
+				success: function (data) {
+					$('#numvotes{{q.id}}').html(data);
+					console.log(data);
+				}
+			})
+		})
+	    // This function gets cookie with a given name
+	    function getCookie(name) {
+	        var cookieValue = null;
+	        if (document.cookie && document.cookie != '') {
+	            var cookies = document.cookie.split(';');
+	            for (var i = 0; i < cookies.length; i++) {
+	                var cookie = jQuery.trim(cookies[i]);
+	                // Does this cookie string begin with the name we want?
+	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                    break;
+	                }
+	            }
+	        }
+	        return cookieValue;
+	    }
+	    var csrftoken = getCookie('csrftoken');
+
+	    /*
+	    The functions below will create a header with csrftoken
+	    */
+
+	    function csrfSafeMethod(method) {
+	        // these HTTP methods do not require CSRF protection
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+	    function sameOrigin(url) {
+	        // test that a given url is a same-origin URL
+	        // url could be relative or scheme relative or absolute
+	        var host = document.location.host; // host + port
+	        var protocol = document.location.protocol;
+	        var sr_origin = '//' + host;
+	        var origin = protocol + sr_origin;
+	        // Allow absolute or scheme relative URLs to same origin
+	        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	            // or any other URL that isn't scheme relative or absolute i.e relative.
+	            !(/^(\/\/|http:|https:).*/.test(url));
+	    }
+
+	    $.ajaxSetup({
+	        beforeSend: function(xhr, settings) {
+	            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	                // Send the token to same-origin, relative URLs only.
+	                // Send the token only if the method warrants CSRF protection
+	                // Using the CSRFToken value acquired earlier
+	                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	            }
+	        }
+	    });
+	});
+	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
@@ -32,15 +98,15 @@
 		{% endif %}
 			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
 				<div class="col-xs-1">
-					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+					<form method="POST">
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
-							<div class="centered">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
+							<div class="centered" id="numvotes{{q.id}}">{{ q.votes }}</div>
+							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -102,23 +168,90 @@ There doesn't appear to be any questions for this class... :(
 {% endif %}
 <ul>
 	{% for q in questions %}
+	
+	<script>
+	$(document).ready(function() {
+		$('[name=vote{{q.id}}]').click(function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:vote' q.id %}",
+				data : {vote : $(this).attr("value") },
+				success: function (data) {
+					$('#numvotes{{q.id}}').html(data);
+					console.log(data);
+				}
+			})
+		})
+	    // This function gets cookie with a given name
+	    function getCookie(name) {
+	        var cookieValue = null;
+	        if (document.cookie && document.cookie != '') {
+	            var cookies = document.cookie.split(';');
+	            for (var i = 0; i < cookies.length; i++) {
+	                var cookie = jQuery.trim(cookies[i]);
+	                // Does this cookie string begin with the name we want?
+	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                    break;
+	                }
+	            }
+	        }
+	        return cookieValue;
+	    }
+	    var csrftoken = getCookie('csrftoken');
+
+	    /*
+	    The functions below will create a header with csrftoken
+	    */
+
+	    function csrfSafeMethod(method) {
+	        // these HTTP methods do not require CSRF protection
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+	    function sameOrigin(url) {
+	        // test that a given url is a same-origin URL
+	        // url could be relative or scheme relative or absolute
+	        var host = document.location.host; // host + port
+	        var protocol = document.location.protocol;
+	        var sr_origin = '//' + host;
+	        var origin = protocol + sr_origin;
+	        // Allow absolute or scheme relative URLs to same origin
+	        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	            // or any other URL that isn't scheme relative or absolute i.e relative.
+	            !(/^(\/\/|http:|https:).*/.test(url));
+	    }
+
+	    $.ajaxSetup({
+	        beforeSend: function(xhr, settings) {
+	            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	                // Send the token to same-origin, relative URLs only.
+	                // Send the token only if the method warrants CSRF protection
+	                // Using the CSRFToken value acquired earlier
+	                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	            }
+	        }
+	    });
+	});
+	</script>
+
 	<li>
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
 		<div class="box row">
 		{% endif %}
-			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
 				<div class="col-xs-1">
-					<form action="{% url 'quailapp:vote' q.id %}" method="POST">
+					<form method="POST">
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="upvote" value="1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
-							<div class="centered">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote" id="downvote" value="-1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
+							<div class="centered" id="numvotes{{q.id}}">{{ q.votes }}</div>
+							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
