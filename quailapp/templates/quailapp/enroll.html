@@ -2,8 +2,8 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <h2>Enroll in courses</h2>
-
 <div class="row">
 	<div class="col-xs-6">
 		<span class="bold">Enrolled</span>
@@ -19,20 +19,13 @@
 	</div>
 	<div class="col-xs-6">
 		<span class="bold">Add</span>
-		<form method="get" action="/enroll">
-			<div class="input-group">
-				<input type="text" name="q" id="id_q" class="form-control" placeholder="COS 333" value="{{ query_string }}">
-				<span class="input-group-btn">
-					{% buttons %}
-			        	<button class="btn btn-secondary" type="submit" value="Submit">Search</button>
-					{% endbuttons %}
-			    </span>
-			</div>
-		</form>
+		<div class="input-group">
+			<input type="text" name="q" id="id_q" class="form-control" placeholder="COS 333" value="{{ query_string }}">
+		</div>
 
 		<form action="/enroll" method="post">
 			{% csrf_token %}
-			<div class="scrollbox">
+			<div class="scrollbox" id="available_classes">
 				{% bootstrap_form form %}
 			</div>
 			{% buttons %}
@@ -42,4 +35,22 @@
 	</div>
 </div>
 
+<script> 
+$(document).ready(function() {
+	$('#id_q').keyup(function() {
+		//console.log($('#id_q').val());
+		$.ajax({
+			url : "/enroll",
+			type : "get",
+			data : {q: $('#id_q').val() },
+			success: function (data) {
+				$('#available_classes').html(data);
+				//console.log(data);
+			}
+		})
+
+	});
+
+});
+</script>
 {% endblock %}

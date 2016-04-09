@@ -231,7 +231,10 @@ def user_info(request):
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
     # searching classes
-    if ('q' in request.GET) and request.GET['q'].strip():
+    #if request.is_ajax():
+        #return HttpResponse(request.GET)
+        #return HttpResponse(request.GET['q'])
+    if request.is_ajax():
         query_string = request.GET['q']
         terms = query_string.split()
         courses_found = Course.objects.exclude(courseid__in=request.user.course_id_list)
@@ -252,7 +255,8 @@ def enroll(request):
         found_entries = Course.objects.filter(courseid__in=course_ids_found).order_by('dept')
         form = EnrollForm(courses_available=found_entries)
         courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
-        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled, 'query_string':query_string})
+        return render(request, 'quailapp/enrollform.html', {'form': form})
+        #return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled, 'query_string':query_string})
 
     if request.method == 'POST':
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
@@ -273,36 +277,5 @@ def enroll(request):
         form = EnrollForm(courses_available=courses_available)
         return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
 
-def hello(request):
-    try:
-        user = QuailUser.objects.get(netid='ktho')
-    except ObjectDoesNotExist:
-        user = ""
-    #user.first_name = "Zach";
-    #user.save(); 
-    return HttpResponse(user.first_name)
-    return HttpResponse("SLDJ")
-
-def test(request):
-    try:
-        user = QuailUser.objects.get(netid='ktho')
-    except ObjectDoesNotExist:
-        user = "" 
-    return render(request, 'quailapp/test.html', {'user': user})
-
 def home(request):
     return render(request, 'quailapp/home.html')
-
-# def register_class(request):
-#     if request.method == 'POST':
-#         form = ClassForm(request.POST)
-#         if form.is_valid():
-#             data = form.cleaned_data
-#             new_class = Class(name=data['your_class'], professor=data['your_professor'], \
-#                 starttime=data['start_time'], endtime=data['end_time'])
-#             new_class.save()
-#             return redirect('/')
-#     else:
-#         form = ClassForm()
-#     return render(request, 'quailapp/classes.html', {'form': form})
-
