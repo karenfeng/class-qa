@@ -100,7 +100,8 @@ class Question(models.Model):
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
 
-    users_voted = models.TextField(null=True, blank=True)
+    users_upvoted = models.TextField(null=True, blank=True, default="")
+    users_downvoted = models.TextField(null=True, blank=True, default="")
 
     class Meta:
       ordering = ['-votes']

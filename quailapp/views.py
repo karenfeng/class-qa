@@ -14,7 +14,7 @@ import datetime, re
 
 import json
 
-from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, SortByForm
 from .models import Question, CASClient, Answer, QuailUser, Course, Comment
 
 def index(request):
@@ -37,13 +37,35 @@ def vote(request, question_id):
             'error_message': "You didn't select a vote.",
             })
     else:
-        if not question.users_voted:
-            question.users_voted = request.user.netid
+        # if user is upvoting
+        if (int(vote) == 1) and ((not question.users_upvoted) or (request.user.netid not in question.users_upvoted)): 
+            if question.users_downvoted and request.user.netid in question.users_downvoted:
+                users_downvoted = questions.users_downvoted.replace("|"+request.user.netid, "")
+                question.users_downvoted = users_downvoted
+            else:
+                users_upvoted = question.users_upvoted + '|' + request.user.netid
+                question.users_upvoted = users_upvoted
             question.votes += int(vote)
-        elif not request.user.netid in question.users_voted:
+        
+        # if user is downvoting
+        elif (int(vote) == -1) and ((not question.users_downvoted) or (request.user.netid not in question.users_downvoted)):
+            # if user already upvoted and wants to downvote
+            if question.users_upvoted and request.user.netid in question.users_upvoted:
+                users_upvoted = question.users_upvoted.replace("|"+request.user.netid, "")
+                question.users_upvoted = users_upvoted
+            else:
+                users_downvoted = question.users_downvoted + '|' + request.user.netid
+                question.users_downvoted = users_downvoted
             question.votes += int(vote)
-            users_voted = question.users_voted + '|' + request.user.netid
-            question.users_voted = users_voted
+        
+
+        # if not question.users_voted:
+        #     question.users_voted = request.user.netid
+        #     question.votes += int(vote)
+        # elif not request.user.netid in question.users_voted:
+        #     question.votes += int(vote)
+        #     users_voted = question.users_voted + '|' + request.user.netid
+        #     question.users_voted = users_voted
 
         if (question.votes < -10):  # deletes question if it's downvoted to oblivion
             question.delete()
@@ -95,6 +117,7 @@ def coursepage(request, course_id):
             return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
     else:
         form = QuestionForm()
+        #sortby_form = SortByForm()
     return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
     #def get_queryset(self):
