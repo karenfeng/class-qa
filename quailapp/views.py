@@ -40,7 +40,7 @@ def vote(request, question_id):
         # if user is upvoting
         if (int(vote) == 1) and ((not question.users_upvoted) or (request.user.netid not in question.users_upvoted)): 
             if question.users_downvoted and request.user.netid in question.users_downvoted:
-                users_downvoted = questions.users_downvoted.replace("|"+request.user.netid, "")
+                users_downvoted = question.users_downvoted.replace("|"+request.user.netid, "")
                 question.users_downvoted = users_downvoted
             else:
                 users_upvoted = question.users_upvoted + '|' + request.user.netid
