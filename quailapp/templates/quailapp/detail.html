@@ -16,7 +16,7 @@
 		<div class="col-xs-11">
 			<h4>{{ question.answer }}</h4>
 			<span class="unemph">Submitted on: {{ question.answer.created_on }}
-			{% if not user.is_student %}by {{ user.first_name }} {{ user.last_name }} {% endif %}
+			{% if not user.is_student %}by {{ question.answer.submitter.first_name }} {{ question.answer.submitter.last_name }} {% endif %}
 			</span>
 		</div>
 		<div class="col-xs-1">
@@ -56,7 +56,13 @@
 <ul>
 {% for comment in question.comment_set.all %}
 	<div class="box">
-		<li>{{ comment }}</li>
+		<li>
+			{{ comment }}
+			<br>
+		<span class="unemph">Submitted on: {{ comment.created_on }}
+			{% if not user.is_student %}by {{ comment.submitter.first_name }} {{ comment.submitter.last_name }} {% endif %}
+			</span>
+		</li>
 	</div>
 	
 {% endfor %}
