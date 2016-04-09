@@ -14,7 +14,7 @@ import datetime, re
 
 import json
 
-from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, SortByForm
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
 from .models import Question, CASClient, Answer, QuailUser, Course, Comment
 
 def index(request):
