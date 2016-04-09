@@ -35,7 +35,7 @@
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{course.id}}/coursepage/" + " #voting{{q.id}}")
-					//console.log(data);
+					console.log(data);
 				}
 			})
 		})
@@ -103,11 +103,11 @@
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group" id="voting{{q.id}}">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_voted %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_upvoted %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered" id="numvotes{{q.id}}">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_voted %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
+							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_downvoted %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
@@ -168,6 +168,7 @@ There doesn't appear to be any questions for this class... :(
 <br>
 {% endif %}
 <ul>
+	{{ sortby_form }}
 	{% for q in questions %}
 	
 	<script>
@@ -181,7 +182,7 @@ There doesn't appear to be any questions for this class... :(
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{course.id}}/coursepage/" + " #voting{{q.id}}")
-					//console.log(data);
+					console.log(data);
 				}
 			})
 		})
@@ -237,23 +238,23 @@ There doesn't appear to be any questions for this class... :(
 	    });
 	});
 	</script>
-
 	<li>
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
 		<div class="box row">
 		{% endif %}
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">	
 				<div class="col-xs-1">
 					<form method="POST">
 						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group" id="voting{{q.id}}">
-							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_voted %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
+							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_upvoted %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-up" %}
 							</button>
 							<div class="centered" id="numvotes{{q.id}}">{{ q.votes }}</div>
-							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_voted %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
+							<button type="submit" class="btn btn-link btn-link-red{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_downvoted %} disabled{% endif %}" name="vote{{q.id}}" id="downvote" value="-1" {% if q.submitter.netid == user.netid %} disabled{% endif %}>
 								{% bootstrap_icon "chevron-down" %}
 							</button>
 						</div>
