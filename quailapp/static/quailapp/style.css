@@ -191,6 +191,12 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #F5F5F5;
 }
 
+.similar-question-box {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #ffffff;
+}
+
 .box:hover, .box:focus, .box:active, .box.active {
   background-color: #E8E8E8;
 }

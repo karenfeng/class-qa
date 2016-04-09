@@ -6,6 +6,8 @@ from django.template import loader
 from django.views import generic
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
@@ -306,6 +308,37 @@ def enroll(request):
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
         form = EnrollForm(courses_available=courses_available)
         return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
+
+def similar_question(request):
+    if request.is_ajax():
+        target_question = request.GET['simQ']
+        course_id = request.GET['course']
+
+        course = get_object_or_404(Course, pk=course_id)
+        questions = Question.objects.filter(course=course)
+        questions_text_lower = [] # questions with all lower case text
+        questions_text_upper = [] # questions as they were submitted with upper case text with their id
+
+        for q in questions:
+            questions_text_lower.append(q.text.lower())
+            questions_text_upper.append((q.text + "\n", q.id))
+            #return HttpResponse((q.id, q.text))
+        questions_text_lower.append(target_question)
+        questions_text_upper.append(target_question)
+
+        # run Tfidf algorithm
+        tfidf = TfidfVectorizer(stop_words='english').fit_transform(questions_text_lower)
+
+        # take cosine similarity by taking dot product
+        pairwise_similarity = (tfidf * tfidf.T).A[len(questions_text_lower)-1] 
+        max_similarity = max(np.delete(pairwise_similarity, len(questions_text_lower)-1))
+        max_index = np.where(pairwise_similarity == max_similarity)[0]
+
+        #corner case for if there are no similar questions
+        if(max_similarity == 0.0): return HttpResponse("")
+
+        best_match = questions_text_upper[max_index]
+        return HttpResponse(best_match)
 
 def home(request):
     return render(request, 'quailapp/home.html')
