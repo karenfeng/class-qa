@@ -1,7 +1,9 @@
 #nomkl
 #numpy==1.8.1
 #scipy==0.14.0
-numpy
+numpy==1.9.2
+scipy
+libgfortran==1.0
 #scipy
-#scikit-learn
+scikit-learn
 #scikit-learn==0.17.1
