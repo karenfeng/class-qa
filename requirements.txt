@@ -9,8 +9,5 @@ gunicorn==19.4.5
 pymongo==3.2.2
 whitenoise==3.0
 wsgiref==0.1.2
-numpy==1.10.4
-scipy==0.17.0
-scikit-learn==0.17.1
 
 #git+git://github.com/django-nonrel/django-permission-backend-nonrel.git@master
