@@ -1,4 +1,7 @@
-nomkl
+#nomkl
+numpy==1.8.1
+scipy==0.14.0
+scikit-learn==0.17b1
 #numpy==1.9.2
-scipy
-scikit-learn==0.17.1
+#scipy
+#scikit-learn==0.17.1
