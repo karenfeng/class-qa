@@ -6,8 +6,8 @@ from django.template import loader
 from django.views import generic
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+#import numpy as np
+#from sklearn.feature_extraction.text import TfidfVectorizer
 
 from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
