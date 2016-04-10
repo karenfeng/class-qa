@@ -6,6 +6,8 @@ from django.template import loader
 from django.views import generic
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import sys
+sys.path.append("numpy_path")
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
