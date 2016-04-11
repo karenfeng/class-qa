@@ -81,6 +81,38 @@ class Course(models.Model):
   professor = models.TextField()
   starttime = models.TimeField(null=False)
   endtime = models.TimeField(null=False)
+  days = models.CharField(max_length=10)
+  chosen_filter = models.CharField(default='-votes', max_length=10) # kinda hack-y. maybe ajax will fix.
+
+  def days_as_list(self):
+    weekdays = []
+    for d in self.days:
+      if (d == '0'):
+        weekdays.append('M')
+      elif (d == '1'):
+        weekdays.append('T')
+      elif (d == '2'):
+        weekdays.append('w')
+      elif (d == '3'):
+        weekdays.append('Th')
+      else:
+        weekdays.append('F')
+    return weekdays
+
+  def days_as_string(self):
+    weekdays = ""
+    for d in self.days:
+      if (d == '0'):
+        weekdays += 'M/'
+      elif (d == '1'):
+        weekdays += 'T/'
+      elif (d == '2'):
+        weekdays += 'W/'
+      elif (d == '3'):
+        weekdays += 'Th/'
+      else:
+        weekdays += 'F/'
+    return weekdays[:len(weekdays)-1]
 
   def __unicode__(self):
     depts = self.dept.split('/')
@@ -99,6 +131,8 @@ class Question(models.Model):
     rank_score = models.FloatField(default=0.0)
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
+    #tags = models.TextField(max_length=10) # allow tags
+    #tag = models.ForeignKey(Tag, null=True)
 
     users_upvoted = models.TextField(null=True, blank=True, default="")
     users_downvoted = models.TextField(null=True, blank=True, default="")
@@ -108,7 +142,13 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.text
+'''
+class Tag(models.Model):
+  text = models.TextField()
 
+  def __unicode__(self):
+    return self.text
+    '''
 
 class Answer(models.Model):
   created_on = models.DateTimeField(auto_now_add=True) 
