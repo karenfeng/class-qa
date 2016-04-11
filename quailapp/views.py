@@ -6,8 +6,8 @@ from django.template import loader
 from django.views import generic
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import sys
-sys.path.append("numpy_path")
+#import sys
+#sys.path.append("numpy_path")
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -96,10 +96,38 @@ def pin(request, question_id):
 # course detail view - shows all questions associated with the course
 def coursepage(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    questions_pinned = course.question_set.all().filter(is_pinned=True)
-    questions_unpinned = course.question_set.all().exclude(is_pinned=True)
+    questions_pinned = course.question_set.all().filter(is_pinned=True).order_by(course.chosen_filter)
+    questions_unpinned = course.question_set.all().exclude(is_pinned=True).order_by(course.chosen_filter)
     
-    # view (unpinned) questions 5 at a time
+    # if a question is posted
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        chosen_filter = request.POST['filter']
+        if (chosen_filter == 'newest'):
+            course.chosen_filter = '-created_on'
+            course.save()
+            questions_pinned = questions_pinned.order_by('-created_on')
+            questions_unpinned = questions_unpinned.order_by('-created_on')
+        elif (chosen_filter == 'oldest'):
+            course.chosen_filter = 'created_on'
+            course.save()
+            questions_pinned = questions_pinned.order_by('created_on')
+            questions_unpinned = questions_unpinned.order_by('created_on')
+        else:
+            course.chosen_filter = '-votes'
+            course.save()
+            questions_pinned = questions_pinned.order_by('-votes')
+            questions_unpinned = questions_unpinned.order_by('-votes')
+        if form.is_valid():
+            data = form.cleaned_data
+            new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0)
+            new_question.save()
+            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
+    else:
+        form = QuestionForm()
+        #sortby_form = SortByForm()
+
+     # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
     page = request.GET.get('page')
     try:
@@ -110,18 +138,6 @@ def coursepage(request, course_id):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
-    
-    # if a question is posted
-    if request.method == 'POST':
-        form = QuestionForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0)
-            new_question.save()
-            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
-    else:
-        form = QuestionForm()
-        #sortby_form = SortByForm()
     return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
     #def get_queryset(self):
