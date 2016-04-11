@@ -249,7 +249,7 @@ def user_info(request):
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
 
     # handle unenroll requests
-    if request.method == 'POST':
+    if request.method == 'POST' and request.is_ajax():
         new_course_ids = ''
         course_list = user.courses_by_id.split('|')
         course_to_unenroll = Course.objects.get(pk=request.POST['courseid'])
@@ -259,6 +259,7 @@ def user_info(request):
         new_course_ids = new_course_ids[:len(new_course_ids)-1]
         user.courses_by_id = new_course_ids
         user.save()
+        return HttpResponse("success")
         return HttpResponseRedirect(reverse('quailapp:userinfo'))
     return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
 

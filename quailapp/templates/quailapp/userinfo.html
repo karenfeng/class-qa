@@ -2,11 +2,14 @@
 {% load bootstrap3 %}
 
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
 <h2>User information</h2>
 
 <span class="bold">NetID:</span> {{ user.netid }}<br>
 <span class="bold">Name:</span> {{ user.first_name }} {{ user.last_name }}<br>
 <span class="bold">Role:</span>
+
 {% if user.is_student %}
 	Student
 {% else %}
@@ -14,25 +17,94 @@
 {% endif %}
 <br>
 <span class="bold">Courses:</span>
-<ul>
-{% for course in courses %}
-	<li>
-		<div class="box row">
-			<div class="col-xs-1">
-				<form action="{% url 'quailapp:userinfo' %}" method="POST">
-					{% csrf_token %}
-					<button class="btn btn-link btn-link-red" type="submit" name="courseid" id="unenroll{{ forloop.counter }}" value="{{ course.id }}">
-						{% bootstrap_icon "remove" %}
-					</button>
-				</form>
+<div id="unenroll_courses">
+	<ul>
+	{% for course in courses %}
+
+	<script>
+	$(document).ready(function() {
+		$(document).on('click', '#unenroll{{forloop.counter}}', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:userinfo' %}" , 
+				data : {courseid : "{{course.id}}"},
+				success: function(data) {
+					$('#unenroll_courses').load("/userinfo" + " #unenroll_courses");
+					console.log(data);
+				}
+			})
+		})
+		// This function gets cookie with a given name
+	    function getCookie(name) {
+	        var cookieValue = null;
+	        if (document.cookie && document.cookie != '') {
+	            var cookies = document.cookie.split(';');
+	            for (var i = 0; i < cookies.length; i++) {
+	                var cookie = jQuery.trim(cookies[i]);
+	                // Does this cookie string begin with the name we want?
+	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                    break;
+	                }
+	            }
+	        }
+	        return cookieValue;
+	    }
+	    var csrftoken = getCookie('csrftoken');
+
+	    /*
+	    The functions below will create a header with csrftoken
+	    */
+
+	    function csrfSafeMethod(method) {
+	        // these HTTP methods do not require CSRF protection
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+	    function sameOrigin(url) {
+	        // test that a given url is a same-origin URL
+	        // url could be relative or scheme relative or absolute
+	        var host = document.location.host; // host + port
+	        var protocol = document.location.protocol;
+	        var sr_origin = '//' + host;
+	        var origin = protocol + sr_origin;
+	        // Allow absolute or scheme relative URLs to same origin
+	        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	            // or any other URL that isn't scheme relative or absolute i.e relative.
+	            !(/^(\/\/|http:|https:).*/.test(url));
+	    }
+
+	    $.ajaxSetup({
+	        beforeSend: function(xhr, settings) {
+	            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	                // Send the token to same-origin, relative URLs only.
+	                // Send the token only if the method warrants CSRF protection
+	                // Using the CSRFToken value acquired earlier
+	                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	            }
+	        }
+	    });
+	});
+	</script>
+		<li>
+			<div class="box row">
+				<div class="col-xs-1">
+					<form method="POST">
+						{% csrf_token %}
+						<button class="btn btn-link btn-link-red" type="submit" name="courseid" id="unenroll{{ forloop.counter }}" value="{{ course.id }}">
+							{% bootstrap_icon "remove" %}
+						</button>
+					</form>
+				</div>
+				<div class="col-xs-11">
+					<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
+				</div>
 			</div>
-			<div class="col-xs-11">
-				<a href="{% url 'quailapp:coursepage' course.id %}"> {{ course }} </a>
-			</div>
-		</div>
-	</li>
-{% endfor %}
-</ul>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
 <h4><a href="{% url 'quailapp:enroll' %}">Enroll in more courses</a></h4>
 <br>
 <span class="bold">Your Questions:</span>
