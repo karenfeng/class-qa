@@ -343,5 +343,15 @@ def similar_question(request):
         best_match = questions_text_upper[max_index]
         return HttpResponse(best_match)
 
+def change_name(request):
+    if request.is_ajax():
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        return HttpResponse(user.first_name + " " + user.last_name)
+
 def home(request):
     return render(request, 'quailapp/home.html')
