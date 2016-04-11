@@ -96,26 +96,27 @@ def pin(request, question_id):
 # course detail view - shows all questions associated with the course
 def coursepage(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
-    questions_pinned = course.question_set.all().filter(is_pinned=True).order_by(course.chosen_filter)
-    questions_unpinned = course.question_set.all().exclude(is_pinned=True).order_by(course.chosen_filter)
+    user = request.user
+    questions_pinned = course.question_set.all().filter(is_pinned=True).order_by(user.chosen_filter)
+    questions_unpinned = course.question_set.all().exclude(is_pinned=True).order_by(user.chosen_filter)
     
     # if a question is posted
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         chosen_filter = request.POST['filter']
         if (chosen_filter == 'newest'):
-            course.chosen_filter = '-created_on'
-            course.save()
+            user.chosen_filter = '-created_on'
+            user.save()
             questions_pinned = questions_pinned.order_by('-created_on')
             questions_unpinned = questions_unpinned.order_by('-created_on')
         elif (chosen_filter == 'oldest'):
-            course.chosen_filter = 'created_on'
-            course.save()
+            user.chosen_filter = 'created_on'
+            user.save()
             questions_pinned = questions_pinned.order_by('created_on')
             questions_unpinned = questions_unpinned.order_by('created_on')
         else:
-            course.chosen_filter = '-votes'
-            course.save()
+            user.chosen_filter = '-votes'
+            user.save()
             questions_pinned = questions_pinned.order_by('-votes')
             questions_unpinned = questions_unpinned.order_by('-votes')
         if form.is_valid():

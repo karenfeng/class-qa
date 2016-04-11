@@ -39,6 +39,7 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_admin = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
+  chosen_filter = models.CharField(default='-votes', max_length=10) # kinda hack-y. maybe ajax will fix.
 
   courses_by_id = models.TextField(max_length=10)
 
@@ -82,7 +83,6 @@ class Course(models.Model):
   starttime = models.TimeField(null=False)
   endtime = models.TimeField(null=False)
   days = models.CharField(max_length=10)
-  chosen_filter = models.CharField(default='-votes', max_length=10) # kinda hack-y. maybe ajax will fix.
 
   def days_as_list(self):
     weekdays = []
