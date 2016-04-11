@@ -103,27 +103,28 @@ def coursepage(request, course_id):
     # if a question is posted
     if request.method == 'POST':
         form = QuestionForm(request.POST)
-        chosen_filter = request.POST['filter']
-        if (chosen_filter == 'newest'):
-            user.chosen_filter = '-created_on'
-            user.save()
-            questions_pinned = questions_pinned.order_by('-created_on')
-            questions_unpinned = questions_unpinned.order_by('-created_on')
-        elif (chosen_filter == 'oldest'):
-            user.chosen_filter = 'created_on'
-            user.save()
-            questions_pinned = questions_pinned.order_by('created_on')
-            questions_unpinned = questions_unpinned.order_by('created_on')
-        else:
-            user.chosen_filter = '-votes'
-            user.save()
-            questions_pinned = questions_pinned.order_by('-votes')
-            questions_unpinned = questions_unpinned.order_by('-votes')
+        if ('filter' in request.POST):
+            chosen_filter = request.POST['filter']
+            if (chosen_filter == 'newest'):
+                user.chosen_filter = '-created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-created_on')
+                questions_unpinned = questions_unpinned.order_by('-created_on')
+            elif (chosen_filter == 'oldest'):
+                user.chosen_filter = 'created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('created_on')
+                questions_unpinned = questions_unpinned.order_by('created_on')
+            else:
+                user.chosen_filter = '-votes'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-votes')
+                questions_unpinned = questions_unpinned.order_by('-votes')
         if form.is_valid():
             data = form.cleaned_data
             new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0)
             new_question.save()
-            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))
+            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))    
     else:
         form = QuestionForm()
         #sortby_form = SortByForm()
