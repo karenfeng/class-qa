@@ -250,7 +250,7 @@ $(document).ready(function() {
 							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 								{% csrf_token %}
 								<button class="btn btn-link right" type="submit" name="pin" id="unpin" value="0">
-									<img nmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
+									<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
 									onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
 									src="{% static "quailapp/unpin.png" %}" alt="Pin">
 								</button>
