@@ -93,16 +93,34 @@ def pin(request, question_id):
     question.save()
     return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
 
-# course detail view - shows all questions associated with the course
-def coursepage(request, course_id):
+def coursepage_live(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
-    questions_pinned = course.question_set.all().filter(is_pinned=True).order_by(user.chosen_filter)
-    questions_unpinned = course.question_set.all().exclude(is_pinned=True).order_by(user.chosen_filter)
+    live_questions = course.question_set.all().filter(is_live=True)
+    questions_pinned = live_questions.filter(is_pinned=True).order_by(user.chosen_filter)
+    questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
     
+    # check if course is live
+    now = datetime.datetime.now()
+    live_month = False
+    live_day = False
+    live_time = False
+    if (now.month >= 1 and now.month < 6):
+        live_month = True
+    if (re.search(str(now.weekday()), course.days)):
+        live_day = True
+    if (now.time() < course.endtime and now.time() > course.starttime):
+        live_time = True
+    if (not(live_month and live_day and live_time)):
+        course.is_live = False
+        course.save()
+        live_questions.update(is_live=False)
+        
     # if a question is posted
     if request.method == 'POST':
         form = QuestionForm(request.POST)
+
+        # if the user chooses a filter
         if ('filter' in request.POST):
             chosen_filter = request.POST['filter']
             if (chosen_filter == 'newest'):
@@ -120,11 +138,18 @@ def coursepage(request, course_id):
                 user.save()
                 questions_pinned = questions_pinned.order_by('-votes')
                 questions_unpinned = questions_unpinned.order_by('-votes')
+
+        # if the user submits a question
         if form.is_valid():
             data = form.cleaned_data
-            new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0)
-            new_question.save()
-            return HttpResponseRedirect(reverse('quailapp:coursepage', args=(course.id,)))    
+            if (course.is_live):
+                new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=True)
+                new_question.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))   
+            else:
+                new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=False)
+                new_question.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(course.id,)))   
     else:
         form = QuestionForm()
         #sortby_form = SortByForm()
@@ -140,10 +165,110 @@ def coursepage(request, course_id):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
-    return render(request, 'quailapp/coursepage.html', {'form': form, 'course': course, 
+    return render(request, 'quailapp/coursepage_live.html', {'form': form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
-    #def get_queryset(self):
-    #    return Question.objects.all()
+
+
+def coursepage_archive(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    user = request.user
+    archived_questions = course.question_set.all().exclude(is_live=True)
+    questions_pinned = archived_questions.filter(is_pinned=True).order_by(user.chosen_filter)
+    questions_unpinned = archived_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
+    
+    # check if course is live
+    now = datetime.datetime.now()
+    live_month = False
+    live_day = False
+    live_time = False
+    if (now.month >= 1 and now.month < 6):
+        live_month = True
+    if (re.search(str(now.weekday()), course.days)):
+        live_day = True
+    if (now.time() < course.endtime and now.time() > course.starttime):
+        live_time = True
+    if (live_month and live_day and live_time):
+        course.is_live = True
+        course.save()
+    else:
+        course.is_live = False
+        course.save()
+        
+    # if a question is posted
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+
+        # if the user chooses a filter
+        if ('filter' in request.POST):
+            chosen_filter = request.POST['filter']
+            if (chosen_filter == 'newest'):
+                user.chosen_filter = '-created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-created_on')
+                questions_unpinned = questions_unpinned.order_by('-created_on')
+            elif (chosen_filter == 'oldest'):
+                user.chosen_filter = 'created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('created_on')
+                questions_unpinned = questions_unpinned.order_by('created_on')
+            else:
+                user.chosen_filter = '-votes'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-votes')
+                questions_unpinned = questions_unpinned.order_by('-votes')
+
+        # if the user submits a question
+        if form.is_valid():
+            data = form.cleaned_data
+            if (course.is_live):
+                new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=True)
+                new_question.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))  
+            else:
+                new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=False)
+                new_question.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(course.id,)))    
+    else:
+        form = QuestionForm()
+        #sortby_form = SortByForm()
+
+     # view (unpinned) questions 5 at a time
+    paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
+    page = request.GET.get('page')
+    try:
+        questions = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        questions = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        questions = paginator.page(paginator.num_pages)
+    return render(request, 'quailapp/coursepage_archive.html', {'form': form, 'course': course, 
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
+
+# course detail view - shows all questions associated with the course
+def coursepage(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)    
+    # check if course is live
+    now = datetime.datetime.now()
+    time_buffer = datetime.timedelta(hours=1)
+    live_month = False
+    live_day = False
+    live_time = False
+    if (now.month >= 1 and now.month < 6):
+        live_month = True
+    if (re.search(str(now.weekday()), course.days)):
+        live_day = True
+    if (now.time() < course.endtime and now.time() > course.starttime):
+        live_time = True
+    if (live_month and live_day and live_time):
+        course.is_live = True
+        course.save()
+        return redirect('/'+course.id+'/coursepage_live')
+    else:
+        course.is_live = False
+        course.save()
+        return redirect('/'+course.id+'/coursepage_archive')
 
 def delete_from_coursepage(request, question_id):
     question = get_object_or_404(Question, pk=question_id)

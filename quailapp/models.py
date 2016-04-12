@@ -83,6 +83,7 @@ class Course(models.Model):
   starttime = models.TimeField(null=False)
   endtime = models.TimeField(null=False)
   days = models.CharField(max_length=10)
+  is_live = models.BooleanField(default=False)
 
   def days_as_list(self):
     weekdays = []
@@ -131,6 +132,7 @@ class Question(models.Model):
     rank_score = models.FloatField(default=0.0)
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False)
     #tags = models.TextField(max_length=10) # allow tags
     #tag = models.ForeignKey(Tag, null=True)
 

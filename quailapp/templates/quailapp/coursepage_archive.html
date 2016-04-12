@@ -6,7 +6,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <h1>{{ course }}</h1>
 <h3>Post a question!</h3>
-<form action="{% url 'quailapp:coursepage' course.id %}" method="post">
+<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post">
     {% csrf_token %}
     <div class="input-group">
       <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
@@ -17,18 +17,24 @@
       </span>
     </div>
 </form>
-
+<h3>Archived Questions</h3>
+{% if course.is_live %}
+<h3>This class is <strong>live</strong> until {{ course.endtime }}</h3>
+{% else %}
+{{ course }} will be live again on {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}
+{% endif %}
+<h3><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></h3>
 <br>
 Filter by:
-<form action="{% url 'quailapp:coursepage' course.id %}" method="post" style="display: inline;">
+<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 	{% csrf_token %}
   <button type="submit" name="filter" value="newest" class="btn-link">Newest</button>
 </form> 
-<form action="{% url 'quailapp:coursepage' course.id %}" method="post" style="display: inline;">
+<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 	{% csrf_token %}
   <button type="submit" name="filter" value="oldest" class="btn-link" style="display: inline;">Oldest</button>
 </form>
-<form action="{% url 'quailapp:coursepage' course.id %}" method="post" style="display: inline;">
+<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
  	{% csrf_token %}
   <button type="submit" name="filter" value="votes" class="btn-link">Popularity</button>
 </form> 
@@ -74,9 +80,6 @@ $(document).ready(function() {
 </a>
 
 
-{% if course.is_live %}
-<h3>Live questions!</h3>
-{% endif %}
 {% if questions_pinned|length > 0 %}
 <h4>Pinned questions</h4>
 {% endif %}
@@ -93,7 +96,7 @@ $(document).ready(function() {
 				data : {vote : $(this).attr("value") },
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
-					$('#voting{{q.id}}').load("/{{course.id}}/coursepage/" + " #voting{{q.id}}");
+					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_archive/" + " #voting{{q.id}}");
 					console.log(data);
 				}
 			})
@@ -241,7 +244,7 @@ There doesn't appear to be any questions for this class... :(
 				data : {vote : $(this).attr("value") },
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
-					$('#voting{{q.id}}').load("/{{course.id}}/coursepage/" + " #voting{{q.id}}");
+					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_archive/" + " #voting{{q.id}}");
 					console.log(data);
 				}
 			})
