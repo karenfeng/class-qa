@@ -263,6 +263,10 @@ fieldset[disabled] .btn-secondary.active {
   color: #7A7A7A;
 }
 
+.red {
+  color: #CC4B00;
+}
+
 .scrollbox {
   height:200px;
   overflow-y:scroll;
