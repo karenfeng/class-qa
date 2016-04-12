@@ -18,6 +18,46 @@
     </div>
 </form>
 
+<script>
+$(document).ready(function() {
+	$('#sim_question').hide();
+	$('#id_your_question').keyup(function() {
+		$.ajax({
+			url : "/similar_question",
+			type : "get",
+			data : {simQ: $('#id_your_question').val(), course: '{{course.id}}'},
+			success: function (data) {
+				console.log(data);
+				var seperator = data.lastIndexOf("\n");
+				var simQuestion = data.substring(0, seperator);
+				var ID = data.substring(seperator + 1, data.length);
+				console.log(simQuestion);
+				console.log(ID);
+				if (data != "") {
+					$('#sim_question').show();
+					$('#sim_question_text').html(simQuestion);
+					$('#sim_question_link').attr('href', "/"+ID);
+				}
+				else {
+					$('#sim_question').hide();
+				}
+			}
+		})
+
+	});
+
+});
+</script>
+
+<div id="sim_question" class="similar-question-box row">
+	<a href="" id="sim_question_link" class="question-box">
+		<div class="col-xs-12">
+			<h4 class="question">Is this similar to your question?</h4>
+			<p id="sim_question_text"></p>
+		</div>
+	</a>
+</div>
+
 <h3>Live Questions | <a href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></h3>
 {% if course.is_live %}
 <h4>{{ course }} is currently <strong>live</strong> until {{ course.endtime }}</h4>
@@ -38,46 +78,6 @@ Filter by:
  	{% csrf_token %}
   <button type="submit" name="filter" value="votes" class="btn-link">Popularity</button>
 </form> 
-
-<script>
-$(document).ready(function() {
-	$('#id_your_question').keyup(function() {
-		$.ajax({
-			url : "/similar_question",
-			type : "get",
-			data : {simQ: $('#id_your_question').val(), course: '{{course.id}}'},
-			success: function (data) {
-				console.log(data);
-				var seperator = data.lastIndexOf("\n");
-				var simQuestion = data.substring(0, seperator);
-				var ID = data.substring(seperator + 1, data.length);
-				console.log(simQuestion);
-				console.log(ID);
-				if (data != "") {
-				$('.similar-question-box').css("background-color", "#ffb2b2");
-				$('#similar_question').html("Warning: there may be similar questions!<br /><br />" + simQuestion);
-				$('#sim_question_link').attr('href', "/"+ID);
-				}
-				else {
-				$('#similar_question').html("");
-				$('.similar-question-box').css("background-color", "#ffffff");
-				}
-
-			}
-		})
-
-	});
-
-});
-</script>
-
-<a href="" id="sim_question_link" class="similar-question">
-	<div id="redbox" class="similar-question-box">
-		<h4 id="similar_question">
-		<h4>
-	</div>
-</a>
-
 
 {% if course.is_live %}
 <h3>Live questions!</h3>
