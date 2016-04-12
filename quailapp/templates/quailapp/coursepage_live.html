@@ -91,8 +91,10 @@ $(document).ready(function() {
 	$(document).ready(function() {
 		var q_text = "{{q.text}}";
 		// hide the edit button if you didn't submit the question
-		if ("{{q.submitter.netid}} == {{user.netid}}") {
-			$('#edit_question').show();
+		var submitter = "{{q.submitter.netid}}";
+		var user = "{{user.netid}}";
+		if (submitter == user) {
+			$('#edit_question{{q.id}}').show();
 		}
 		else {
 			$('#edit_question').hide(); 
