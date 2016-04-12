@@ -17,13 +17,12 @@
       </span>
     </div>
 </form>
-<h3>Archived Questions</h3>
+<h3>Archived Questions | <a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></h3>
 {% if course.is_live %}
-<h3>This class is <strong>live</strong> until {{ course.endtime }}</h3>
+<h4>{{ course }} is currently <strong>live</strong> until {{ course.endtime }}</h4>
 {% else %}
-{{ course }} will be live again on {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}
+<h4>{{ course }} is not live right now. Check back in on {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}</h4>
 {% endif %}
-<h3><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></h3>
 <br>
 Filter by:
 <form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">

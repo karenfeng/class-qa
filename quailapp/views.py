@@ -15,7 +15,6 @@ from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
 
 import datetime, re
-
 import json
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
