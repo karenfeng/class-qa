@@ -41,7 +41,6 @@ Filter by:
 
 <script>
 $(document).ready(function() {
-	console.log("hello");
 	$('#id_your_question').keyup(function() {
 		$.ajax({
 			url : "/similar_question",
@@ -90,7 +89,6 @@ $(document).ready(function() {
 	{% for q in questions_pinned %}
 	<script>
 	$(document).ready(function() {
-		console.log("HERE");
 		$(document).on('click', '[name=vote{{q.id}}]', function(event) {
 			event.preventDefault();
 			$.ajax({
@@ -238,7 +236,47 @@ There doesn't appear to be any questions for this class... :(
 	
 	<script>
 	$(document).ready(function() {
-		console.log("HERE");
+		var q_text = "{{q.text}}";
+		// hide the edit button if you didn't submit the question
+		if ("{{q.submitter.netid}} == {{user.netid}}") {
+			$('#edit_question').show();
+		}
+		else {
+			$('#edit_question').hide(); 
+		}
+		$('#submit_edit_button{{q.id}}').hide();
+
+		// click edit button
+		$(document).on('click', '#edit_question{{q.id}}', function(event) {
+			event.preventDefault();
+			console.log("CLICK");
+			$("#question{{q.id}}").html('<input id="submit_edit{{q.id}}" type="text" class="form-control" value="">');
+			$("#submit_edit{{q.id}}").attr("value", q_text);
+			// disable link temporarily while user edits
+			$('#detail{{q.id}}').click(function(event) {
+				event.preventDefault();
+			})
+			$('#edit_question{{q.id}}').hide();
+			$('#submit_edit_button{{q.id}}').show();
+		})
+
+		// click submit button
+		$(document).on('click', '#submit_edit_button{{q.id}}', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:edit_question' q.id %}",
+				data: {text: $("#submit_edit{{q.id}}").val() },
+				success: function(data) {
+					$('#submit_edit_button{{q.id}}').hide();
+					$('#edit_question{{q.id}}').show();
+					$("#question{{q.id}}").html(data);
+					q_text = data;
+				}
+			})
+		})
+
+		// FOR AJAX UPVOTING/DOWNVOTING 
 		$(document).on('click', '[name=vote{{q.id}}]', function(event) {
 			event.preventDefault();
 			$.ajax({
@@ -248,7 +286,6 @@ There doesn't appear to be any questions for this class... :(
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{q.id}}");
-					console.log(data);
 				}
 			})
 		})
@@ -310,7 +347,7 @@ There doesn't appear to be any questions for this class... :(
 		{% else %}
 		<div class="box row">
 		{% endif %}
-			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">	
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 				<div class="col-xs-1">
 					<form method="POST">
 						{% csrf_token %}
@@ -329,7 +366,7 @@ There doesn't appear to be any questions for this class... :(
 				</div>
 				<div class="col-xs-10">
 					<p class="question">
-						{{ q.text }}<br>
+						<span id="question{{q.id}}">{{ q.text }}</span><br>
 						<span class="unemph">{{ q.created_on }}
 						{% if not user.is_student %}
 							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
@@ -369,6 +406,8 @@ There doesn't appear to be any questions for this class... :(
 					{% endif %}
 				</div>
 			</a>
+			<button id="edit_question{{q.id}}" type="submit" >Edit</button>
+			<button id="submit_edit_button{{q.id}}" type="submit">Submit</button>
 		</div>
 	</li>
 	{% endfor %}

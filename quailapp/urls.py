@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/delete_from_info/$', login_required(views.delete_from_userinfo), name='delete_from_userinfo'),
     url(r'^similar_question$', login_required(views.similar_question), name='similar_question'),
     url(r'^change_name$', login_required(views.change_name), name='change_name'),
-    
+    url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_question/$', login_required(views.edit_question), name='edit_question'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -495,5 +495,12 @@ def change_name(request):
         user.save()
         return HttpResponse(user.first_name + " " + user.last_name)
 
+def edit_question(request, question_id):
+    if request.is_ajax():
+        question = get_object_or_404(Question, pk=question_id)
+        question.text = request.POST['text']
+        question.save()
+        return HttpResponse(question.text)
+
 def home(request):
     return render(request, 'quailapp/home.html')
