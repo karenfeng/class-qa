@@ -22,11 +22,14 @@
 
 <script>
 $(document).ready(function() {
-	console.log("Hi");
+	var first_name = "{{user.first_name}}";
+	var last_name = "{{user.last_name}}";
 	$(document).on('click', '#edit_name', function(event) {
 		event.preventDefault();
 		$('#submit_edit').show();
-		$('#full_name').html('<input id="first_name" type="text" class="form-control"><input id="last_name" type="text" class="form-control">');
+		$('#full_name').html('<input id="first_name" type="text" class="form-control" value=""><input id="last_name" type="text" class="form-control" value="">');
+		$("#first_name").attr("value", first_name);
+		$("#last_name").attr("value", last_name);
 		$('#edit_name').hide();
 	})
 	$(document).on('click', "#submit_edit", function(event) {
@@ -39,6 +42,8 @@ $(document).ready(function() {
 			success: function(data) {
 				console.log(data);
 				$('#full_name').html(data);
+				first_name = data.split(" ")[0];
+				last_name = data.split(" ")[1];
 			}
 		})
 		$('#submit_edit').hide();
