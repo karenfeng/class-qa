@@ -261,3 +261,7 @@ fieldset[disabled] .btn-secondary.active {
 .right {
   float: right;
 }
+
+.no-pad {
+  padding: 0px 0px;
+}
