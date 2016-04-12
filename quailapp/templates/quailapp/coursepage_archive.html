@@ -198,8 +198,8 @@ $(document).ready(function() {
 						{% if q.is_pinned %}
 							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 								{% csrf_token %}
-								<button class="btn btn-link" type="submit" name="pin" id="unpin" value="0">
-									<img class="small right" onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
+								<button class="btn btn-link right" type="submit" name="pin" id="unpin" value="0">
+									<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
 									onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
 									src="{% static "quailapp/unpin.png" %}" alt="Pin">
 								</button>
@@ -207,8 +207,8 @@ $(document).ready(function() {
 							{% else %}
 							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 								{% csrf_token %}
-								<button class="btn btn-link" type="submit" name="pin" id="pin" value="1">
-									<img class="small right" onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
+								<button class="btn btn-link right" type="submit" name="pin" id="pin" value="1">
+									<img onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
 									onmouseout="this.src='{% static "quailapp/pin.png" %}'"
 									src="{% static "quailapp/pin.png" %}" alt="Pin">
 								</button>
@@ -346,8 +346,8 @@ There doesn't appear to be any questions for this class... :(
 						{% if q.is_pinned %}
 							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 								{% csrf_token %}
-								<button class="btn btn-link" type="submit" name="pin" id="unpin" value="0">
-									<img class="small right" onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
+								<button class="btn btn-link right" type="submit" name="pin" id="unpin" value="0">
+									<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
 									onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
 									src="{% static "quailapp/unpin.png" %}" alt="Pin">
 								</button>
@@ -355,8 +355,8 @@ There doesn't appear to be any questions for this class... :(
 							{% else %}
 							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
 								{% csrf_token %}
-								<button class="btn btn-link" type="submit" name="pin" id="pin" value="1">
-									<img class="small right" onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
+								<button class="btn btn-link right" type="submit" name="pin" id="pin" value="1">
+									<img onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
 									onmouseout="this.src='{% static "quailapp/pin.png" %}'"
 									src="{% static "quailapp/pin.png" %}" alt="Pin">
 								</button>
