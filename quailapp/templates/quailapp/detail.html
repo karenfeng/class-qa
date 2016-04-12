@@ -9,9 +9,9 @@
 {% if question.answer %}
 	<h3>Answer:</h3>
 	{% if question.answer.submitter == user %}
-	<div class="box-blue row">
+	<div class="box-static-blue row">
 	{% else %}
-	<div class="box row">
+	<div class="box-static-gray row">
 	{% endif %}
 		<div class="col-xs-11">
 			<h4>{{ question.answer }}</h4>
@@ -55,7 +55,11 @@
 <div class="bold">Comments:</div>
 <ul>
 {% for comment in question.comment_set.all %}
-	<div class="box">
+	{% if comment.submitter == user %}
+	<div class="box-static-blue">
+	{% else %}
+	<div class="box-static-gray">
+	{% endif %}
 		<li>
 			{{ comment }}
 			<br>

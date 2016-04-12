@@ -217,6 +217,18 @@ fieldset[disabled] .btn-secondary.active {
   overflow: auto;
 }
 
+.box-static-gray {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #F5F5F5;
+}
+
+.box-static-blue {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #C4EFF1;
+}
+
 .box-static-dark {
   padding: 5px 10px 5px 10px;
   background-color: #DCDCDC;
