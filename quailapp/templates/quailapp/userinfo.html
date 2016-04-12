@@ -7,27 +7,24 @@
 <h2>User information</h2>
 
 <span class="bold">NetID:</span> {{ user.netid }}<br>
-<span class="bold">Name:</span> <span id="full_name">{{ user.first_name }} {{ user.last_name }}</span><br>
+<span class="bold">Name:</span> <span id="full_name">{{ user.first_name }} {{ user.last_name }}</span>
+
+<button id="edit_name" class="btn btn-link btn-sm">Edit</button>
+<br>
+
 <span class="bold">Role:</span>
-
-
 {% if user.is_student %}
 	Student
 {% else %}
 	Lecturer
 {% endif %}
-
-<button id="edit_name">Edit</button>
-<button id="submit_edit" style="display: none">Submit</button>
-
 <script>
 $(document).ready(function() {
 	var first_name = "{{user.first_name}}";
 	var last_name = "{{user.last_name}}";
 	$(document).on('click', '#edit_name', function(event) {
 		event.preventDefault();
-		$('#submit_edit').show();
-		$('#full_name').html('<input id="first_name" type="text" class="form-control" value=""><input id="last_name" type="text" class="form-control" value="">');
+		$('#full_name').html('<form class="form-inline"><input class="form-control" id="first_name" maxlength="100" name="first_name" type="text"><input class="form-control" id="last_name" maxlength="100" name="last_name" type="text"><button id="submit_edit" class="btn btn-secondary">Submit</button></form>');
 		$("#first_name").attr("value", first_name);
 		$("#last_name").attr("value", last_name);
 		$('#edit_name').hide();
@@ -46,7 +43,6 @@ $(document).ready(function() {
 				last_name = data.split(" ")[1];
 			}
 		})
-		$('#submit_edit').hide();
 		$('#edit_name').show();
 	})
 	// This function gets cookie with a given name
