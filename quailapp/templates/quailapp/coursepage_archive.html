@@ -2,12 +2,19 @@
 {% load staticfiles %}
 {% load bootstrap3 %}
 
+{% block classes %}
+{% for course in courses %}
+<li>
+	<a href="{% url 'quailapp:coursepage_live' course.id %}">{{ course }}</a>
+</li>
+{% endfor %}
+{% endblock %}
+
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <h1>{{ course }}</h1>
 <span class="unemph">
-{{ course }} meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}
+Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}.
 </span>
 
 <h3 class="centered">Archived Questions</h3>

@@ -194,7 +194,8 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
     return render(request, 'quailapp/coursepage_live.html', {'form': form, 'course': course, 
-        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 
 def coursepage_archive(request, course_id):
@@ -242,7 +243,8 @@ def coursepage_archive(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
     return render(request, 'quailapp/coursepage_archive.html', {'course': course, 
-        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user})
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 '''
 # course detail view - shows all questions associated with the course
@@ -305,7 +307,8 @@ def question_detail(request, question_id):
     else:
         form = AnswerForm()
         comment_form = CommentForm()
-    return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user})
+    return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
+        'courses': Course.objects.filter(courseid__in=request.user.course_id_list)})
 
 def get_question(request):
     # otherwise can post a question
@@ -406,7 +409,8 @@ def user_info(request):
         user.save()
         return HttpResponse("success")
         return HttpResponseRedirect(reverse('quailapp:userinfo'))
-    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses})
+    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
