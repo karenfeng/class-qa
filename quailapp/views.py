@@ -505,5 +505,14 @@ def edit_question(request, question_id):
         question.save()
         return HttpResponse(question.text)
 
+def edit_answer(request, question_id):
+    if request.is_ajax():
+        question = get_object_or_404(Question, pk=question_id)
+        
+        question.answer.text = request.POST['text']
+        question.answer.save()
+
+        return HttpResponse(question.answer.text)
+
 def home(request):
     return render(request, 'quailapp/home.html')
