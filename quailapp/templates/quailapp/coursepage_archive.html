@@ -14,30 +14,47 @@
 <p class="centered"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
 
 {% if not user.is_student %}
-Archive questions:
-<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-	{% csrf_token %}
-	<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">Every lecture [default]</button>
-</form>
-<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-	{% csrf_token %}
-	<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">Every other lecture</button>
-</form>
-<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-	{% csrf_token %}
-	<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">Every week</button>
-</form>
-<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-	{% csrf_token %}
-	<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">Every two weeks</button>
-</form>
-<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-	{% csrf_token %}
-	<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">Every month</button>
-</form>
+<span class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    Archive by...
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+    <li>
+		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+			{% csrf_token %}
+			<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">Every lecture [default]</button>
+		</form>
+	</li>
+    <li>
+		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+			{% csrf_token %}
+			<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">Every other lecture</button>
+		</form>
+	</li>
+    <li>
+		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+			{% csrf_token %}
+			<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">Every week</button>
+		</form>
+	</li>
+	<li>
+		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+			{% csrf_token %}
+			<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">Every two weeks</button>
+		</form>
+	</li>
+	<li>
+		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+			{% csrf_token %}
+			<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">Every month</button>
+		</form>
+	</li>
+  </ul>
+</span>
 {% endif %}
 
-<div class="dropdown">
+<span class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Filter by...
     <span class="caret"></span>
@@ -62,7 +79,7 @@ Archive questions:
 		</form>
 	</li>
   </ul>
-</div>
+</span>
 
 {% if questions_pinned|length > 0 %}
 <h4>Pinned questions</h4>

@@ -10,13 +10,171 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-<h2>Question: {{ question.text }}</h2>
+<script>
+$(document).ready(function() {
+	var q_text = "{{question.text}}";
+	// hide the edit button if you didn't submit the question
+	var submitter = "{{question.submitter.netid}}";
+	var user = "{{user.netid}}";
+	if (submitter == user) {
+		$('#edit_question{{question.id}}').show();
+	}
+	else {
+		$('#edit_question').hide(); 
+	}
+	$('#submit_edit_button{{question.id}}').hide();
+
+	// click edit button
+	$(document).on('click', '#edit_question{{question.id}}', function(event) {
+		event.preventDefault();
+		console.log("CLICK");
+		$("#question{{question.id}}").html('<input id="submit_edit{{question.id}}" type="text" class="form-control" value="">');
+		$("#submit_edit{{question.id}}").attr("value", q_text);
+		// disable link temporarily while user edits
+		$('#detail{{question.id}}').click(function(event) {
+			event.preventDefault();
+		})
+		$('#edit_question{{question.id}}').hide();
+		$('#submit_edit_button{{question.id}}').show();
+	})
+
+	// click submit button
+	$(document).on('click', '#submit_edit_button{{question.id}}', function(event) {
+		event.preventDefault();
+		$.ajax({
+			type: 'post',
+			url: "{% url 'quailapp:edit_question' question.id %}",
+			data: {text: $("#submit_edit{{question.id}}").val() },
+			success: function(data) {
+				$('#submit_edit_button{{question.id}}').hide();
+				$('#edit_question{{question.id}}').show();
+				$("#question{{question.id}}").html(data);
+				q_text = data;
+			}
+		})
+	})
+
+	// FOR AJAX UPVOTING/DOWNVOTING 
+	$(document).on('click', '[name=vote{{question.id}}]', function(event) {
+		event.preventDefault();
+		$.ajax({
+			type: 'post',
+			url: "{% url 'quailapp:vote' question.id %}",
+			data : {vote : $(this).attr("value") },
+			success: function (data) {
+				//$('#numvotes{{question.id}}').html(data);
+				$('#voting{{question.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{question.id}}");
+			}
+		})
+	})
+    // This function gets cookie with a given name
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    /*
+    The functions below will create a header with csrftoken
+    */
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+});
+</script>
+
+<h2>Question:</h2>
+{% if question.submitter.netid == user.netid %}
+<div class="box-static-blue row">
+{% else %}
+<div class="box-static-gray row">
+{% endif %}
+	<div class="col-xs-1">
+		<form method="POST">
+			{% csrf_token %}
+			{% buttons %}
+			<div class="btn-group-vertical btn-group-sm" role="group" id="voting{{question.id}}">
+				<button type="submit" class="btn btn-link{% if question.submitter.netid == user.netid %} disabled{% elif user.netid in question.users_upvoted %} disabled{% endif %}" name="vote{{question.id}}" id="upvote" value="1" {% if question.submitter.netid == user.netid %}disabled{% endif %}>
+					{% bootstrap_icon "chevron-up" %}
+				</button>
+				<div class="centered" id="numvotes{{question.id}}">{{ question.votes }}</div>
+				<button type="submit" class="btn btn-link btn-link-red{% if question.submitter.netid == user.netid %} disabled{% elif user.netid in question.users_downvoted %} disabled{% endif %}" name="vote{{question.id}}" id="downvote" value="-1" {% if question.submitter.netid == user.netid %}disabled{% endif %}>
+					{% bootstrap_icon "chevron-down" %}
+				</button>
+			</div>
+			{% endbuttons %}
+		</form>
+	</div>
+	<div class="col-xs-10">
+		<p class="question">
+			<span class="input-group">
+		      	<span id="question{{question.id}}">{{ question.text }}</span>
+		      	<span class="input-group-btn">
+					<button id="submit_edit_button{{question.id}}" type="submit" class="btn btn-secondary btn-sm">Submit</button>
+		      </span>
+		    </span>
+			<span class="unemph">{{ question.created_on }}
+			{% if not user.is_student %}
+				by {{ question.submitter.first_name }} {{ question.submitter.last_name }}
+			{% endif %}
+			</span>
+			<br>
+			<button id="edit_question{{question.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
+		</p>
+	</div>
+	<div class="col-xs-1">
+		{% if question.submitter.netid == user.netid or not user.is_student %}
+		<form action="{% url 'quailapp:delete_from_coursepage' question.id %}" method="POST">
+			{% csrf_token %}
+				<button type="submit" class="btn btn-link btn-link-red right">
+					{% bootstrap_icon "remove" %}
+				</button>
+		</form>
+		{% endif %}
+	</div>
+</div>
 
 {% if question.answer %}
 	<h3>Answer:</h3>
 	{% if question.answer.submitter == user %}
 	<div class="box-static-blue row">
-	
 	{% else %}
 	<div class="box-static-gray row">
 	{% endif %}

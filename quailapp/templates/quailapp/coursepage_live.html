@@ -26,7 +26,6 @@
 
 <script>
 $(document).ready(function() {
-	$('#sim_question').hide();
 	$('#id_your_question').keyup(function() {
 		$.ajax({
 			url : "/similar_question",
@@ -40,12 +39,12 @@ $(document).ready(function() {
 				console.log(simQuestion);
 				console.log(ID);
 				if (data != "") {
-					$('#sim_question').show();
+					$('#sim_question').attr('style', '');
 					$('#sim_question_text').html(simQuestion);
 					$('#sim_question_link').attr('href', "/"+ID);
 				}
 				else {
-					$('#sim_question').hide();
+					$('#sim_question').attr('style', 'display: none;');
 				}
 			}
 		})
@@ -55,7 +54,7 @@ $(document).ready(function() {
 });
 </script>
 
-<div id="sim_question" class="similar-question-box row">
+<div id="sim_question" class="similar-question-box row" style="display: none;">
 	<a href="" id="sim_question_link" class="question-box">
 		<div class="col-xs-12">
 			<h4 class="question">Is this similar to your question?</h4>
@@ -67,7 +66,7 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
-<div class="dropdown">
+<span class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Filter by...
     <span class="caret"></span>
@@ -92,11 +91,9 @@ $(document).ready(function() {
 		</form> 
 	</li>
   </ul>
-</div>
+</span>
 
-{% if course.is_live %}
 <h3>Live questions!</h3>
-{% endif %}
 {% if questions_pinned|length > 0 %}
 <h4>Pinned questions</h4>
 {% endif %}
@@ -288,7 +285,6 @@ $(document).ready(function() {
 	{% endfor %}
 </ul>
 
-<br>
 <h4>Submitted questions</h4>
 {% if questions|length == 0 %}
 There doesn't appear to be any questions for this class... :(
