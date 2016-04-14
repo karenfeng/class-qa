@@ -40,7 +40,7 @@
 	<div class="col-xs-8">
 		{% for course in courses %}
 			<div class="box-static-dark">
-				<a href="{% url 'quailapp:coursepage' course.id %}">
+				<a href="{% url 'quailapp:coursepage_live' course.id %}">
 					<h5>{{ course }}</h5>
 				</a>
 			</div>

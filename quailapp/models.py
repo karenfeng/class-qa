@@ -83,7 +83,7 @@ class Course(models.Model):
   starttime = models.TimeField(null=False)
   endtime = models.TimeField(null=False)
   days = models.CharField(max_length=10)
-  is_live = models.BooleanField(default=False)
+  archive_type = models.TextField(default='every_lecture') # allow profs to change how questions are archived
 
   def days_as_list(self):
     weekdays = []
