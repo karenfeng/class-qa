@@ -132,7 +132,7 @@ class Question(models.Model):
     rank_score = models.FloatField(default=0.0)
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
-    is_live = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=True)
     #tags = models.TextField(max_length=10) # allow tags
     #tag = models.ForeignKey(Tag, null=True)
 
