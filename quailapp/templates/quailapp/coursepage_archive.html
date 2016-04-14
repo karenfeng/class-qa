@@ -7,11 +7,7 @@
 <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <h1>{{ course }}</h1>
 <span class="unemph">
-{% if course.is_live %}
-	{{ course }} is currently <span class="bold">live</span> until {{ course.endtime }}
-{% else %}
-	{{ course }} is <span class="bold">not live</span> right now. Check back in on {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}
-{% endif %}
+{{ course }} meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}
 </span>
 
 <h3 class="centered">Archived Questions</h3>

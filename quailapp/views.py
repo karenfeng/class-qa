@@ -122,14 +122,14 @@ def coursepage_live(request, course_id):
                 diff_weeks = 1   # default to archiving every other week
             else:
                 for i in range(len(days)):
-                    if (weekday == days[i]):
+                    if (weekday == int(days[i])):
                         index = i
                 diff_days = (weekday - int(days[index-1])) % 7
                 diff_weeks = 0
-            time_buffer = now - datetime.timedelta(hours=2,days=diff_days, weeks=diff_weeks)
+            time_buffer = now - datetime.timedelta(hours=3,days=diff_days, weeks=diff_weeks)
             to_archive = True
         elif (course.archive_type == 'every_lecture'):
-            time_buffer = now - datetime.timedelta(hours=2)
+            time_buffer = now - datetime.timedelta(hours=3)
             to_archive = True
             
     if (course.archive_type == 'every_week'):
