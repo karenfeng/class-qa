@@ -114,6 +114,7 @@ def pin(request, question_id):
         return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(question.course.id,)))
 
 def coursepage_live(request, course_id):
+
     course = get_object_or_404(Course, pk=course_id)    
     # check if course is live
     user = request.user
@@ -198,7 +199,6 @@ def coursepage_live(request, course_id):
             return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))   
     else:
         form = QuestionForm()
-        #sortby_form = SortByForm()
 
      # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
@@ -211,6 +211,11 @@ def coursepage_live(request, course_id):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
+
+    if request.is_ajax() and request.method == 'GET':
+        return render(request, 'quailapp/questionreload.html', {'form': form, 'course': course, 
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
     return render(request, 'quailapp/coursepage_live.html', {'form': form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
