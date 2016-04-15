@@ -181,6 +181,14 @@ fieldset[disabled] .btn-secondary.active {
   color: #913500;
 }
 
+.btn-link-yellow {
+  color: #DEC000;
+}
+
+.btn-link-yellow:hover, .btn-link-yellow:focus, .btn-link-yellow:active, .btn-link-yellow.active, .open > .dropdown-toggle.btn-link-yellow {
+  color: #C5AA00;
+}
+
 .btn-link-gray {
   color: #607D8B;
 }

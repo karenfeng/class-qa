@@ -128,6 +128,7 @@ class Question(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
     votes = models.IntegerField(default=0)
+    stars = models.IntegerField(default=0)
     submitter = models.ForeignKey(QuailUser, null=True)
     rank_score = models.FloatField(default=0.0)
     course = models.ForeignKey(Course, null=True)
@@ -138,6 +139,7 @@ class Question(models.Model):
 
     users_upvoted = models.TextField(null=True, blank=True, default="")
     users_downvoted = models.TextField(null=True, blank=True, default="")
+    users_starred = models.TextField(null=True, blank=True, default="")
 
     class Meta:
       ordering = ['-votes']

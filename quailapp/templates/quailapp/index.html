@@ -17,12 +17,12 @@
 	<div class="col-xs-4">
 		<div class="box-static-dark">
 			<a href="{% url 'quailapp:userinfo' %}">
-				<h4 class="centered">Your questions</h3>
+				<h4 class="centered">Starred questions</h3>
 			</a>
 		</div>
 		<div class="box-static">
 			<ul>
-			{% for q in user.question_set.all %}
+			{% for q in starred_questions %}
 				<li>{{ q.text }}</li>
 			{% endfor %}
 			</ul>

@@ -93,6 +93,74 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 {% endif %}
 <ul>
 	{% for q in questions_pinned %}
+	<script>
+	$(document).ready(function() {
+		// FOR AJAX STARRING/UNSTARRING
+		$(document).on('click', '[name=star{{q.id}}]', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:star' q.id %}",
+				data : {star : $(this).attr("value") },
+				success: function (data) {
+					//$('#numstars{{q.id}}').html(data);
+					$('#starring{{q.id}}').load("/{{course.id}}/coursepage_archive/" + " #starring{{q.id}}");
+				}
+			})
+		})
+		
+	    // This function gets cookie with a given name
+	    function getCookie(name) {
+	        var cookieValue = null;
+	        if (document.cookie && document.cookie != '') {
+	            var cookies = document.cookie.split(';');
+	            for (var i = 0; i < cookies.length; i++) {
+	                var cookie = jQuery.trim(cookies[i]);
+	                // Does this cookie string begin with the name we want?
+	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                    break;
+	                }
+	            }
+	        }
+	        return cookieValue;
+	    }
+	    var csrftoken = getCookie('csrftoken');
+
+	    /*
+	    The functions below will create a header with csrftoken
+	    */
+
+	    function csrfSafeMethod(method) {
+	        // these HTTP methods do not require CSRF protection
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+	    function sameOrigin(url) {
+	        // test that a given url is a same-origin URL
+	        // url could be relative or scheme relative or absolute
+	        var host = document.location.host; // host + port
+	        var protocol = document.location.protocol;
+	        var sr_origin = '//' + host;
+	        var origin = protocol + sr_origin;
+	        // Allow absolute or scheme relative URLs to same origin
+	        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	            // or any other URL that isn't scheme relative or absolute i.e relative.
+	            !(/^(\/\/|http:|https:).*/.test(url));
+	    }
+
+	    $.ajaxSetup({
+	        beforeSend: function(xhr, settings) {
+	            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	                // Send the token to same-origin, relative URLs only.
+	                // Send the token only if the method warrants CSRF protection
+	                // Using the CSRFToken value acquired earlier
+	                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	            }
+	        }
+	    });
+	});
+	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
@@ -127,6 +195,21 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 					</p>
 				</div>
 				<div class="col-xs-1">
+					<form method="POST">
+						{% csrf_token %}
+						<div id="starring{{q.id}}" class="right">
+							{% if user.netid in q.users_starred %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="-1" name="star{{q.id}}">
+								{% bootstrap_icon "star" %}
+							</button>
+							{% else %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="1" name="star{{q.id}}">
+								{% bootstrap_icon "star-empty" %}
+							</button>
+							{% endif %}
+							<span id="numstars{{q.id}}">{{ q.stars }}</span>
+						</div>
+					</form>
 					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<form action="{% url 'quailapp:delete_from_coursepage' q.id %}" method="POST">
 						{% csrf_token %}
@@ -172,6 +255,74 @@ There doesn't appear to be any questions for this class... :(
 <ul>
 	{{ sortby_form }}
 	{% for q in questions %}
+	<script>
+	$(document).ready(function() {
+		// FOR AJAX STARRING/UNSTARRING
+		$(document).on('click', '[name=star{{q.id}}]', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:star' q.id %}",
+				data : {star : $(this).attr("value") },
+				success: function (data) {
+					//$('#numstars{{q.id}}').html(data);
+					$('#starring{{q.id}}').load("/{{course.id}}/coursepage_archive/" + " #starring{{q.id}}");
+				}
+			})
+		})
+		
+	    // This function gets cookie with a given name
+	    function getCookie(name) {
+	        var cookieValue = null;
+	        if (document.cookie && document.cookie != '') {
+	            var cookies = document.cookie.split(';');
+	            for (var i = 0; i < cookies.length; i++) {
+	                var cookie = jQuery.trim(cookies[i]);
+	                // Does this cookie string begin with the name we want?
+	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                    break;
+	                }
+	            }
+	        }
+	        return cookieValue;
+	    }
+	    var csrftoken = getCookie('csrftoken');
+
+	    /*
+	    The functions below will create a header with csrftoken
+	    */
+
+	    function csrfSafeMethod(method) {
+	        // these HTTP methods do not require CSRF protection
+	        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	    }
+	    function sameOrigin(url) {
+	        // test that a given url is a same-origin URL
+	        // url could be relative or scheme relative or absolute
+	        var host = document.location.host; // host + port
+	        var protocol = document.location.protocol;
+	        var sr_origin = '//' + host;
+	        var origin = protocol + sr_origin;
+	        // Allow absolute or scheme relative URLs to same origin
+	        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+	            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+	            // or any other URL that isn't scheme relative or absolute i.e relative.
+	            !(/^(\/\/|http:|https:).*/.test(url));
+	    }
+
+	    $.ajaxSetup({
+	        beforeSend: function(xhr, settings) {
+	            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+	                // Send the token to same-origin, relative URLs only.
+	                // Send the token only if the method warrants CSRF protection
+	                // Using the CSRFToken value acquired earlier
+	                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	            }
+	        }
+	    });
+	});
+	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
@@ -206,6 +357,21 @@ There doesn't appear to be any questions for this class... :(
 					</p>
 				</div>
 				<div class="col-xs-1">
+					<form method="POST">
+						{% csrf_token %}
+						<div id="starring{{q.id}}" class="right">
+							{% if user.netid in q.users_starred %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="-1" name="star{{q.id}}">
+								{% bootstrap_icon "star" %}
+							</button>
+							{% else %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="1" name="star{{q.id}}">
+								{% bootstrap_icon "star-empty" %}
+							</button>
+							{% endif %}
+							<span id="numstars{{q.id}}">{{ q.stars }}</span>
+						</div>
+					</form>
 					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<form action="{% url 'quailapp:delete_from_coursepage' q.id %}" method="POST">
 						{% csrf_token %}

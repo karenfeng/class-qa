@@ -27,7 +27,9 @@ def index(request):
         return redirect('/login')
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
-    return render(request, 'quailapp/index.html', {'user':user, 'courses':courses})
+
+    starredQuestions = Question.objects.filter(users_starred__contains=user.netid)
+    return render(request, 'quailapp/index.html', {'user':user, 'courses':courses, 'starred_questions':starredQuestions})
 
 # handles what happens when a user uses the vote form on a question
 def vote(request, question_id):
@@ -80,6 +82,22 @@ def vote(request, question_id):
     
     return HttpResponse(question.votes)
     #return HttpResponseRedirect(reverse('quailapp:coursepage', args=(question.course.id,)))
+
+# handles what happens when a user stars a question
+def star(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    star = request.POST['star']
+    
+    if question.users_starred and request.user.netid in question.users_starred:
+        users_starred = question.users_starred.replace("|"+request.user.netid, "")
+    else:
+        users_starred = question.users_starred + '|' + request.user.netid
+    
+    question.stars += int(star)
+    question.users_starred = users_starred    
+    question.save()
+    
+    return HttpResponse(question.stars)
 
 # handles what happens when someone pins a question to the coursepage
 def pin(request, question_id):

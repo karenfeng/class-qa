@@ -162,6 +162,21 @@ $(document).ready(function() {
 				}
 			})
 		})
+
+		// FOR AJAX STARRING/UNSTARRING
+		$(document).on('click', '[name=star{{q.id}}]', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:star' q.id %}",
+				data : {star : $(this).attr("value") },
+				success: function (data) {
+					//$('#numstars{{q.id}}').html(data);
+					$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #starring{{q.id}}");
+				}
+			})
+		})
+
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
 	        var cookieValue = null;
@@ -255,6 +270,21 @@ $(document).ready(function() {
 					</p>
 				</div>
 				<div class="col-xs-1">
+					<form method="POST">
+						{% csrf_token %}
+						<div id="starring{{q.id}}" class="right">
+							{% if user.netid in q.users_starred %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="-1" name="star{{q.id}}">
+								{% bootstrap_icon "star" %}
+							</button>
+							{% else %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="1" name="star{{q.id}}">
+								{% bootstrap_icon "star-empty" %}
+							</button>
+							{% endif %}
+							<span id="numstars{{q.id}}">{{ q.stars }}</span>
+						</div>
+					</form>
 					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<form action="{% url 'quailapp:delete_from_coursepage' q.id %}" method="POST">
 						{% csrf_token %}
@@ -357,6 +387,21 @@ There doesn't appear to be any questions for this class... :(
 				}
 			})
 		})
+
+		// FOR AJAX STARRING/UNSTARRING
+		$(document).on('click', '[name=star{{q.id}}]', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post',
+				url: "{% url 'quailapp:star' q.id %}",
+				data : {star : $(this).attr("value") },
+				success: function (data) {
+					//$('#numstars{{q.id}}').html(data);
+					$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #starring{{q.id}}");
+				}
+			})
+		})
+
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
 	        var cookieValue = null;
@@ -450,6 +495,21 @@ There doesn't appear to be any questions for this class... :(
 					</p>
 				</div>
 				<div class="col-xs-1">
+					<form method="POST">
+						{% csrf_token %}
+						<div id="starring{{q.id}}" class="right">
+							{% if user.netid in q.users_starred %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="-1" name="star{{q.id}}">
+								{% bootstrap_icon "star" %}
+							</button>
+							{% else %}
+							<button type="submit" class="btn btn-link btn-link-yellow no-pad" value="1" name="star{{q.id}}">
+								{% bootstrap_icon "star-empty" %}
+							</button>
+							{% endif %}
+							<span id="numstars{{q.id}}">{{ q.stars }}</span>
+						</div>
+					</form>
 					{% if q.submitter.netid == user.netid or not user.is_student %}
 					<form action="{% url 'quailapp:delete_from_coursepage' q.id %}" method="POST">
 						{% csrf_token %}
