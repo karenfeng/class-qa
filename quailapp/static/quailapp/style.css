@@ -375,3 +375,8 @@ fieldset[disabled] .btn-secondary.active {
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
   background-color: #003D3D
 }
+
+[id*=submit_edit_button] {
+  visibility: hidden;
+}
+

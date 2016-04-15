@@ -85,19 +85,20 @@ def vote(request, question_id):
 
 # handles what happens when a user stars a question
 def star(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    star = request.POST['star']
-    
-    if question.users_starred and request.user.netid in question.users_starred:
-        users_starred = question.users_starred.replace("|"+request.user.netid, "")
-    else:
-        users_starred = question.users_starred + '|' + request.user.netid
-    
-    question.stars += int(star)
-    question.users_starred = users_starred    
-    question.save()
-    
-    return HttpResponse(question.stars)
+    if request.is_ajax():
+        question = get_object_or_404(Question, pk=question_id)
+        star = request.POST['star']
+        
+        if question.users_starred and request.user.netid in question.users_starred:
+            users_starred = question.users_starred.replace("|"+request.user.netid, "")
+        else:
+            users_starred = question.users_starred + '|' + request.user.netid
+        
+        question.stars += int(star)
+        question.users_starred = users_starred    
+        question.save()
+        
+        return HttpResponse(question.stars)
 
 # handles what happens when someone pins a question to the coursepage
 def pin(request, question_id):
@@ -212,10 +213,6 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    if request.is_ajax() and request.method == 'GET':
-        return render(request, 'quailapp/questionreload.html', {'form': form, 'course': course, 
-        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
     return render(request, 'quailapp/coursepage_live.html', {'form': form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
