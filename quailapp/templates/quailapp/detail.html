@@ -11,7 +11,7 @@
 
 {% block content %}
 {% if question.is_live %}
-<a href="{% url 'quailapp:coursepage_live' question.course.id %}">{% bootstrap_icon "arrow-left"%}
+<a href="{% url 'quailapp:coursepage_live' question.course.id %}">
 {% else %}
 <a href="{% url 'quailapp:coursepage_archive' question.course.id %}">
 {% endif %}
