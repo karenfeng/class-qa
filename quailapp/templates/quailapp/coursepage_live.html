@@ -18,19 +18,6 @@
 Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}.
 </span>
 
-<h3>Post a question!</h3>
-<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
-    {% csrf_token %}
-    <div class="input-group">
-      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
-      <span class="input-group-btn">
-		{% buttons %}
-        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-		{% endbuttons %}
-      </span>
-    </div>
-</form>
-
 <script>
 $(document).ready(function() {
 	$('#id_your_question').keyup(function() {
@@ -573,5 +560,18 @@ There doesn't appear to be any questions for this class... :(
         {% endif %}
     </span>
 </div>
+
+<h3>Post a question!</h3>
+<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
 
 {% endblock %}

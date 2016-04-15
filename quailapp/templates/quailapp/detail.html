@@ -11,10 +11,12 @@
 
 {% block content %}
 {% if question.is_live %}
-<a href="{% url 'quailapp:coursepage_live' question.course.id %}">Go back to {{question.course}}</a>
+<a href="{% url 'quailapp:coursepage_live' question.course.id %}">{% bootstrap_icon "arrow-left"%}
 {% else %}
-<a href="{% url 'quailapp:coursepage_archive' question.course.id %}">Go back to {{question.course}}</a>
+<a href="{% url 'quailapp:coursepage_archive' question.course.id %}">
 {% endif %}
+{% bootstrap_icon "arrow-left"%} {{question.course}}
+</a>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
@@ -128,7 +130,7 @@ $(document).ready(function() {
 });
 </script>
 
-<h2>Question:</h2>
+<h3>Question</h3>
 {% if question.submitter.netid == user.netid %}
 <div class="box-static-blue row">
 {% else %}
@@ -180,7 +182,7 @@ $(document).ready(function() {
 </div>
 
 {% if question.answer %}
-	<h3>Answer:</h3>
+	<h3>Answer</h3>
 	{% if question.answer.submitter == user %}
 	<div class="box-static-blue row">
 	{% else %}

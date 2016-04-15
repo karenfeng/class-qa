@@ -19,34 +19,40 @@
         $('a[href="' + this.location.pathname + '"]').parent().addClass('active');
     });
 	</script>
-	<nav class="navbar navbar-simple">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="{% url 'quailapp:home' %}">
-					<img class="max" src="{% static "quailapp/logo.png" %}" alt="Quail">
-				</a>
-			</div>
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{% url 'quailapp:index' %}">{% bootstrap_icon "home" %}</a></li>
-					<li><a href="{% url 'quailapp:userinfo' %}">{% bootstrap_icon "user" %}</a></li>
-					<li><a href="{% url 'quailapp:logout' %}">Logout</a></li>
-				</ul>
-				<ul class="nav navbar-nav">
-					<li class="dropdown">
-	  					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-	  						Classes
-	  						<span class="caret"></span>
-	  					</a>
-	  					<ul class="dropdown-menu">
-							{% block classes %}{% endblock %}
+	<div class="row">
+  		<div class="col-sm-2">
+    		<div class="sidebar-nav">
+			<nav class="navbar navbar-inverse navbar-simple">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a class="navbar-brand" href="{% url 'quailapp:home' %}">
+							Quail
+						</a>
+					</div>
+					<div class="navbar-collapse collapse sidebar-navbar-collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="{% url 'quailapp:index' %}">{% bootstrap_icon "home" %} Home</a></li>
+							<li><a href="{% url 'quailapp:userinfo' %}">{% bootstrap_icon "user" %} User</a></li>
+							<li class="dropdown">
+			  					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			  						{% bootstrap_icon "book" %} Classes
+			  						<span class="caret"></span>
+			  					</a>
+			  					<ul class="dropdown-menu">
+									{% block classes %}{% endblock %}
+								</ul>
+							</li>
+							<li><a href="{% url 'quailapp:logout' %}">{% bootstrap_icon "lock" %} Logout</a></li>
 						</ul>
-					</li>
-				</ul>
+					</div>
+				</nav>
 			</div>
-		</nav>
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
+		</div>
+		<div class="col-sm-10">
+			<div id="content">
+	        {% block content %}{% endblock %}
+	    	</div>
+    	</div>
+	</div>
 </body>
 </html>
