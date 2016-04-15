@@ -11,33 +11,16 @@
 
 {% block content %}
 
-<h1>Welcome, {{ user.first_name }}</h1>
+<h1 class="centered">Welcome, {{ user.first_name }}</h1>
 
 <div class="row">
 	<div class="col-xs-4">
 		<div class="box-static-dark">
 			<a href="{% url 'quailapp:userinfo' %}">
-				<h4 class="centered">User information</h3>
+				<h4 class="centered">Your questions</h3>
 			</a>
 		</div>
 		<div class="box-static">
-			<span class="bold">NetID:</span> {{ user.netid }}<br>
-			<span class="bold">Name:</span> {{ user.first_name }} {{ user.last_name }}<br>
-			<span class="bold">Role:</span>
-			{% if user.is_student %}
-				Student
-			{% else %}
-				Lecturer
-			{% endif %}
-			<br>
-			<span class="bold">Courses:</span>
-			<ul>
-			{% for course in courses %}
-				<li>{{ course }}</li>
-			{% endfor %}
-			</ul>
-
-			<span class="bold">Your Questions:</span>
 			<ul>
 			{% for q in user.question_set.all %}
 				<li>{{ q.text }}</li>

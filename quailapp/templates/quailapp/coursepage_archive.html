@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "basedark.html" %}
 {% load staticfiles %}
 {% load bootstrap3 %}
 
@@ -12,12 +12,12 @@
 
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<h1>{{ course }}</h1>
+<h1 class="dark">{{ course }}</h1>
 <span class="unemph">
 Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}.
 </span>
 
-<h3 class="centered">Archived Questions</h3>
+<h3 class="centered dark">Archived Questions</h3>
 <p class="centered"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
 
 {% if not user.is_student %}
@@ -89,7 +89,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 </span>
 
 {% if questions_pinned|length > 0 %}
-<h4>Pinned questions</h4>
+<h4 class="dark">Pinned questions</h4>
 {% endif %}
 <ul>
 	{% for q in questions_pinned %}
@@ -164,7 +164,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 </ul>
 
 <br>
-<h4>Submitted questions</h4>
+<h4 class="dark">Submitted questions</h4>
 {% if questions|length == 0 %}
 There doesn't appear to be any questions for this class... :(
 <br>
@@ -242,7 +242,7 @@ There doesn't appear to be any questions for this class... :(
 	{% endfor %}
 </ul>
 
-<div class="pagination">
+<div class="pagination dark">
     <span class="step-links">
     	{% if questions.has_previous %}
     		<a class="btn btn-link btn-link-gray" href="?page={{ questions.previous_page_number }}">

@@ -22,6 +22,14 @@ form {
    margin-bottom: 0px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', sans-serif;
+}
+
+p, span, div {
+  font-family: 'Fira Sans', sans-serif;
+}
+
 img.max {
   max-width:100%;
   max-height:100%;
@@ -44,6 +52,18 @@ img.centered {
   display: block;
   margin-left: auto;
   margin-right: auto
+}
+
+h1.dark, h2.dark, h3.dark, h4.dark, h5.dark, h6.dark, span.dark, p.dark, div.dark {
+  color: #F5F5F5;
+}
+
+body.dark {
+  background-color: #313131;
+}
+
+.navbar-simple {
+  background-color: #F5F5F5;
 }
 
 .btn {
