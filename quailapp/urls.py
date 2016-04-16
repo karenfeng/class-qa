@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^change_name$', login_required(views.change_name), name='change_name'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_question/$', login_required(views.edit_question), name='edit_question'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_answer/$', login_required(views.edit_answer), name='edit_answer'),
+    url(r'^(?P<course_id>[a-zA-Z0-9]+)/answered_questions/$', login_required(views.answered_questions), name='answered_questions'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

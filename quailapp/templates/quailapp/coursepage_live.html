@@ -591,6 +591,11 @@ $(document).ready(function() {
 	</form>
 
 
+
+<script>
+	var num = 0;
+	var changed = false; 
+</script>
  <script>
 // simple script to reload page every 5 seconds, as long as a question isn't being edited or a question isn't being posted 
 function reload_pages() {
@@ -602,12 +607,59 @@ function reload_pages() {
 	}
 	
 }
+function check_ifanswered() {
+
+	$.ajax({
+		type : 'get',
+		url: "{% url 'quailapp:answered_questions' course.id %}",
+		dataType: 'json',
+		success: function(data) {
+			if (data) {
+				console.log(data);
+				for (i = 0; i < data.length; i++) {
+					num++; 
+					$("#all_notifications").append('<li><div id="notification'+num+'" style="display: none;"><span id="dismiss'+num+'" href=""><a title="dismiss this notification">x</a></span></div></li>');
+					$("#notification"+num).fadeIn("slow").append('Your question was answered: ' + data[i].fields.text);
+					$("#notification"+num).attr("href", "/"+data[i].fields.id);
+					changed = true;
+				}	
+			}
+
+			else {
+				console.log("no questions answered in last X seconds");
+				changed = false;
+			}
+		}
+
+	})
+	//$("#notification").fadeIn("slow").append('your message');
+	
+	
+}
+$(document).ajaxComplete(function() {
+	if (changed) {
+		for (i = 0; i <= num; i++) {
+			$('#dismiss'+i).on('click', function() {
+
+				console.log("i can click"+i);
+				$("#notification"+(i-1)).fadeOut("slow");
+			});
+		}
+	}
+});
 $(document).ready(function() {
+
 	setInterval(function() {
 		reload_pages();
-	}, 5000);
+		check_ifanswered();
+		
+	}, 10000);
+
 })
  </script>
 
 
+<ul id="all_notifications">
+
+</ul>
 {% endblock %}

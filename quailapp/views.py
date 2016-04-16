@@ -6,6 +6,8 @@ from django.template import loader
 from django.views import generic
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from django.contrib import messages
 #import sys
 #sys.path.append("numpy_path")
 import numpy as np
@@ -15,7 +17,10 @@ from django.contrib.auth import login, logout, authenticate
 #from .custom_auth_backend import QuailCustomBackend
 
 import datetime, re
+from datetime import timedelta
+
 import json
+from django.core import serializers
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
 from .models import Question, CASClient, Answer, QuailUser, Course, Comment
@@ -538,5 +543,29 @@ def edit_answer(request, question_id):
 
         return HttpResponse(question.answer.text)
 
+
+def answered_questions(request, course_id):
+
+    if request.is_ajax():
+        course = get_object_or_404(Course, pk=course_id)
+        questions = Question.objects.filter(submitter=request.user, course=course, is_live=True)
+        
+        # all questions that have been answered in the last X seconds... 
+        q_ids = []
+        now = datetime.datetime.now()
+        for q in questions:
+            try:
+                if (q.answer.created_on + timedelta(0, 10) >= now):
+                    q_ids.append(q.id)
+            except:
+                pass
+        if not q_ids:
+            return HttpResponse("")
+        # serialize into json response
+        questions_answered = Question.objects.filter(pk__in=q_ids)
+        data = serializers.serialize('json', questions_answered)
+        return HttpResponse(data, content_type='application/json')
+
 def home(request):
     return render(request, 'quailapp/home.html')
+
