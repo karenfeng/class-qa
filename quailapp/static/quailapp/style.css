@@ -35,12 +35,22 @@ img.max {
   max-height:100%;
 }
 
+img.big {
+  max-width:120%;
+  max-height:120%;
+}
+
 a {
   color: #007F7F;
 }
 
 a:focus, a:hover {
   color: #004c4c;
+}
+
+img.xs {
+  max-width: 25%;
+  max-height: 25%;
 }
 
 img.small {

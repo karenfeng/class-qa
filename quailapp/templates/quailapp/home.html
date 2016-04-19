@@ -4,20 +4,18 @@
 
 <html lang="en">
 <head>
-	<title>Quail</title>
-	<link rel="icon" href="{% static "quailapp/favicon.ico" %}" type="image/x-icon" />
+	<title>quail</title>
+	<link rel="icon" href="{% static "quailapp/logo-black.ico" %}" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{% static "quailapp/style.css" %}" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Fira+Sans:300' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
 	<div class="centered">
-		<img src="{% static "quailapp/textlogo.png" %}" alt="Quail" align="middle">
-		<h1>
-			[questions you ask in lecture]
-		</h1>
-		<div class="unemph">
-			Built by Princeton students, for Princeton students.
-		</div><br>
+		<img class="xs" src="{% static "quailapp/logo-black-text.png" %}" alt="Quail" align="middle">
+		<div class="unemph">Questions You Ask in Lecture.</div>
+		<br>
 		<a href="{% url 'quailapp:login'%}" class="btn btn-primary btn-lg home-button" role="button">
 			Login with CAS
 		</a><br><br>
