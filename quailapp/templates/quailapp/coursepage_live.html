@@ -66,10 +66,32 @@ $(document).ready(function() {
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
 <form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
- 	<label for="id_q">Search:</label>
- 	<input type="text" name="q" id="id_q"/>
- 	<input type="submit" value="Submit"/>
- </form>
+	<label for="id_q">Search:</label>
+	<input type="text" name="q" id="id_q"/>
+	<input type="submit" value="Submit"/>
+</form>
+
+
+{% for tag in course.tag_set.all %}
+	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}" style="display: inline;">
+		<button type="submit" name="tag" id="id_tag" value = "{{ tag.id }}" class = "btn-link"/>{{ tag }}
+		</button>
+	</form>
+{% endfor %}
+
+{% if not user.is_student %}
+<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+    {% csrf_token %}
+    <div class="input-group">
+      <input id="id_your_tag" name="your_tag" type="text" class="form-control" placeholder="Add tag">
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
+{% endif %}
 
 <span class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -502,6 +524,9 @@ $(document).ready(function() {
 							<br>
 							<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
 						</p>
+						{% for tag in q.tags_as_list %}
+							{{ tag }}
+						{% endfor %}
 					</div>
 					<div class="col-xs-1">
 						<form method="POST">
@@ -586,8 +611,7 @@ $(document).ready(function() {
 	<h3>Post a question!</h3>
 	<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
 	    {% csrf_token %}
-	    <div class="input-group">
-	      <input id="id_your_question" name="your_question" type="text" class="form-control" placeholder="Your question">
+	      {% bootstrap_form form %}
 	      <span class="input-group-btn">
 			{% buttons %}
 	        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>

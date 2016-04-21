@@ -20,8 +20,8 @@ from datetime import timedelta
 import json
 from django.core import serializers
 
-from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm
-from .models import Question, CASClient, Answer, QuailUser, Course, Comment
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag
 
 def index(request):
     try:
@@ -190,9 +190,21 @@ def coursepage_live(request, course_id):
          questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
          questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter) 
 
+    if ('tag' in request.GET):
+        tag = request.GET['tag']
+        questions_found = live_questions
+        question_ids_found = []
+        for question in questions_found:
+            if (re.search(re.escape(tag), question.tags)):
+                question_ids_found.append(question.id)
+        found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+        questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+        questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
+
     # if a question is posted
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
+        form = QuestionForm(request.POST, tags=course.tag_set.all())
+        tag_form = TagForm(request.POST)
 
         # if the user chooses a filter
         if ('filter' in request.POST):
@@ -216,11 +228,27 @@ def coursepage_live(request, course_id):
         # if the user submits a question
         if form.is_valid():
             data = form.cleaned_data
+
             new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=True)
             new_question.save()
-            return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))   
+
+            #tags = new_question. + '|'
+            tags = ''
+            for tag in data['tags']:
+                tags = tags + tag.id + '|'
+            new_question.tags = tags[:len(tags)-1]
+            new_question.save()
+
+            return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))
+
+        if tag_form.is_valid():
+            data = tag_form.cleaned_data
+            new_tag = Tag(text=data['your_tag'], course=course, submitter=request.user)
+            new_tag.save()
+            return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))      
     else:
-        form = QuestionForm()
+        form = QuestionForm(tags=course.tag_set.all())
+        tag_form = TagForm()
 
      # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
@@ -234,7 +262,7 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    return render(request, 'quailapp/coursepage_live.html', {'form': form, 'course': course, 
+    return render(request, 'quailapp/coursepage_live.html', {'form': form, 'tag_form': tag_form, 'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 

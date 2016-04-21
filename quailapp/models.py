@@ -124,6 +124,15 @@ class Course(models.Model):
     name = name[:len(name)-1]
     return '%s: %s' % (name, self.title)  
 
+class Tag(models.Model):
+  text = models.TextField() # the actual tag name itself
+  course = models.ForeignKey(Course, null=True) # tags associated with a course
+  questions = models.TextField()  # question ids uder this tag
+  submitter = models.ForeignKey(QuailUser, null=True)
+
+  def __unicode__(self):
+    return self.text
+    
 class Question(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
@@ -134,8 +143,7 @@ class Question(models.Model):
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
     is_live = models.BooleanField(default=True)
-    #tags = models.TextField(max_length=10) # allow tags
-    #tag = models.ForeignKey(Tag, null=True)
+    tags = models.TextField(max_length=10, default="") # allow tags (separated by '|')
 
     users_upvoted = models.TextField(null=True, blank=True, default="")
     users_downvoted = models.TextField(null=True, blank=True, default="")
@@ -146,13 +154,14 @@ class Question(models.Model):
 
     def __unicode__(self):
         return self.text
-'''
-class Tag(models.Model):
-  text = models.TextField()
 
-  def __unicode__(self):
-    return self.text
-    '''
+    def tags_as_list(self):
+      tag_list = []
+      tag_ids = self.tags.split('|')
+      for tag in tag_ids:
+        if tag != '':
+          tag_list.append(Tag.objects.all().get(pk=tag))
+      return tag_list
 
 class Answer(models.Model):
   created_on = models.DateTimeField(auto_now_add=True) 
