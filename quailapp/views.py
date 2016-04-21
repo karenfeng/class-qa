@@ -182,7 +182,7 @@ def coursepage_live(request, course_id):
          for term in terms:
              question_ids_found = []
              for question in questions_found:
-                if (re.search(term, question.text, re.I)):
+                if (re.search(re.escape(term), question.text, re.I)):
                      question_ids_found.append(question.id)
              questions_found = questions_found.filter(pk__in=question_ids_found)
  
@@ -253,7 +253,7 @@ def coursepage_archive(request, course_id):
          for term in terms:
              question_ids_found = []
              for question in questions_found:
-                if (re.search(term, question.text, re.I)):
+                if (re.search(re.escape(term), question.text, re.I)):
                      question_ids_found.append(question.id)
              questions_found = questions_found.filter(pk__in=question_ids_found)
  
