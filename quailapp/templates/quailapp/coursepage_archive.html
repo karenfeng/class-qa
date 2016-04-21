@@ -20,6 +20,14 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <h3 class="centered dark">Archived Questions</h3>
 <p class="centered"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
 
+
+<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
+ 	<label for="id_q">Search:</label>
+ 	<input type="text" name="q" id="id_q"/>
+ 	<input type="submit" value="Submit"/>
+ </form>
+
+
 {% if not user.is_student %}
 <span class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -30,31 +38,31 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
     <li>
 		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">Every lecture [default]</button>
+			<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_lecture" %}<span class="unemph">Every lecture</span>{% else %}Every lecture{% endif %}</button>
 		</form>
 	</li>
     <li>
 		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">Every other lecture</button>
+			<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_other_lecture" %}<span class="unemph">Every other lecture</span>{% else %}Every other lecture{% endif %}</button>
 		</form>
 	</li>
     <li>
 		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">Every week</button>
+			<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">{% if course.archive_type == "every_week" %}<span class="unemph">Every week</span>{% else %}Every week{% endif %}</button>
 		</form>
 	</li>
 	<li>
 		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">Every two weeks</button>
+			<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">{% if course.archive_type == "every_two_weeks" %}<span class="unemph">Every two weeks</span>{% else %}Every two weeks{% endif %}</button>
 		</form>
 	</li>
 	<li>
 		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">Every month</button>
+			<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">{% if course.archive_type == "every_month" %}<span class="unemph">Every month</span>{% else %}Every month{% endif %}</button>
 		</form>
 	</li>
   </ul>
@@ -70,19 +78,19 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
     <li>
     	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 		{% csrf_token %}
-  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">Newest</button>
+  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">{% if user.chosen_filter == "-created_on" %}<span class="unemph">Newest</span>{% else %}Newest{% endif %}</button>
 		</form>
 	</li>
     <li>
     	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
 		{% csrf_token %}
-  			<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray">Oldest</button>
+  			<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray">{% if user.chosen_filter == "created_on" %}<span class="unemph">Oldest</span>{% else %}Oldest{% endif %}</button>
 		</form>
 	</li>
     <li>
     	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
  		{% csrf_token %}
-  			<button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">Popularity</button>
+  			<button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">{% if user.chosen_filter == "-votes" %}<span class="unemph">Popularity</span>{% else %}Popularity{% endif %}</button>
 		</form>
 	</li>
   </ul>

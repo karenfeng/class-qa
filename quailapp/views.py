@@ -8,8 +8,6 @@ from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib import messages
-#import sys
-#sys.path.append("numpy_path")
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -144,7 +142,7 @@ def coursepage_live(request, course_id):
             weekday = now.weekday()
             if (len(days) < 2):
                 diff_days = 0
-                diff_weeks = 1   # default to archiving every other week
+                diff_weeks = 1   # default to archiving every other week if lecture is once a week
             else:
                 for i in range(len(days)):
                     if (weekday == int(days[i])):
@@ -156,7 +154,8 @@ def coursepage_live(request, course_id):
         elif (course.archive_type == 'every_lecture'):
             time_buffer = now - datetime.timedelta(hours=3)
             to_archive = True
-            
+    
+    # if course isn't currently live, check for other archive types   
     if (course.archive_type == 'every_week'):
         time_buffer = now - datetime.timedelta(days=7)
         to_archive = True
@@ -167,6 +166,7 @@ def coursepage_live(request, course_id):
         time_buffer = now - datetime.timedelta(days=30)
         to_archive = True
 
+    # if there are questions to archive, archive them; otherwise display the normal live questions
     if (to_archive == True):
         updated_questions = course.question_set.all().filter(is_live=True, created_on__lte=time_buffer)
         updated_questions.update(is_live=False)
@@ -174,6 +174,22 @@ def coursepage_live(request, course_id):
     questions_pinned = live_questions.filter(is_pinned=True).order_by(user.chosen_filter)
     questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
         
+    # search functionality for questions
+    if ('q' in request.GET) and request.GET['q'].strip():
+         query_string = request.GET['q']
+         terms = query_string.split()
+         questions_found = live_questions
+         for term in terms:
+             question_ids_found = []
+             for question in questions_found:
+                if (re.search(term, question.text, re.I)):
+                     question_ids_found.append(question.id)
+             questions_found = questions_found.filter(pk__in=question_ids_found)
+ 
+         found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter) 
+
     # if a question is posted
     if request.method == 'POST':
         form = QuestionForm(request.POST)
@@ -228,8 +244,23 @@ def coursepage_archive(request, course_id):
     user = request.user
     archived_questions = course.question_set.all().exclude(is_live=True)
     questions_pinned = archived_questions.filter(is_pinned=True).order_by(user.chosen_filter)
-    questions_unpinned = archived_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
-        
+    questions_unpinned = archived_questions.exclude(is_pinned=True).order_by(user.chosen_filter)    
+
+    if ('q' in request.GET) and request.GET['q'].strip():
+         query_string = request.GET['q']
+         terms = query_string.split()
+         questions_found = archived_questions
+         for term in terms:
+             question_ids_found = []
+             for question in questions_found:
+                if (re.search(term, question.text, re.I)):
+                     question_ids_found.append(question.id)
+             questions_found = questions_found.filter(pk__in=question_ids_found)
+ 
+         found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter) 
+
     # if a question is posted
     if request.method == 'POST':
         # if the user chooses a filter
@@ -270,31 +301,6 @@ def coursepage_archive(request, course_id):
     return render(request, 'quailapp/coursepage_archive.html', {'course': course, 
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
-
-'''
-# course detail view - shows all questions associated with the course
-def coursepage(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)    
-    # check if course is live
-    now = datetime.datetime.now()
-    time_buffer = now - datetime.timedelta(hours=6)
-    live_questions = course.question_set.all().filter(is_live=True)
-    live_month = False
-    live_day = False
-    live_time = False
-    if (now.month >= 1 and now.month < 6):
-        live_month = True
-    if (re.search(str(now.weekday()), course.days)):
-        live_day = True
-    if (now.time() < course.endtime and now.time() > course.starttime):
-        live_time = True
-    if (live_month and live_day and live_time):
-        updated_questions = live_questions.filter(created_on__lte=time_buffer)
-        updated_questions.update(is_live=False)
-        #course.is_live = True
-        #course.save()
-    return redirect('/'+course.id+'/coursepage_live')
-'''
 
 def delete_from_coursepage(request, question_id):
     question = get_object_or_404(Question, pk=question_id)

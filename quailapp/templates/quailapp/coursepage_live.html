@@ -65,6 +65,12 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
+<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+ 	<label for="id_q">Search:</label>
+ 	<input type="text" name="q" id="id_q"/>
+ 	<input type="submit" value="Submit"/>
+ </form>
+
 <span class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Filter by...
