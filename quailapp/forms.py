@@ -2,12 +2,11 @@ from django import forms
 from .models import Course
 
 class QuestionForm(forms.Form):
-    your_question = forms.CharField(label='Your question', max_length=100)
-
     def __init__(self, *args, **kwargs):
 		self.tags = kwargs.pop('tags')
 		super(QuestionForm,self).__init__(*args,**kwargs)
-		self.fields['tags'] = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple(), label='', queryset=self.tags)
+		self.fields['tags'] = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple(), label='', queryset=self.tags, required=False)
+		self.fields['your_question'] = forms.CharField(label='Your question', max_length=100)
 
 class AnswerForm(forms.Form):
     your_answer = forms.CharField(label='Your answer', max_length=200)

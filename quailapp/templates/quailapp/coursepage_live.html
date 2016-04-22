@@ -71,12 +71,17 @@ $(document).ready(function() {
 	<input type="submit" value="Submit"/>
 </form>
 
-
 {% for tag in course.tag_set.all %}
-	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}" style="display: inline;">
-		<button type="submit" name="tag" id="id_tag" value = "{{ tag.id }}" class = "btn-link"/>{{ tag }}
+	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+		<button type="submit" name="tag" id="id_tag" value= "{{ tag.id }}" class= "btn-link" style="display: inline;">{{ tag }}
 		</button>
 	</form>
+	{% if tag.submitter.netid == user.netid or not user.is_student %}
+	<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
+		{% csrf_token %}
+			<button type="submit" class="btn btn-link btn-link-red" style="display: inline;">delete</button>
+	</form>
+	{% endif %}
 {% endfor %}
 
 {% if not user.is_student %}
@@ -102,19 +107,19 @@ $(document).ready(function() {
     <li>
     	<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post" style="display: inline;">
 		{% csrf_token %}
-  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">Newest</button>
+  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">{% if user.chosen_filter == "-created_on" %}<span class="unemph">Newest</span>{% else %}Newest{% endif %}</button>
 		</form> 
 	</li>
     <li>
 		<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post" style="display: inline;">
 			{% csrf_token %}
-		  	<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray" style="display: inline;">Oldest</button>
+		  	<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray">{% if user.chosen_filter == "created_on" %}<span class="unemph">Oldest</span>{% else %}Oldest{% endif %}</button>
 		</form>
 	</li>
     <li>
 		<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post" style="display: inline;">
 		 	{% csrf_token %}
-		 	 <button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">Popularity</button>
+		 	 <button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">{% if user.chosen_filter == "-votes" %}<span class="unemph">Popularity</span>{% else %}Popularity{% endif %}</button>
 		</form> 
 	</li>
   </ul>
@@ -525,7 +530,7 @@ $(document).ready(function() {
 							<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
 						</p>
 						{% for tag in q.tags_as_list %}
-							{{ tag }}
+							<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
 						{% endfor %}
 					</div>
 					<div class="col-xs-1">

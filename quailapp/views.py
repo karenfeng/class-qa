@@ -203,11 +203,10 @@ def coursepage_live(request, course_id):
 
     # if a question is posted
     if request.method == 'POST':
-        form = QuestionForm(request.POST, tags=course.tag_set.all())
-        tag_form = TagForm(request.POST)
-
         # if the user chooses a filter
         if ('filter' in request.POST):
+            form = QuestionForm(tags=course.tag_set.all())
+            tag_form = TagForm()
             chosen_filter = request.POST['filter']
             if (chosen_filter == 'newest'):
                 user.chosen_filter = '-created_on'
@@ -223,29 +222,29 @@ def coursepage_live(request, course_id):
                 user.chosen_filter = '-votes'
                 user.save()
                 questions_pinned = questions_pinned.order_by('-votes')
-                questions_unpinned = questions_unpinned.order_by('-votes')
+                questions_unpinned = questions_unpinned.order_by('-votes')  
 
-        # if the user submits a question
-        if form.is_valid():
-            data = form.cleaned_data
+        else:
+            form = QuestionForm(request.POST, tags=course.tag_set.all())
+            tag_form = TagForm(request.POST)
+        
+            if form.is_valid():
+                data = form.cleaned_data
+                tags = ''
+                for tag in data['tags']:
+                    tags = tags + '|' + tag.id
+                new_question = Question(text=data['your_question'], course=course, submitter=user, votes=0, is_live=True, tags=tags)
+                new_question.save()
+                for tag in data['tags']:
+                    tag.questions = tag.questions + '|' + new_question.id
+                    tag.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))
 
-            new_question = Question(text=data['your_question'], course=course, submitter=request.user, votes=0, is_live=True)
-            new_question.save()
-
-            #tags = new_question. + '|'
-            tags = ''
-            for tag in data['tags']:
-                tags = tags + tag.id + '|'
-            new_question.tags = tags[:len(tags)-1]
-            new_question.save()
-
-            return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))
-
-        if tag_form.is_valid():
-            data = tag_form.cleaned_data
-            new_tag = Tag(text=data['your_tag'], course=course, submitter=request.user)
-            new_tag.save()
-            return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))      
+            if tag_form.is_valid():
+                data = tag_form.cleaned_data
+                new_tag = Tag(text=data['your_tag'], course=course, submitter=request.user)
+                new_tag.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))  
     else:
         form = QuestionForm(tags=course.tag_set.all())
         tag_form = TagForm()
@@ -262,10 +261,9 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    return render(request, 'quailapp/coursepage_live.html', {'form': form, 'tag_form': tag_form, 'course': course, 
+    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
-
 
 def coursepage_archive(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
@@ -330,6 +328,19 @@ def coursepage_archive(request, course_id):
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
+def delete_tag_from_coursepage(request, tag_id):
+    tag = get_object_or_404(Tag, pk=tag_id)
+    course = tag.course
+    questions = tag.questions.split('|')
+    for q in questions:
+        if q != '':
+            question = Question.objects.get(pk=q)
+            question_tags = question.tags.replace("|"+tag.id, "")
+            question.tags = question_tags
+            question.save()
+    tag.delete()
+    return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))
+
 def delete_from_coursepage(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     course = question.course
@@ -367,7 +378,7 @@ def question_detail(request, question_id):
         form = AnswerForm()
         comment_form = CommentForm()
     return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
-        'courses': Course.objects.filter(courseid__in=request.user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def get_question(request):
     # otherwise can post a question

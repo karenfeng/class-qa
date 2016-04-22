@@ -69,8 +69,9 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   def courses_as_list(self):
     course_list = []
     course_ids = self.courses_by_id.split('|')
-    for i in range(len(course_ids)):
-      course_list.append(Course.objects.get(courseid=course_ids[i]))
+    for courseid in course_ids:
+      if courseid != '':
+        course_list.append(Course.objects.get(courseid=courseid))
     return course_list
 
 class Course(models.Model):
@@ -127,7 +128,7 @@ class Course(models.Model):
 class Tag(models.Model):
   text = models.TextField() # the actual tag name itself
   course = models.ForeignKey(Course, null=True) # tags associated with a course
-  questions = models.TextField()  # question ids uder this tag
+  questions = models.TextField(default="")  # question ids under this tag
   submitter = models.ForeignKey(QuailUser, null=True)
 
   def __unicode__(self):
@@ -143,7 +144,7 @@ class Question(models.Model):
     course = models.ForeignKey(Course, null=True)
     is_pinned = models.BooleanField(default=False)
     is_live = models.BooleanField(default=True)
-    tags = models.TextField(max_length=10, default="") # allow tags (separated by '|')
+    tags = models.TextField(null=True, default="") # allow tags (separated by '|')
 
     users_upvoted = models.TextField(null=True, blank=True, default="")
     users_downvoted = models.TextField(null=True, blank=True, default="")
@@ -160,7 +161,7 @@ class Question(models.Model):
       tag_ids = self.tags.split('|')
       for tag in tag_ids:
         if tag != '':
-          tag_list.append(Tag.objects.all().get(pk=tag))
+          tag_list.append(Tag.objects.get(pk=tag))
       return tag_list
 
 class Answer(models.Model):
