@@ -20,8 +20,8 @@ from datetime import timedelta
 import json
 from django.core import serializers
 
-from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm
-from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag
+from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm, FeedbackForm
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback
 
 def index(request):
     try:
@@ -123,6 +123,10 @@ def coursepage_live(request, course_id):
     # check if course is live
     user = request.user
     now = datetime.datetime.now()
+    counter = request.session.get('counter')
+    if not counter:
+        counter = [0] * 6
+    request.session['counter'] = counter
 
     to_archive = False
     live_month = False
@@ -170,7 +174,12 @@ def coursepage_live(request, course_id):
     if (to_archive == True):
         updated_questions = course.question_set.all().filter(is_live=True, created_on__lte=time_buffer)
         updated_questions.update(is_live=False)
+        updated_feedback = course.feedback_set.all().filter(is_live=True, created_on__lte=time_buffer)
+        updated_feedback.update(is_live=False, archived_on=now.date())
+    
+    # feedback and questions to display on live page
     live_questions = course.question_set.all().filter(is_live=True)
+    live_feedback = course.feedback_set.all().filter(is_live=True)
     questions_pinned = live_questions.filter(is_pinned=True).order_by(user.chosen_filter)
     questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
         
@@ -207,6 +216,7 @@ def coursepage_live(request, course_id):
         if ('filter' in request.POST):
             form = QuestionForm(tags=course.tag_set.all())
             tag_form = TagForm()
+            feedback_form = FeedbackForm()
             chosen_filter = request.POST['filter']
             if (chosen_filter == 'newest'):
                 user.chosen_filter = '-created_on'
@@ -227,7 +237,8 @@ def coursepage_live(request, course_id):
         else:
             form = QuestionForm(request.POST, tags=course.tag_set.all())
             tag_form = TagForm(request.POST)
-        
+            feedback_form = FeedbackForm(request.POST)
+ 
             if form.is_valid():
                 data = form.cleaned_data
                 tags = ''
@@ -244,10 +255,22 @@ def coursepage_live(request, course_id):
                 data = tag_form.cleaned_data
                 new_tag = Tag(text=data['your_tag'], course=course, submitter=request.user)
                 new_tag.save()
-                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))  
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
+
+            if feedback_form.is_valid():
+                data = feedback_form.cleaned_data
+                
+                choice = data['feedback_choice']
+                if choice != '':
+                    counter[int(choice)] += 1
+                new_feedback = Feedback(text=data['your_feedback'], course=course, submitter=user, is_live=True, feedback_choice=choice)  
+                new_feedback.save()
+                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
+                
     else:
         form = QuestionForm(tags=course.tag_set.all())
         tag_form = TagForm()
+        feedback_form = FeedbackForm()
 
      # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
@@ -261,14 +284,15 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form,
-        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form, 'counter': counter,
+        'feedback_form': feedback_form, 'live_feedback': live_feedback, 'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def coursepage_archive(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
     archived_questions = course.question_set.all().exclude(is_live=True)
+    archived_feedback = course.feedback_set.all().exclude(is_live=True)
     questions_pinned = archived_questions.filter(is_pinned=True).order_by(user.chosen_filter)
     questions_unpinned = archived_questions.exclude(is_pinned=True).order_by(user.chosen_filter)    
 
@@ -286,6 +310,17 @@ def coursepage_archive(request, course_id):
          found_entries = Question.objects.all().filter(pk__in=question_ids_found)
          questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
          questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter) 
+
+    if ('tag' in request.GET):
+        tag = request.GET['tag']
+        questions_found = archived_questions
+        question_ids_found = []
+        for question in questions_found:
+            if (re.search(re.escape(tag), question.tags)):
+                question_ids_found.append(question.id)
+        found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+        questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+        questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
 
     # if a question is posted
     if request.method == 'POST':
@@ -324,7 +359,7 @@ def coursepage_archive(request, course_id):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
-    return render(request, 'quailapp/coursepage_archive.html', {'course': course, 
+    return render(request, 'quailapp/coursepage_archive.html', {'course': course, 'archived_feedback': archived_feedback,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 

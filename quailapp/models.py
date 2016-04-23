@@ -182,6 +182,21 @@ class Comment(models.Model):
   def __unicode__(self):
     return self.text
 
+class Feedback(models.Model):
+  created_on = models.DateTimeField(auto_now_add=True) 
+  archived_on = models.DateField(null=True)
+  text = models.TextField()
+  submitter = models.ForeignKey(QuailUser, null=True)
+  course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
+  is_live = models.BooleanField(default=True)
+  feedback_choice = models.CharField(max_length=5, null=True)
+
+  class Meta:
+      ordering = ['-created_on']
+
+  def __unicode__(self):
+    return self.text
+
 # for CAS login..
 class CASClient:
    def __init__(self, request):

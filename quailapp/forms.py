@@ -1,12 +1,24 @@
 from django import forms
 from .models import Course
 
+FEEDBACK_CHOICES = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+)
+
 class QuestionForm(forms.Form):
     def __init__(self, *args, **kwargs):
 		self.tags = kwargs.pop('tags')
 		super(QuestionForm,self).__init__(*args,**kwargs)
 		self.fields['tags'] = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple(), label='', queryset=self.tags, required=False)
 		self.fields['your_question'] = forms.CharField(label='Your question', max_length=100)
+
+class FeedbackForm(forms.Form):
+	feedback_choice = forms.ChoiceField(widget=forms.RadioSelect(), label='', choices=FEEDBACK_CHOICES, required=False)
+	your_feedback = forms.CharField(label='Your feedback', max_length=200)
 
 class AnswerForm(forms.Form):
     your_answer = forms.CharField(label='Your answer', max_length=200)

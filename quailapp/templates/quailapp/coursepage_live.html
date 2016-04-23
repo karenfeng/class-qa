@@ -354,7 +354,7 @@ $(document).ready(function() {
 
 	<h4>Submitted questions</h4>
 	{% if questions|length == 0 %}
-	There doesn't appear to be any questions for this class... :(
+	No Questions found
 	<br>
 	{% endif %}
 	<ul>
@@ -613,18 +613,58 @@ $(document).ready(function() {
 	    </span>
 	</div>
 </div>
-	<h3>Post a question!</h3>
-	<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
-	    {% csrf_token %}
-	      {% bootstrap_form form %}
-	      <span class="input-group-btn">
-			{% buttons %}
-	        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-			{% endbuttons %}
-	      </span>
-	    </div>
-	</form>
+<h3>Post a question!</h3>
+<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+    {% csrf_token %}
+      {% bootstrap_form form %}
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+		{% endbuttons %}
+      </span>
+    </div>
+</form>
 
+<h2>Live Feedback</h2>
+<h4>
+	{% for count in counter %}
+		{% if not forloop.first %}
+		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
+		{% endif %}
+	{% endfor %}
+</h4>
+<div class="scrollbox" id="feedback">
+<ul>
+{% for feedback in live_feedback %}
+	{% if comment.submitter == user %}
+	<div class="box-static-blue">
+	{% else %}
+	<div class="box-static-gray">
+	{% endif %}
+		<li>
+			{{ feedback }}
+			<br>
+			<span class="bold">How helpful was lecture?: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
+			<span class="unemph">Submitted on: {{ feedback.created_on }}
+			{% if not feedback.is_live %}Archived on: {{ feedback.archived_on }}{% endif %}
+			</span>
+		</li>
+	</div>
+{% endfor %}
+</ul>
+</div>
+
+
+<h3>Feedback</h3>
+<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+    {% csrf_token %}
+      {% bootstrap_form feedback_form %}
+      <span class="input-group-btn">
+		{% buttons %}
+        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+		{% endbuttons %}
+      </span>
+</form>
 
 
 <script>

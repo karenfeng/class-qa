@@ -27,6 +27,13 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
  	<input type="submit" value="Submit"/>
  </form>
 
+{% for tag in course.tag_set.all %}
+	<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
+		<button type="submit" name="tag" id="id_tag" value= "{{ tag.id }}" class= "btn-link" style="display: inline;">{{ tag }}
+		</button>
+	</form>
+{% endfor %}
+
 
 {% if not user.is_student %}
 <span class="dropdown">
@@ -257,7 +264,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <br>
 <h4 class="dark">Submitted questions</h4>
 {% if questions|length == 0 %}
-There doesn't appear to be any questions for this class... :(
+No Questions Found
 <br>
 {% endif %}
 <ul>
@@ -415,6 +422,29 @@ There doesn't appear to be any questions for this class... :(
 	</li>
 	{% endfor %}
 </ul>
+
+
+<h2 class="dark">Archived feedback</h2>
+<div class="scrollbox" id="feedback">
+<ul>
+{% for feedback in archived_feedback %}
+	{% if comment.submitter == user %}
+	<div class="box-static-blue">
+	{% else %}
+	<div class="box-static-gray">
+	{% endif %}
+		<li>
+			{{ feedback }}
+			<br>
+			<span class="bold">How helpful was lecture?: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
+			<span class="unemph">Submitted on: {{ feedback.created_on }}
+			{% if not feedback.is_live %}Archived on: {{ feedback.archived_on }}{% endif %}
+			</span>
+		</li>
+	</div>
+{% endfor %}
+</ul>
+</div>
 
 <div class="pagination dark">
     <span class="step-links">
