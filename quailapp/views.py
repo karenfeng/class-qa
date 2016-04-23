@@ -123,10 +123,6 @@ def coursepage_live(request, course_id):
     # check if course is live
     user = request.user
     now = datetime.datetime.now()
-    counter = request.session.get('counter')
-    if not counter:
-        counter = [0] * 6
-    request.session['counter'] = counter
 
     to_archive = False
     live_month = False
@@ -182,6 +178,13 @@ def coursepage_live(request, course_id):
     live_feedback = course.feedback_set.all().filter(is_live=True)
     questions_pinned = live_questions.filter(is_pinned=True).order_by(user.chosen_filter)
     questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
+
+    # counting the number of stars in each feedback
+    counter = [0] * 6
+    for feedback in course.feedback_set.all():
+        if feedback.feedback_choice != None:
+            count = int(feedback.feedback_choice)
+            counter[count] += 1
         
     # search functionality for questions
     if ('q' in request.GET) and request.GET['q'].strip():

@@ -644,7 +644,7 @@ $(document).ready(function() {
 		<li>
 			{{ feedback }}
 			<br>
-			<span class="bold">How helpful was lecture?: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
+			<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
 			<span class="unemph">Submitted on: {{ feedback.created_on }}
 			{% if not feedback.is_live %}Archived on: {{ feedback.archived_on }}{% endif %}
 			</span>
@@ -656,6 +656,7 @@ $(document).ready(function() {
 
 
 <h3>Feedback</h3>
+On a scale of 1-5, how clear / helpful was lecture?
 <form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
     {% csrf_token %}
       {% bootstrap_form feedback_form %}
