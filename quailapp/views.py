@@ -264,9 +264,11 @@ def coursepage_live(request, course_id):
                 data = feedback_form.cleaned_data
                 
                 choice = data['feedback_choice']
+                feedback = data['your_feedback']
+
                 if choice != '':
                     counter[int(choice)] += 1
-                new_feedback = Feedback(text=data['your_feedback'], course=course, submitter=user, is_live=True, feedback_choice=choice)  
+                new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice)  
                 new_feedback.save()
                 return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
                 

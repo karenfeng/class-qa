@@ -185,7 +185,7 @@ class Comment(models.Model):
 class Feedback(models.Model):
   created_on = models.DateTimeField(auto_now_add=True) 
   archived_on = models.DateField(null=True)
-  text = models.TextField()
+  text = models.TextField(null=True, blank=True, default="")
   submitter = models.ForeignKey(QuailUser, null=True)
   course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
   is_live = models.BooleanField(default=True)
