@@ -182,7 +182,7 @@ def coursepage_live(request, course_id):
     # counting the number of stars in each feedback
     counter = [0] * 6
     for feedback in course.feedback_set.all():
-        if feedback.feedback_choice != None:
+        if feedback.feedback_choice != '':
             count = int(feedback.feedback_choice)
             counter[count] += 1
         
