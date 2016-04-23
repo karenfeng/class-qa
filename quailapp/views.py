@@ -343,15 +343,30 @@ def delete_tag_from_coursepage(request, tag_id):
 
 def delete_from_coursepage(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
+    is_live = question.is_live
     course = question.course
+    tags = question.tags.split('|')
+    for tag in tags:
+        if tag != '':
+            t = Tag.objects.get(pk=tag)
+            t_questions = t.questions.replace("|"+question.id, "")
+            t.questions = t_questions
+            t.save()
     question.delete()
-    if (question.is_live == True):
+    if (is_live == True):
         return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,)))
     else:
         return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(course.id,)))
 
 def delete_from_userinfo(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
+    tags = question.tags.split('|')
+    for tag in tags:
+        if tag != '':
+            t = Tag.objects.get(pk=tag.id)
+            t_questions = t.questions.replace("|"+question.id, "")
+            t.questions = t_questions
+            t.save()
     question.delete()
     return HttpResponseRedirect(reverse('quailapp:userinfo'))
 
