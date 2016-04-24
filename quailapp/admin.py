@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 # Register your models here
-from .models import Question, Answer, QuailUser, Course, Tag, Feedback
+from .models import Question, Answer, QuailUser, Course, Tag, Feedback, AllNetids
 
 
 class UserCreationForm(forms.ModelForm):
@@ -80,6 +80,9 @@ admin.site.register(QuailUser, UserAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)
+
+class AllNetidsAdmin(admin.ModelAdmin): pass
+admin.site.register(AllNetids, AllNetidsAdmin)
 
 class QuestionAdmin(admin.ModelAdmin): pass
 admin.site.register(Question, QuestionAdmin)

@@ -21,7 +21,7 @@ import json
 from django.core import serializers
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm, FeedbackForm
-from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback, AllNetids
 
 def index(request):
     try:
@@ -487,6 +487,24 @@ def logout_CAS(request):
 
 # create a new account for a user 
 def create_account(request, netid):
+    
+    ## lecturer student validation 
+    if request.is_ajax():
+        # check if student
+        all_netids_object = AllNetids.objects.all()
+        all_netids = all_netids_object[0].all_netids
+        if request.GET['is_student'] == "1":
+            if netid in all_netids:
+                return HttpResponse("yes")
+            else:
+                return HttpResponse("")
+        # check if lecturer
+        else:
+            if netid not in all_netids:
+                return HttpResponse("yes")
+            else:
+                return HttpResponse("")
+
     # save new user in the database 
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -642,6 +660,8 @@ def edit_answer(request, question_id):
         question.answer.save()
 
         return HttpResponse(question.answer.text)
+
+
 
 
 def answered_questions(request, course_id):

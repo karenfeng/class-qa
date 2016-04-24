@@ -4,6 +4,41 @@
 {% block content %}
 <h2>Create an account for {{netid}}</h2>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#submit_button').attr('disabled', true);
+    $('input:radio[name="is_student"]').change(
+        function(){
+            console.log($(this).attr("value"));
+            $.ajax({
+                type: 'get',
+                url: "{% url 'quailapp:create' netid %}",
+                data: { is_student : $(this).attr('value') },
+                success: function(data) {
+                    if (!data) {
+                        $('#submit_button').attr('disabled', true);
+                        if ($(this).attr('value') == "1") {
+                            $('#warning').html("    You are not a student!");
+                        }
+                        else {
+                            $('#warning').html("    You are not a lecturer!");
+                        }
+                    }
+                    else {
+                        $('#submit_button').attr('disabled', false);
+                        $('#warning').html("");
+                        $('#warning').html("");
+                    }
+                }
+            })
+                
+            
+        });
+});
+
+</script>
+
 <form action="/{{netid}}/create" method="post">
     {% csrf_token %}
     <label class="control-label">Name</label>
@@ -19,8 +54,11 @@
 	<label class="control-label">Who are you?</label>
 	<div class="radio"><label for="id_is_student_0"><input class="" id="id_is_student_0" name="is_student" required="required" title="" type="radio" value="0"> Lecturer</label></div>
 	<div class="radio"><label for="id_is_student_1"><input class="" id="id_is_student_1" name="is_student" required="required" title="" type="radio" value="1"> Student</label></div>
+    <div id="warning"></div>
 	{% buttons %}
-    	<button class="btn btn-primary right" type="submit" value="Submit">Submit</button>
+    	<button class="btn btn-primary right" type="submit" value="Submit" id="submit_button">Submit</button>
     {% endbuttons %}
 </form>
+
+
 {% endblock %}

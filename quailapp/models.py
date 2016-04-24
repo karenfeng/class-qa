@@ -4,15 +4,9 @@ import sys, os, cgi, urllib, re
 
 # Create your models here.
 
-# class QuailUser(models.Model):
-#   netid = models.TextField()
-#   first_name = models.TextField()
-#   last_name = models.TextField()
-#   is_student = models.BooleanField()
-#   #classes = models.ForeignField(Course, null=True)
+class AllNetids(models.Model):
+  all_netids = models.TextField()
 
-#   def __unicode__(self):
-#     return self.netid
 class QuailUserManager(BaseUserManager):
   #def create_user(self, netid, first_name, last_name, is_student, courses_by_name=None, password=None):
   def create_user(self, netid, first_name, last_name, is_student, courses_by_id=None, password=None):
