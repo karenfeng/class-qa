@@ -369,6 +369,7 @@ $(document).ready(function() {
 			var submitter = "{{q.submitter.netid}}";
 			var user = "{{user.netid}}";
 			
+
 			if (submitter == user) {
 				$('#edit_question{{q.id}}').show();
 			}
@@ -401,7 +402,7 @@ $(document).ready(function() {
 					url: "{% url 'quailapp:edit_question' q.id %}",
 					data: {text: $("#submit_edit{{q.id}}").val() },
 					success: function(data) {
-						$('#submit_edit_button{{q.id}}').css('visibility', 'hide');
+						$('#submit_edit_button{{q.id}}').css('visibility', 'hidden');
 						$('#edit_question{{q.id}}').show();
 						$("#question{{q.id}}").html(data);
 						q_text = data;
@@ -692,7 +693,7 @@ function check_ifanswered() {
 		success: function(data) {
 			if (data) {
 				$('#notification').html("");
-				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a>');
 				$(".dismiss").click(function(){
        				$("#notification").fadeOut("slow");
 });
@@ -733,7 +734,9 @@ $(document).ready(function() {
 
 
 <div id="notification" style="display: none;">
-	
+	<span class="dismiss">
+		<a title="dismiss this notification">x</a>
+	</span>
 </div>
 
 </ul>
