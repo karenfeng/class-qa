@@ -675,7 +675,7 @@ def answered_questions(request, course_id):
         now = datetime.datetime.now()
         for q in questions:
             try:
-                if (q.answer.created_on + timedelta(0, 10) >= now):
+                if (q.answer.created_on + timedelta(seconds=10) >= now):
                     q_ids.append(q.id)
             except:
                 pass

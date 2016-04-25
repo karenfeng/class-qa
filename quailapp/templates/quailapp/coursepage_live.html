@@ -691,7 +691,8 @@ function check_ifanswered() {
 		dataType: 'json',
 		success: function(data) {
 			if (data) {
-				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a>');
+				$('#notification').html("");
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
 				$(".dismiss").click(function(){
        				$("#notification").fadeOut("slow");
 });
@@ -732,9 +733,7 @@ $(document).ready(function() {
 
 
 <div id="notification" style="display: none;">
-	<span class="dismiss">
-		<a title="dismiss this notification">x</a>
-	</span>
+	
 </div>
 
 </ul>
