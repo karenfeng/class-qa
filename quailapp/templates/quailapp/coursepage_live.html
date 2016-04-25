@@ -691,14 +691,10 @@ function check_ifanswered() {
 		dataType: 'json',
 		success: function(data) {
 			if (data) {
-				console.log(data);
-				for (i = 0; i < data.length; i++) {
-					num++; 
-					$("#all_notifications").append('<li><div id="notification'+num+'" style="display: none;"><span id="dismiss'+num+'" href=""><a title="dismiss this notification">x</a></span></div></li>');
-					$("#notification"+num).fadeIn("slow").append('Your question was answered: ' + data[i].fields.text);
-					$("#notification"+num).attr("href", "/"+data[i].fields.id);
-					changed = true;
-				}	
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a>');
+				$(".dismiss").click(function(){
+       				$("#notification").fadeOut("slow");
+});
 			}
 
 			else {
@@ -712,17 +708,17 @@ function check_ifanswered() {
 	
 	
 }
-$(document).ajaxComplete(function() {
-	if (changed) {
-		for (i = 0; i <= num; i++) {
-			$('#dismiss'+i).on('click', function() {
+// $(document).ajaxComplete(function() {
+// 	if (changed) {
+// 		for (i = 0; i <= num; i++) {
+// 			$('#dismiss'+i).on('click', function() {
 
-				console.log("i can click"+i);
-				$("#notification"+(i-1)).fadeOut("slow");
-			});
-		}
-	}
-});
+// 				console.log("i can click"+i);
+// 				$("#notification"+(i-1)).fadeOut("slow");
+// 			});
+// 		}
+// 	}
+// });
 $(document).ready(function() {
 
 	setInterval(function() {
@@ -735,7 +731,11 @@ $(document).ready(function() {
  </script>
 
 
-<ul id="all_notifications">
+<div id="notification" style="display: none;">
+	<span class="dismiss">
+		<a title="dismiss this notification">x</a>
+	</span>
+</div>
 
 </ul>
 {% endblock %}
