@@ -64,7 +64,15 @@ img.centered {
   margin-right: auto
 }
 
-h1.dark, h2.dark, h3.dark, h4.dark, h5.dark, h6.dark, span.dark, p.dark, div.dark {
+h1.dark,
+h2.dark,
+h3.dark,
+h4.dark,
+h5.dark,
+h6.dark,
+span.dark,
+p.dark,
+div.dark {
   color: #F5F5F5;
 }
 
@@ -314,6 +322,12 @@ fieldset[disabled] .btn-secondary.active {
 
 .right {
   float: right;
+  display: inline;
+}
+
+.left {
+  float: left;
+  display: inline;
 }
 
 .no-pad {

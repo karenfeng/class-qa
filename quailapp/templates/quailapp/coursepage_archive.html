@@ -17,6 +17,7 @@
 Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endtime }}.
 </span>
 
+<<<<<<< Updated upstream
 <h3 class="centered dark">Archived Questions</h3>
 <p class="centered"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
 
@@ -34,6 +35,10 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 	</form>
 {% endfor %}
 
+=======
+<h3 class="dark centered">Archived Questions</h3>
+<p class="dark centered"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
+>>>>>>> Stashed changes
 
 {% if not user.is_student %}
 <span class="dropdown">
@@ -76,7 +81,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 </span>
 {% endif %}
 
-<span class="dropdown">
+<span class="dropdown left">
   <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Filter by...
     <span class="caret"></span>
@@ -102,6 +107,20 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 	</li>
   </ul>
 </span>
+<span class="left">
+	<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
+		{% csrf_token %}
+		<div class="input-group">
+		 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
+		 	<span class="input-group-btn">
+				<button type="submit" class="btn btn-secondary" value="Submit">
+					Search!
+				</button>
+			</span>
+		</div>
+	</form>
+</span>
+<br>
 
 {% if questions_pinned|length > 0 %}
 <h4 class="dark">Pinned questions</h4>
@@ -264,7 +283,11 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <br>
 <h4 class="dark">Submitted questions</h4>
 {% if questions|length == 0 %}
+<<<<<<< Updated upstream
 No Questions Found
+=======
+<p>There doesn't appear to be any questions for this class... :(</p>
+>>>>>>> Stashed changes
 <br>
 {% endif %}
 <ul>
