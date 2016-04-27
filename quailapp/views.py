@@ -225,12 +225,15 @@ def coursepage_live(request, course_id):
 
     if ('tag' in request.GET):
         tag = request.GET['tag']
-        questions_found = live_questions
-        question_ids_found = []
-        for question in questions_found:
-            if (re.search(re.escape(tag), question.tags)):
-                question_ids_found.append(question.id)
-        found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+        if (tag == 'all_tags'):
+            found_entries = live_questions
+        else:
+            questions_found = live_questions
+            question_ids_found = []
+            for question in questions_found:
+                if (re.search(re.escape(tag), question.tags)):
+                    question_ids_found.append(question.id)
+            found_entries = Question.objects.all().filter(pk__in=question_ids_found)
         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
         #return HttpResponse("HI")
@@ -342,12 +345,15 @@ def coursepage_archive(request, course_id):
 
     if ('tag' in request.GET):
         tag = request.GET['tag']
-        questions_found = archived_questions
-        question_ids_found = []
-        for question in questions_found:
-            if (re.search(re.escape(tag), question.tags)):
-                question_ids_found.append(question.id)
-        found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+        if (tag == 'all_tags'):
+            found_entries = archived_questions
+        else:
+            questions_found = archived_questions
+            question_ids_found = []
+            for question in questions_found:
+                if (re.search(re.escape(tag), question.tags)):
+                    question_ids_found.append(question.id)
+            found_entries = Question.objects.all().filter(pk__in=question_ids_found)
         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
 

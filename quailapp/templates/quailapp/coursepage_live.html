@@ -65,13 +65,28 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
+<h4>Search questions</h4>
+<span class="left">
+	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+		{% csrf_token %}
+		<div class="input-group">
+		 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
+		 	<span class="input-group-btn">
+				<button type="submit" class="btn btn-secondary" value="Submit">
+					Search!
+				</button>
+			</span>
+		</div>
+	</form>
+</span>
+<br>
+<br>
+<h4>Tags</h4>
 <form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-	<label for="id_q">Search:</label>
-	<input type="text" name="q" id="id_q"/>
-	<input type="submit" value="Submit"/>
+	<button type="submit" name="tag" id="all_tags" value= "all_tags" class= "btn-link" style="display: inline;">All
+	</button><br>
 </form>
-
-<div id="display_tags">
+<div id="display_tags">	
 	{% for tag in course.tag_set.all %}
 
 		<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class= "btn-link" style="display: inline;">{{ tag }}
@@ -680,7 +695,7 @@ $(document).ready(function() {
 	<div class="pagination">
 	    <span class="step-links">
 	    	{% if questions.has_previous %}
-	    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.previous_page_number }}">
+	    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
 		    		{% bootstrap_icon "chevron-left" %}
 				</a>
 			{% else %}
@@ -694,7 +709,7 @@ $(document).ready(function() {
 	        </span>
 
 	        {% if questions.has_next %}
-	    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.next_page_number }}">
+	    		<a class="btn btn-link btn-link-gray" href="?page={{ questions.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
 		    		{% bootstrap_icon "chevron-right" %}
 				</a>
 			{% else %}
