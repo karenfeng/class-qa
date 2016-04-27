@@ -212,7 +212,10 @@ def coursepage_live(request, course_id):
         found_entries = Question.objects.all().filter(pk__in=question_ids_found)
         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
-
+        #return HttpResponse("HI")
+        #return render(request, 'quailapp/temp.html', {'course': course, 'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        #'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+    
     # if a question is posted
     if request.method == 'POST':
         # if the user chooses a filter

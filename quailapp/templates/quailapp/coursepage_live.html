@@ -72,16 +72,41 @@ $(document).ready(function() {
 </form>
 
 {% for tag in course.tag_set.all %}
-	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-		<button type="submit" name="tag" id="id_tag" value= "{{ tag.id }}" class= "btn-link" style="display: inline;">{{ tag }}
-		</button>
-	</form>
+
+	<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class= "btn-link" style="display: inline;">{{ tag }}
+	</button>
 	{% if tag.submitter.netid == user.netid or not user.is_student %}
 	<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
 		{% csrf_token %}
 			<button type="submit" class="btn btn-link btn-link-red" style="display: inline;">delete</button>
 	</form>
 	{% endif %}
+
+	<script>
+		var tag_id = "";
+	</script>
+
+	<script>
+	// ajax for tags
+	$(document).ready(function() {
+		$(document).on('click','#id_tag{{tag.id}}', function(event) {
+			console.log('clicked');
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?tag={{tag.id}}" + " #all_questions");
+		tag_id = "{{tag.id}}";
+			// $.ajax({
+			// type: 'get',
+			// url: "{% url 'quailapp:coursepage_live' course.id %}",
+			// data: {tag : "{{tag.id}}"},
+			// success: function(data) {
+			// 	console.log(data);
+			// 	$('#all_questions').html(data);
+			// }
+
+			// })	
+		})
+		
+	})
+	</script>
 {% endfor %}
 
 {% if not user.is_student %}
@@ -679,8 +704,13 @@ function reload_pages() {
 
 	//console.log(editing);
 	if (!editing) {
-		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
 		console.log("reload");
+		if (tag_id == "") {
+			$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
+		}
+		else {
+			$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+		}
 	}
 	
 }
