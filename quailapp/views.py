@@ -129,15 +129,17 @@ def coursepage_live(request, course_id):
     live_day = False
     live_time = False
     days = course.days
+
     diff_days = 0
     diff_weeks = 0
     if (now.month >= 1 and now.month < 6):
         live_month = True
-    if (re.search(str(now.weekday()), course.days)):
+    if (re.search(str(now.weekday()), days)):
         live_day = True
     if (now.time() < course.endtime and now.time() > course.starttime):
         live_time = True
     if (live_month and live_day and live_time):
+        lecture_date = now.date()
         if (course.archive_type == 'every_other_lecture'):
             weekday = now.weekday()
             if (len(days) < 2):
@@ -154,7 +156,26 @@ def coursepage_live(request, course_id):
         elif (course.archive_type == 'every_lecture'):
             time_buffer = now - datetime.timedelta(hours=3)
             to_archive = True
-    
+    else:
+        last_lecture = -1
+        int_days = [-1] # buffer for the first day
+        for day in days:
+            int_days.append(int(day))
+        int_days.append(10) # a buffer for the last day
+        for i in range(len(int_days)-1):
+            if now.weekday() == int_days[i]:
+                last_lecture = int_days[i]
+                break
+            elif now.weekday() > int_days[i] and now.weekday() < int_days[i+1]:
+                if i == 0:
+                    last_lecture = int_days[i-2]
+                    break
+                else:
+                    last_lecture = int_days[i]
+                    break
+        diff = (now.weekday() - last_lecture) % 7
+        lecture_date = (now - datetime.timedelta(days=diff)).date()
+
     # if course isn't currently live, check for other archive types   
     if (course.archive_type == 'every_week'):
         time_buffer = now - datetime.timedelta(days=7)
@@ -182,7 +203,7 @@ def coursepage_live(request, course_id):
     # counting the number of stars in each feedback
     counter = [0] * 6
     for feedback in course.feedback_set.all():
-        if feedback.feedback_choice != '':
+        if feedback.feedback_choice != '' and feedback.is_live:
             count = int(feedback.feedback_choice)
             counter[count] += 1
         
@@ -292,7 +313,7 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form, 'counter': counter,
+    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form, 'counter': counter, 'lecture_date': lecture_date,
         'feedback_form': feedback_form, 'live_feedback': live_feedback, 'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
@@ -356,6 +377,13 @@ def coursepage_archive(request, course_id):
             course.archive_type = chosen_type
             course.save()
 
+    # counting the number of stars in each feedback
+    counter = [0] * 6
+    for feedback in course.feedback_set.all():
+        if feedback.feedback_choice != '' and not feedback.is_live:
+            count = int(feedback.feedback_choice)
+            counter[count] += 1
+
      # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
     page = request.GET.get('page')
@@ -368,7 +396,7 @@ def coursepage_archive(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
     return render(request, 'quailapp/coursepage_archive.html', {'course': course, 'archived_feedback': archived_feedback,
-        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user, 'counter': counter,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def delete_tag_from_coursepage(request, tag_id):

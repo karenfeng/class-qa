@@ -227,6 +227,9 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						{% endif %}
 						</span>
 					</p>
+					{% for tag in q.tags_as_list %}
+						<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
+					{% endfor %}
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
@@ -392,6 +395,10 @@ No Questions Found
 							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
 						{% endif %}
 						</span>
+						<br>
+						{% for tag in q.tags_as_list %}
+							<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
+						{% endfor %}
 					</p>
 				</div>
 				<div class="col-xs-1">
@@ -448,6 +455,13 @@ No Questions Found
 
 
 <h2 class="dark">Archived feedback</h2>
+<h4 class="dark">
+	{% for count in counter %}
+		{% if not forloop.first %}
+		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
+		{% endif %}
+	{% endfor %}
+</h4>
 <div class="scrollbox" id="feedback">
 <ul>
 {% for feedback in archived_feedback %}
@@ -461,7 +475,7 @@ No Questions Found
 			<br>
 			<span class="bold">How helpful was lecture?: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
 			<span class="unemph">Submitted on: {{ feedback.created_on }}
-			{% if not feedback.is_live %}Archived on: {{ feedback.archived_on }}{% endif %}
+			{% if not feedback.is_live %}<br>Archived on: {{ feedback.archived_on }}{% endif %}
 			</span>
 		</li>
 	</div>
