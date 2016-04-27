@@ -383,6 +383,12 @@ $(document).ready(function() {
 						</span>
 						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
+						{% if q.tags_as_list %}
+						<br>
+						{% for tag in q.tags_as_list %}
+							<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
+						{% endfor %}
+						{% endif %}
 					</p>
 				</div>
 				<div class="col-xs-1">
@@ -713,7 +719,7 @@ $(document).ready(function() {
 	</form>
 </div>
 
-<h2>Live Feedback</h2>
+<h2>Live Feedback for {{ lecture_date }}</h2>
 <h4>
 	{% for count in counter %}
 		{% if not forloop.first %}
