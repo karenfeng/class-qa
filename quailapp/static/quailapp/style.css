@@ -233,13 +233,13 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #F5F5F5;
 }
 
-.similar-question-box {
+.box-red {
   margin: 10px 0px 10px 0px;
   padding: 5px 10px 5px 10px;
   background-color: #EFC9b2;
 }
 
-.similar-question-box:hover, .similar-question-box:focus, .similar-question-box:active, .similar-question-box.active {
+.box-red:hover, .box-red:focus, .box-red:active, .box-red.active {
   background-color: #E5A57f;
 }
 

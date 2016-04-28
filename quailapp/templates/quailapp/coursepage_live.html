@@ -56,6 +56,13 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
+<div id="sim_question" class="box-red" style="display: none;">
+	<a href="" id="sim_question_link" class="question-box">
+		<h4 class="question">Is this similar to your question?</h4>
+		<p id="sim_question_text"></p>
+	</a>
+</div>
+
 <h4>Post a question!</h4>
 <div id="post_question">
 	<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
@@ -70,20 +77,13 @@ $(document).ready(function() {
 	</form>
 </div>
 
-<div id="sim_question" class="similar-question-box row" style="display: none;">
-	<a href="" id="sim_question_link" class="question-box">
-		<div class="col-xs-12">
-			<h4 class="question">Is this similar to your question?</h4>
-			<p id="sim_question_text"></p>
-		</div>
-	</a>
-</div>
-
 <br>
 
 {% if display_feedback and not provided_feedback %}
-<div class="box-static-dark red">
-	<a href="{% url 'quailapp:user_feedback' course.id %}"><h4 class="question">Provide feedback for the last lecture!</h4></a>
+<div class="box-red">
+	<a href="{% url 'quailapp:user_feedback' course.id %}" class="question-box">
+		<h4 class="question">Provide feedback for the last lecture!</h4>
+	</a>
 </div>
 <br>
 {% endif %}
