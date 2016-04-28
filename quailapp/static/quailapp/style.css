@@ -470,3 +470,7 @@ fieldset[disabled] .btn-secondary.active {
   font-size: 9px;
   color: white;
 }
+
+.input-group-btn button {
+  height: 34px;
+}
