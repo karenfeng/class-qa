@@ -37,11 +37,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <br>
 <br>
 <h4 class="dark">Tags</h4>
-<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
-	<button type="submit" name="tag" id="all_tags" value= "all_tags" class= "btn-link" style="display: inline;">All
-	</button><br>
-</form>
-
+<a href="{% url 'quailapp:coursepage_archive' course.id %}">All tags</a><br>
 <div id="display_tags">	
 	{% for tag in course.tag_set.all %}
 

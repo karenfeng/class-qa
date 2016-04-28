@@ -8,7 +8,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^index$', login_required(views.index), name='index'),
-    url(r'^get$', login_required(views.get_question), name='get'),
+    #url(r'^get$', login_required(views.get_question), name='get'), # deprecated
     url(r'^(?P<answer_id>[a-zA-Z0-9]+)/deleteans/$', login_required(views.delete_answer), name='deleteans'), # deletes answers assoc w/ question
     url(r'^(?P<question_id>[0-9][a-zA-Z0-9]+)/$', login_required(views.question_detail), name='detail'), # messy solution; question ids too long
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/vote/$', login_required(views.vote), name='vote'), # vote for a specific question
@@ -31,5 +31,7 @@ urlpatterns = [
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_question/$', login_required(views.edit_question), name='edit_question'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_answer/$', login_required(views.edit_answer), name='edit_answer'),
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/answered_questions/$', login_required(views.answered_questions), name='answered_questions'),
+    url(r'^(?P<course_id>[a-zA-Z0-9]+)/feedback/$', login_required(views.user_feedback), name='user_feedback'),
+    url(r'^(?P<feedback_id>[a-zA-Z0-9]+)/feedback/delete$', login_required(views.delete_feedback), name='delete_feedback'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

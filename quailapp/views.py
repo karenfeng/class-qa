@@ -30,7 +30,6 @@ def index(request):
         return redirect('/login')
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
-
     starredQuestions = Question.objects.filter(users_starred__contains=user.netid)
     return render(request, 'quailapp/index.html', {'user':user, 'courses':courses, 'starred_questions':starredQuestions})
 
@@ -123,6 +122,7 @@ def coursepage_live(request, course_id):
     # check if course is live
     user = request.user
     now = datetime.datetime.now()
+    display_feedback = True
 
     to_archive = False
     live_month = False
@@ -140,6 +140,9 @@ def coursepage_live(request, course_id):
         live_time = True
     if (live_month and live_day and live_time):
         lecture_date = now.date()
+        user.provided_feedback = False
+        user.save()
+        display_feedback = False
         if (course.archive_type == 'every_other_lecture'):
             weekday = now.weekday()
             if (len(days) < 2):
@@ -175,6 +178,9 @@ def coursepage_live(request, course_id):
                     break
         diff = (now.weekday() - last_lecture) % 7
         lecture_date = (now - datetime.timedelta(days=diff)).date()
+    # save the last lecture date to the course
+    course.last_lecture = lecture_date
+    course.save()
 
     # if course isn't currently live, check for other archive types   
     if (course.archive_type == 'every_week'):
@@ -201,11 +207,11 @@ def coursepage_live(request, course_id):
     questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
 
     # counting the number of stars in each feedback
-    counter = [0] * 6
-    for feedback in course.feedback_set.all():
-        if feedback.feedback_choice != '' and feedback.is_live:
-            count = int(feedback.feedback_choice)
-            counter[count] += 1
+    # counter = [0] * 6
+    # for feedback in course.feedback_set.all():
+    #     if feedback.feedback_choice != '' and feedback.is_live:
+    #         count = int(feedback.feedback_choice)
+    #         counter[count] += 1
         
     # search functionality for questions
     if ('q' in request.GET) and request.GET['q'].strip():
@@ -246,7 +252,7 @@ def coursepage_live(request, course_id):
         if ('filter' in request.POST):
             form = QuestionForm(tags=course.tag_set.all())
             tag_form = TagForm()
-            feedback_form = FeedbackForm()
+            #feedback_form = FeedbackForm()
             chosen_filter = request.POST['filter']
             if (chosen_filter == 'newest'):
                 user.chosen_filter = '-created_on'
@@ -267,7 +273,7 @@ def coursepage_live(request, course_id):
         else:
             form = QuestionForm(request.POST, tags=course.tag_set.all())
             tag_form = TagForm(request.POST)
-            feedback_form = FeedbackForm(request.POST)
+            #feedback_form = FeedbackForm(request.POST)
  
             if form.is_valid():
                 data = form.cleaned_data
@@ -287,22 +293,24 @@ def coursepage_live(request, course_id):
                 new_tag.save()
                 return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
 
-            if feedback_form.is_valid():
-                data = feedback_form.cleaned_data
+            # if feedback_form.is_valid():
+            #     data = feedback_form.cleaned_data
                 
-                choice = data['feedback_choice']
-                feedback = data['your_feedback']
+            #     choice = data['feedback_choice']
+            #     feedback = data['your_feedback']
 
-                if choice != '':
-                    counter[int(choice)] += 1
-                new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice)  
-                new_feedback.save()
-                return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
+            #     if choice != '':
+            #         counter[int(choice)] += 1
+            #     new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice)  
+            #     new_feedback.save()
+            #     user.provided_feedback = True
+            #     user.save()
+            #     return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
                 
     else:
         form = QuestionForm(tags=course.tag_set.all())
         tag_form = TagForm()
-        feedback_form = FeedbackForm()
+        #feedback_form = FeedbackForm()
 
      # view (unpinned) questions 5 at a time
     paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
@@ -316,8 +324,68 @@ def coursepage_live(request, course_id):
         # If page is out of range (e.g. 9999), deliver last page of results.
         questions = paginator.page(paginator.num_pages)
 
-    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form, 'counter': counter, 'lecture_date': lecture_date,
-        'feedback_form': feedback_form, 'live_feedback': live_feedback, 'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+    return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form,
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user, 'display_feedback': display_feedback,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+
+def user_feedback(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    user = request.user
+    user_feedback = user.feedback_set.all().filter(course=course)
+    # now = datetime.datetime.now()
+
+    # live_month = False
+    # live_day = False
+    # live_time = False
+    # days = course.days
+
+    # if (now.month >= 1 and now.month < 6):
+    #     live_month = True
+    # if (re.search(str(now.weekday()), days)):
+    #     live_day = True
+    # if (now.time() < course.endtime and now.time() > course.starttime):
+    #     live_time = True
+    # if (live_month and live_day and live_time):
+    #     lecture_date = now.date()
+    # else:
+    #     last_lecture = -1
+    #     int_days = [-1] # buffer for the first day
+    #     for day in days:
+    #         int_days.append(int(day))
+    #     int_days.append(10) # a buffer for the last day
+    #     for i in range(len(int_days)-1):
+    #         if now.weekday() == int_days[i]:
+    #             last_lecture = int_days[i]
+    #             break
+    #         elif now.weekday() > int_days[i] and now.weekday() < int_days[i+1]:
+    #             if i == 0:
+    #                 last_lecture = int_days[i-2]
+    #                 break
+    #             else:
+    #                 last_lecture = int_days[i]
+    #                 break
+    #     diff = (now.weekday() - last_lecture) % 7
+    #     lecture_date = (now - datetime.timedelta(days=diff)).date()
+
+    lecture_date = course.last_lecture
+    if request.method == 'POST':
+        feedback_form = FeedbackForm(request.POST)
+        if feedback_form.is_valid():
+            data = feedback_form.cleaned_data
+            
+            choice = data['feedback_choice']
+            feedback = data['your_feedback']
+            
+            new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice, lecture_date=lecture_date)  
+            new_feedback.save()
+            user.provided_feedback = True
+            user.save()
+            return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,))) 
+    else:
+        feedback_form = FeedbackForm()
+
+    return render(request, 'quailapp/user_feedback.html', {'course': course, 'lecture_date': lecture_date,
+        'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def coursepage_archive(request, course_id):
@@ -447,6 +515,18 @@ def delete_from_userinfo(request, question_id):
     question.delete()
     return HttpResponseRedirect(reverse('quailapp:userinfo'))
 
+def delete_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, pk=feedback_id)
+    user = request.user
+    course = feedback.course
+    last_lecture = course.last_lecture
+    lecture_date = feedback.lecture_date
+    if (last_lecture == lecture_date):
+        user.provided_feedback = False
+        user.save()
+    feedback.delete()
+    return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,)))
+
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -472,18 +552,22 @@ def question_detail(request, question_id):
     return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
-def get_question(request):
-    # otherwise can post a question
-    if request.method == 'POST':
-        form = QuestionForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            new_question = Question(text=data['your_question'], submitter=request.user, votes=0)
-            new_question.save()
-            return redirect('/index')
-    else:
-        form = QuestionForm()
-    return render(request, 'quailapp/question.html', {'form': form})
+# def get_question(request):
+#     # otherwise can post a question
+#     if request.method == 'POST':
+#         form = QuestionForm(request.POST)
+#         if form.is_valid():
+#             for tag in data['tags']:
+#                 tags = tags + '|' + tag.id
+#             new_question = Question(text=data['your_question'], course=course, submitter=user, votes=0, is_live=True, tags=tags)
+#             new_question.save()
+#             for tag in data['tags']:
+#                 tag.questions = tag.questions + '|' + new_question.id
+#                 tag.save()
+#         return redirect('/index')
+#     else:
+#         form = QuestionForm()
+#     return render(request, 'quailapp/question.html', {'form': form})
 
 # delete all the answers associated with a specific question
 def delete_answer(request, answer_id):

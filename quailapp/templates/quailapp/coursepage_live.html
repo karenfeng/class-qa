@@ -65,6 +65,12 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
+{% if display_feedback and not user.provided_feedback %}
+<div class="box-static-dark red">
+	<a href="{% url 'quailapp:user_feedback' course.id %}"><h4 class="question">Provide feedback for the last lecture!</h4></a>
+</div>
+{% endif %}
+
 <h4>Search questions</h4>
 <span class="left">
 	<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
@@ -82,10 +88,7 @@ $(document).ready(function() {
 <br>
 <br>
 <h4>Tags</h4>
-<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-	<button type="submit" name="tag" id="all_tags" value= "all_tags" class= "btn-link" style="display: inline;">All
-	</button><br>
-</form>
+<a href="{% url 'quailapp:coursepage_live' course.id %}">All tags</a><br>
 <div id="display_tags">	
 	{% for tag in course.tag_set.all %}
 
@@ -734,48 +737,6 @@ $(document).ready(function() {
 	</form>
 </div>
 
-<h2>Live Feedback for {{ lecture_date }}</h2>
-<h4>
-	{% for count in counter %}
-		{% if not forloop.first %}
-		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
-		{% endif %}
-	{% endfor %}
-</h4>
-<div class="scrollbox" id="feedback">
-<ul>
-{% for feedback in live_feedback %}
-	{% if comment.submitter == user %}
-	<div class="box-static-blue">
-	{% else %}
-	<div class="box-static-gray">
-	{% endif %}
-		<li>
-			{{ feedback }}
-			<br>
-			<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
-			<span class="unemph">Submitted on: {{ feedback.created_on }}
-			{% if not feedback.is_live %}Archived on: {{ feedback.archived_on }}{% endif %}
-			</span>
-		</li>
-	</div>
-{% endfor %}
-</ul>
-</div>
-
-
-<h3>Feedback</h3>
-On a scale of 1-5, how clear / helpful was lecture?
-<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
-    {% csrf_token %}
-      {% bootstrap_form feedback_form %}
-      <span class="input-group-btn">
-		{% buttons %}
-        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-		{% endbuttons %}
-      </span>
-</form>
-
 
 <script>
 	var num = 0;
@@ -809,7 +770,7 @@ function check_ifanswered() {
 				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
 				$(".dismiss").click(function(){
        				$("#notification").fadeOut("slow");
-});
+				});
 			}
 
 			else {

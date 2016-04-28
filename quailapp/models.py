@@ -33,7 +33,8 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_admin = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
-  chosen_filter = models.CharField(default='-votes', max_length=10) # kinda hack-y. maybe ajax will fix.
+  chosen_filter = models.CharField(default='-votes', max_length=10)
+  provided_feedback = models.BooleanField(default=False)
 
   courses_by_id = models.TextField(max_length=10)
 
@@ -79,6 +80,7 @@ class Course(models.Model):
   endtime = models.TimeField(null=False)
   days = models.CharField(max_length=10)
   archive_type = models.TextField(default='every_lecture') # allow profs to change how questions are archived
+  last_lecture = models.DateField(null=True)
 
   def days_as_list(self):
     weekdays = []
@@ -184,6 +186,7 @@ class Feedback(models.Model):
   course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
   is_live = models.BooleanField(default=True)
   feedback_choice = models.CharField(max_length=5, null=True)
+  lecture_date = models.DateField(null=True)
 
   class Meta:
       ordering = ['-created_on']
