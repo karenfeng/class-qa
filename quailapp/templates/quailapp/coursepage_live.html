@@ -65,7 +65,7 @@ $(document).ready(function() {
 <h3 class="centered red">Live Questions</h3>
 <p class="centered"><a class="centered" href="{% url 'quailapp:coursepage_archive' course.id %}">Archived Questions</a></p>
 
-{% if display_feedback and not user.provided_feedback %}
+{% if display_feedback and not provided_feedback %}
 <div class="box-static-dark red">
 	<a href="{% url 'quailapp:user_feedback' course.id %}"><h4 class="question">Provide feedback for the last lecture!</h4></a>
 </div>

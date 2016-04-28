@@ -31,6 +31,14 @@ def index(request):
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
     starredQuestions = Question.objects.filter(users_starred__contains=user.netid)
+
+    if request.method == 'POST':
+        feedback_id = request.POST['feedback']
+        feedback = Feedback.objects.get(pk=feedback_id)
+        feedback.is_live = False
+        feedback.save()
+        return HttpResponseRedirect(reverse('quailapp:index'))
+
     return render(request, 'quailapp/index.html', {'user':user, 'courses':courses, 'starred_questions':starredQuestions})
 
 # handles what happens when a user uses the vote form on a question
@@ -122,6 +130,7 @@ def coursepage_live(request, course_id):
     # check if course is live
     user = request.user
     now = datetime.datetime.now()
+    course_id_list = user.courses_by_id.split('|')
     display_feedback = True
 
     to_archive = False
@@ -140,8 +149,11 @@ def coursepage_live(request, course_id):
         live_time = True
     if (live_month and live_day and live_time):
         lecture_date = now.date()
-        user.provided_feedback = False
-        user.save()
+        for i in range(len(course_id_list)):
+            if course.courseid == course_id_list[i]:
+                new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
+                user.provided_feedback = new_provided_feedback
+                user.save()
         display_feedback = False
         if (course.archive_type == 'every_other_lecture'):
             weekday = now.weekday()
@@ -197,8 +209,8 @@ def coursepage_live(request, course_id):
     if (to_archive == True):
         updated_questions = course.question_set.all().filter(is_live=True, created_on__lte=time_buffer)
         updated_questions.update(is_live=False)
-        updated_feedback = course.feedback_set.all().filter(is_live=True, created_on__lte=time_buffer)
-        updated_feedback.update(is_live=False, archived_on=now.date())
+        # updated_feedback = course.feedback_set.all().filter(is_live=True, created_on__lte=time_buffer)
+        # updated_feedback.update(is_live=False, archived_on=now.date())
     
     # feedback and questions to display on live page
     live_questions = course.question_set.all().filter(is_live=True)
@@ -206,13 +218,15 @@ def coursepage_live(request, course_id):
     questions_pinned = live_questions.filter(is_pinned=True).order_by(user.chosen_filter)
     questions_unpinned = live_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
 
-    # counting the number of stars in each feedback
-    # counter = [0] * 6
-    # for feedback in course.feedback_set.all():
-    #     if feedback.feedback_choice != '' and feedback.is_live:
-    #         count = int(feedback.feedback_choice)
-    #         counter[count] += 1
-        
+    # checking if user has already submitted feedback for this course
+    provided_feedback = False
+    for i in range(len(course_id_list)):
+        if course.courseid == course_id_list[i]:
+            if user.provided_feedback[i] == '1':
+                provided_feedback = True
+            else:
+                provided_feedback = False      
+
     # search functionality for questions
     if ('q' in request.GET) and request.GET['q'].strip():
          query_string = request.GET['q']
@@ -326,12 +340,13 @@ def coursepage_live(request, course_id):
 
     return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user, 'display_feedback': display_feedback,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'provided_feedback': provided_feedback, 'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def user_feedback(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
     user_feedback = user.feedback_set.all().filter(course=course)
+    course_id_list = user.courses_by_id.split('|')
     # now = datetime.datetime.now()
 
     # live_month = False
@@ -378,14 +393,29 @@ def user_feedback(request, course_id):
             
             new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice, lecture_date=lecture_date)  
             new_feedback.save()
-            user.provided_feedback = True
-            user.save()
+
+            index = -1
+            for i in range(len(course_id_list)):
+                if course.courseid == course_id_list[i]:
+                    new_provided_feedback = user.provided_feedback[:i] + '1' + user.provided_feedback[i+1:]
+                    user.provided_feedback = new_provided_feedback
+                    user.save()
+
             return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,))) 
     else:
         feedback_form = FeedbackForm()
 
+    # checking if user has already submitted feedback for this course
+    provided_feedback = False
+    for i in range(len(course_id_list)):
+        if course.courseid == course_id_list[i]:
+            if user.provided_feedback[i] == '1':
+                provided_feedback = True
+            else:
+                provided_feedback = False
+
     return render(request, 'quailapp/user_feedback.html', {'course': course, 'lecture_date': lecture_date,
-        'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback,
+        'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback, 'provided_feedback': provided_feedback,
         'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def coursepage_archive(request, course_id):
@@ -521,11 +551,30 @@ def delete_feedback(request, feedback_id):
     course = feedback.course
     last_lecture = course.last_lecture
     lecture_date = feedback.lecture_date
+    course_id_list = user.courses_by_id.split('|')
     if (last_lecture == lecture_date):
-        user.provided_feedback = False
-        user.save()
+        for i in range(len(course_id_list)):
+            if course.courseid == course_id_list[i]:
+                new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
+                user.provided_feedback = new_provided_feedback
+                user.save()
     feedback.delete()
     return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,)))
+
+def archived_feedback(request):
+    user = request.user
+    archived_feedback = user.feedback_set.all().exclude(is_live=True)
+    courses = Course.objects.filter(courseid__in=user.course_id_list)
+
+    # counting the number of stars in each feedback
+    counter = [0] * 6
+    for course in courses:
+        for feedback in course.feedback_set.all():
+            if feedback.feedback_choice != '' and not feedback.is_live:
+                count = int(feedback.feedback_choice)
+                counter[count] += 1
+    return render(request, 'quailapp/archived_feedback.html', {'archived_feedback': archived_feedback,
+        'counter': counter, 'user': user, 'courses': courses})
 
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):

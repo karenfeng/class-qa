@@ -33,5 +33,6 @@ urlpatterns = [
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/answered_questions/$', login_required(views.answered_questions), name='answered_questions'),
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/feedback/$', login_required(views.user_feedback), name='user_feedback'),
     url(r'^(?P<feedback_id>[a-zA-Z0-9]+)/feedback/delete$', login_required(views.delete_feedback), name='delete_feedback'),
+    url(r'^archived_feedback$', login_required(views.archived_feedback), name='archived_feedback'),
     #url(r'^class$', views.register_class, name='class'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

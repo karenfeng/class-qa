@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block classes %}
+{% for course in courses %}
+<li>
+	<a href="{% url 'quailapp:coursepage_live' course.id %}">{{ course }}</a>
+</li>
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'quailapp:index' %}">
+{% bootstrap_icon "arrow-left"%} Dashboard
+</a>
+
+<h2>Archived Feedback for Lectured Courses</h2>
+<h4>
+	{% for count in counter %}
+		{% if not forloop.first %}
+		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
+		{% endif %}
+	{% endfor %}
+</h4>
+
+{% for course in courses %}
+	Feedback for {{course}}:<br>
+	{% if course.feedback_set.all|length == 0 %}
+		N/A<br>
+	{% else %}
+		{% for feedback in course.feedback_set.all %}
+			{% if not feedback.is_live %}
+			<li>
+				<div class="box-static-blue">
+				{{ feedback }}
+				<br>
+				<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
+				<span class="unemph">Submitted on: {{ feedback.created_on }}
+				for lecture on {{ feedback.lecture_date }}
+				</span>
+				</div>
+			</li>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+	<br>
+{% endfor %}
+
+{% endblock %}

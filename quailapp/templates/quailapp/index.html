@@ -50,16 +50,12 @@
 		</div>
 		<div class="scrollbox" "box-static">
 			{% for course in courses %}
-				Feedback for {{course}}:<br>
-				{% if course.feedback_set.all|length == 0 %}
-					N/A<br>
-				{% else %}
-					{% for feedback in user.feedback_set.all %}
-						{% if feedback.course == course %}
-						<li><a href="{% url 'quailapp:user_feedback' course.id %}">{{ feedback }}</a></li>
-						{% endif %}
-					{% endfor %}
-				{% endif %}
+				Feedback for {{course}}:<br>	
+				{% for feedback in user.feedback_set.all %}
+					{% if feedback.course == course %}
+					<li><a href="{% url 'quailapp:user_feedback' course.id %}">{{ feedback }}</a></li>
+					{% endif %}
+				{% endfor %}
 				<br>
 			{% endfor %}
 		</div>
@@ -76,6 +72,7 @@
 					N/A<br>
 				{% else %}
 					{% for feedback in course.feedback_set.all %}
+						{% if feedback.is_live %}
 						<li>
 							<div class="box-static-blue">
 							{{ feedback }}
@@ -84,13 +81,22 @@
 							<span class="unemph">Submitted on: {{ feedback.created_on }}
 							for lecture on {{ feedback.lecture_date }}
 							</span>
+							<br>
+							<small>
+								<form action="{% url 'quailapp:index' %}" method="post">
+								{% csrf_token %}
+						  			<button type="submit" name="feedback" value="{{feedback.id}}" class="btn-link btn-link-gray">Archive</button>
+								</form> 
+							</small>
 							</div>
 						</li>
+						{% endif %}
 					{% endfor %}
 				{% endif %}
 				<br>
 			{% endfor %}
 		</div>
+		<a href="{% url 'quailapp:archived_feedback' %}"><h4>Archived feedback</h4></a>
 
 		{% endif %}
 

@@ -34,7 +34,7 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
   chosen_filter = models.CharField(default='-votes', max_length=10)
-  provided_feedback = models.BooleanField(default=False)
+  provided_feedback = models.CharField(default="0000000000", max_length=10)
 
   courses_by_id = models.TextField(max_length=10)
 
@@ -60,6 +60,13 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
 
   def course_id_list(self):
     return self.courses_by_id.split('|')
+
+  # def provided_feedback(self):
+  #   courses_feedback = {}
+  #   course_id_list = self.courses_by_id.split('|')
+  #   for courseid in course_id_list:
+  #     courses_feedback[str(courseid)] = False
+  #   return courses_feedback
 
   def courses_as_list(self):
     course_list = []
