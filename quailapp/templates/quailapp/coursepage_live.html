@@ -122,10 +122,10 @@ $(document).ready(function() {
 					<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
 						{{ tag }}
 					</button>
-					</li>
 					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">delete</button><br>
+					<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">{% bootstrap_icon "remove" %}</button><br>
 					{% endif %}
+					</li>
 
 					<script>
 						var tag_id = "";
@@ -218,20 +218,6 @@ $(document).ready(function() {
 			</ul>
 		</span>
 
-		{% if not user.is_student %}
-		<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
-		    {% csrf_token %}
-		    <div class="input-group">
-		      <input id="id_your_tag" name="your_tag" type="text" class="form-control" placeholder="Add tag">
-		      <span class="input-group-btn">
-				{% buttons %}
-		        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-				{% endbuttons %}
-		      </span>
-		    </div>
-		</form>
-		{% endif %}
-
 		<span class="dropdown">
 		  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 		    Filter by...
@@ -258,6 +244,20 @@ $(document).ready(function() {
 			</li>
 		  </ul>
 		</span>
+
+		{% if not user.is_student %}
+		<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+		    {% csrf_token %}
+		    <div class="input-group">
+		      <input id="id_your_tag" name="your_tag" type="text" class="form-control" placeholder="Add tag">
+		      <span class="input-group-btn">
+				{% buttons %}
+		        	<button class="btn btn-secondary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+				{% endbuttons %}
+		      </span>
+		    </div>
+		</form>
+		{% endif %}
 	</div>
 </div>
 

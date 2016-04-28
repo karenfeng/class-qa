@@ -20,203 +20,204 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <h3 class="centered dark">Archived Questions</h3>
 <p class="centered dark"><a href="{% url 'quailapp:coursepage_live' course.id %}">Live Questions</a></p>
 
-<h4 class="dark">Search questions</h4>
-<span class="left">
-	<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
-		{% csrf_token %}
-		<div class="input-group">
-		 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
-		 	<span class="input-group-btn">
-				<button type="submit" class="btn btn-secondary" value="Submit">
-					Search!
-				</button>
-			</span>
-		</div>
-	</form>
-</span>
-<br>
-<br>
+<div class="row">
+	<div class="col-xs-8">
+		<span class="right">
+			<form method="get" action="{% url 'quailapp:coursepage_archive' course.id %}">
+				{% csrf_token %}
+				<div class="input-group">
+				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
+				 	<span class="input-group-btn">
+						<button type="submit" class="btn btn-secondary" value="Submit">
+							Search!
+						</button>
+					</span>
+				</div>
+			</form>
+		</span>
+	</div>
+	<div class="col-xs-4">
+		<span class="dropdown">
+		  	<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    	Tags...
+		    	<span class="caret"></span>
+		  	</button>
+		  	<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+				<li>
+					<button class="btn-link btn-link-gray" onclick="window.location.href='{% url 'quailapp:coursepage_archive' course.id %}'" style="display: inline;">
+						(All tags)
+					</button>
+				</li>
+				<div id="display_tags">	
+				{% for tag in course.tag_set.all %}
+					<li>
+					<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+						{{ tag }}
+					</button>
+					{% if tag.submitter.netid == user.netid or not user.is_student %}
+					<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">{% bootstrap_icon "remove" %}</button><br>
+					{% endif %}
+					</li>
 
-<span class="dropdown">
-  	<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    	Tags...
-    	<span class="caret"></span>
-  	</button>
-  	<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-		<li>
-			<button class="btn-link btn-link-gray" onclick="window.location.href='{% url 'quailapp:coursepage_archive' course.id %}'" style="display: inline;">
-				(All tags)
-			</button>
-		</li>
-		<div id="display_tags">	
-		{% for tag in course.tag_set.all %}
-			<li>
-			<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-				{{ tag }}
-			</button>
+					<script>
+						var tag_id = "";
+					</script>
+
+					<script>
+					// ajax for tags
+					$(document).ready(function() {
+
+						// filter by tag
+						$(document).on('click','#id_tag{{tag.id}}', function(event) {
+							console.log('clicked');
+						$('#all_questions').load("/{{course.id}}/coursepage_archive/?tag={{tag.id}}" + " #all_questions");
+						tag_id = "{{tag.id}}";
+						});
+
+						// delete tag 
+						$(document).on('click', '#delete_tag{{tag.id}}', function(event) {
+							$.ajax({
+								type: 'post',
+								url: "{% url 'quailapp:delete_tag_from_coursepage' tag.id %}",
+								success: function(data) {
+									if (tag_id == "") {
+										$('#display_tags').load("/{{course.id}}/coursepage_archive/" + " #display_tags");
+										$('#post_question').load("/{{course.id}}/coursepage_archive/" + " #post_question");
+									}
+									else {
+										$('#display_tags').load("/{{course.id}}/coursepage_archive/?tag="+tag_id + " #display_tags");
+										$('#post_question').load("/{{course.id}}/coursepage_archive/?tag=" + tag_id + " #post_question");
+									}
+									reload_pages();
+								}
+
+							});
+						});
+						// This function gets cookie with a given name
+					    function getCookie(name) {
+					        var cookieValue = null;
+					        if (document.cookie && document.cookie != '') {
+					            var cookies = document.cookie.split(';');
+					            for (var i = 0; i < cookies.length; i++) {
+					                var cookie = jQuery.trim(cookies[i]);
+					                // Does this cookie string begin with the name we want?
+					                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					                    break;
+					                }
+					            }
+					        }
+					        return cookieValue;
+					    }
+					    var csrftoken = getCookie('csrftoken');
+
+					    /*
+					    The functions below will create a header with csrftoken
+					    */
+
+					    function csrfSafeMethod(method) {
+					        // these HTTP methods do not require CSRF protection
+					        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+					    }
+					    function sameOrigin(url) {
+					        // test that a given url is a same-origin URL
+					        // url could be relative or scheme relative or absolute
+					        var host = document.location.host; // host + port
+					        var protocol = document.location.protocol;
+					        var sr_origin = '//' + host;
+					        var origin = protocol + sr_origin;
+					        // Allow absolute or scheme relative URLs to same origin
+					        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+					            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+					            // or any other URL that isn't scheme relative or absolute i.e relative.
+					            !(/^(\/\/|http:|https:).*/.test(url));
+					    }
+
+					    $.ajaxSetup({
+					        beforeSend: function(xhr, settings) {
+					            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+					                // Send the token to same-origin, relative URLs only.
+					                // Send the token only if the method warrants CSRF protection
+					                // Using the CSRFToken value acquired earlier
+					                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+					            }
+					        }
+					    });
+						
+					})
+					</script>
+				{% endfor %}
+			</ul>
+		</span>
+
+		<span class="dropdown">
+		  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    Filter by...
+		    <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+		    <li>
+		    	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post">
+				{% csrf_token %}
+		  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">{% if user.chosen_filter == "-created_on" %}<span class="unemph">Newest</span>{% else %}Newest{% endif %}</button>
+				</form> 
 			</li>
-			{% if tag.submitter.netid == user.netid or not user.is_student %}
-			<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">delete</button><br>
-			{% endif %}
-
-			<script>
-				var tag_id = "";
-			</script>
-
-			<script>
-			// ajax for tags
-			$(document).ready(function() {
-
-				// filter by tag
-				$(document).on('click','#id_tag{{tag.id}}', function(event) {
-					console.log('clicked');
-				$('#all_questions').load("/{{course.id}}/coursepage_archive/?tag={{tag.id}}" + " #all_questions");
-				tag_id = "{{tag.id}}";
-				});
-
-				// delete tag 
-				$(document).on('click', '#delete_tag{{tag.id}}', function(event) {
-					$.ajax({
-						type: 'post',
-						url: "{% url 'quailapp:delete_tag_from_coursepage' tag.id %}",
-						success: function(data) {
-							if (tag_id == "") {
-								$('#display_tags').load("/{{course.id}}/coursepage_archive/" + " #display_tags");
-								$('#post_question').load("/{{course.id}}/coursepage_archive/" + " #post_question");
-							}
-							else {
-								$('#display_tags').load("/{{course.id}}/coursepage_archive/?tag="+tag_id + " #display_tags");
-								$('#post_question').load("/{{course.id}}/coursepage_archive/?tag=" + tag_id + " #post_question");
-							}
-							reload_pages();
-						}
-
-					});
-				});
-				// This function gets cookie with a given name
-			    function getCookie(name) {
-			        var cookieValue = null;
-			        if (document.cookie && document.cookie != '') {
-			            var cookies = document.cookie.split(';');
-			            for (var i = 0; i < cookies.length; i++) {
-			                var cookie = jQuery.trim(cookies[i]);
-			                // Does this cookie string begin with the name we want?
-			                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-			                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-			                    break;
-			                }
-			            }
-			        }
-			        return cookieValue;
-			    }
-			    var csrftoken = getCookie('csrftoken');
-
-			    /*
-			    The functions below will create a header with csrftoken
-			    */
-
-			    function csrfSafeMethod(method) {
-			        // these HTTP methods do not require CSRF protection
-			        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-			    }
-			    function sameOrigin(url) {
-			        // test that a given url is a same-origin URL
-			        // url could be relative or scheme relative or absolute
-			        var host = document.location.host; // host + port
-			        var protocol = document.location.protocol;
-			        var sr_origin = '//' + host;
-			        var origin = protocol + sr_origin;
-			        // Allow absolute or scheme relative URLs to same origin
-			        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-			            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-			            // or any other URL that isn't scheme relative or absolute i.e relative.
-			            !(/^(\/\/|http:|https:).*/.test(url));
-			    }
-
-			    $.ajaxSetup({
-			        beforeSend: function(xhr, settings) {
-			            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-			                // Send the token to same-origin, relative URLs only.
-			                // Send the token only if the method warrants CSRF protection
-			                // Using the CSRFToken value acquired earlier
-			                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			            }
-			        }
-			    });
-				
-			})
-			</script>
-		{% endfor %}
-	</ul>
-</span>
-
-{% if not user.is_student %}
-<span class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    Archive by...
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
-    <li>
-		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_lecture" %}<span class="unemph">Every lecture</span>{% else %}Every lecture{% endif %}</button>
-		</form>
-	</li>
-    <li>
-		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_other_lecture" %}<span class="unemph">Every other lecture</span>{% else %}Every other lecture{% endif %}</button>
-		</form>
-	</li>
-    <li>
-		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">{% if course.archive_type == "every_week" %}<span class="unemph">Every week</span>{% else %}Every week{% endif %}</button>
-		</form>
-	</li>
-	<li>
-		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">{% if course.archive_type == "every_two_weeks" %}<span class="unemph">Every two weeks</span>{% else %}Every two weeks{% endif %}</button>
-		</form>
-	</li>
-	<li>
-		<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-			{% csrf_token %}
-			<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">{% if course.archive_type == "every_month" %}<span class="unemph">Every month</span>{% else %}Every month{% endif %}</button>
-		</form>
-	</li>
-  </ul>
-</span>
-{% endif %}
-
-<span class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    Filter by...
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li>
-    	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-		{% csrf_token %}
-  			<button type="submit" name="filter" value="newest" class="btn-link btn-link-gray">{% if user.chosen_filter == "-created_on" %}<span class="unemph">Newest</span>{% else %}Newest{% endif %}</button>
-		</form>
-	</li>
-    <li>
-    	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
-		{% csrf_token %}
-  			<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray">{% if user.chosen_filter == "created_on" %}<span class="unemph">Oldest</span>{% else %}Oldest{% endif %}</button>
-		</form>
-	</li>
-    <li>
-    	<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
- 		{% csrf_token %}
-  			<button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">{% if user.chosen_filter == "-votes" %}<span class="italic">Popularity</span>{% else %}Popularity{% endif %}</button>
-		</form>
-	</li>
-  </ul>
-</span>
+		    <li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post">
+					{% csrf_token %}
+				  	<button type="submit" name="filter" value="oldest" class="btn-link btn-link-gray">{% if user.chosen_filter == "created_on" %}<span class="unemph">Oldest</span>{% else %}Oldest{% endif %}</button>
+				</form>
+			</li>
+		    <li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post">
+				 	{% csrf_token %}
+				 	 <button type="submit" name="filter" value="votes" class="btn-link btn-link-gray">{% if user.chosen_filter == "-votes" %}<span class="italic">Popularity</span>{% else %}Popularity{% endif %}</button>
+				</form> 
+			</li>
+		  </ul>
+		</span>
+		{% if not user.is_student %}
+		<span class="dropdown">
+		  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    Archive by...
+		    <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+		    <li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+					{% csrf_token %}
+					<button type="submit" name="archive_type" value="every_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_lecture" %}<span class="unemph">Every lecture</span>{% else %}Every lecture{% endif %}</button>
+				</form>
+			</li>
+		    <li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+					{% csrf_token %}
+					<button type="submit" name="archive_type" value="every_other_lecture" class="btn-link btn-link-gray">{% if course.archive_type == "every_other_lecture" %}<span class="unemph">Every other lecture</span>{% else %}Every other lecture{% endif %}</button>
+				</form>
+			</li>
+		    <li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+					{% csrf_token %}
+					<button type="submit" name="archive_type" value="every_week" class="btn-link btn-link-gray">{% if course.archive_type == "every_week" %}<span class="unemph">Every week</span>{% else %}Every week{% endif %}</button>
+				</form>
+			</li>
+			<li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+					{% csrf_token %}
+					<button type="submit" name="archive_type" value="every_two_weeks" class="btn-link btn-link-gray">{% if course.archive_type == "every_two_weeks" %}<span class="unemph">Every two weeks</span>{% else %}Every two weeks{% endif %}</button>
+				</form>
+			</li>
+			<li>
+				<form action="{% url 'quailapp:coursepage_archive' course.id %}" method="post" style="display: inline;">
+					{% csrf_token %}
+					<button type="submit" name="archive_type" value="every_month" class="btn-link btn-link-gray">{% if course.archive_type == "every_month" %}<span class="unemph">Every month</span>{% else %}Every month{% endif %}</button>
+				</form>
+			</li>
+		  </ul>
+		</span>
+		{% endif %}
+	</div>
+</div>
 
 <div id="all_questions">
 {% if questions_pinned|length > 0 %}
@@ -324,9 +325,11 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						{% endif %}
 						</span>
 					</p>
+					{% if q.tags_as_list %}
 					{% for tag in q.tags_as_list %}
 						<span class="box-small">{{ tag }}</span>
 					{% endfor %}
+					{% endif %}
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
@@ -488,10 +491,12 @@ No Questions Found
 							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
 						{% endif %}
 						</span>
-						{% for tag in q.tags_as_list %}
-							<span class="box-small">{{ tag }}</span>
-						{% endfor %}
 					</p>
+					{% if q.tags_as_list %}
+					{% for tag in q.tags_as_list %}
+						<span class="box-small">{{ tag }}</span>
+					{% endfor %}
+					{% endif %}
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">

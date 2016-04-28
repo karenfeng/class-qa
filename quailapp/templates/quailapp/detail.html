@@ -213,6 +213,7 @@ $(document).ready(function() {
 
 {% else %}
 {% if not user.is_student %}
+<span class="unemph">Looks like there are no answers... submit an answer!</span>
 <form action="{% url 'quailapp:detail' question.id %}" method="post">
     {% csrf_token %}
     <div class="input-group">
@@ -224,7 +225,6 @@ $(document).ready(function() {
       </span>
     </div>
 </form>
-<span class="unemph">Looks like there are no answers... submit an answer!</span>
 {% else %}
 <span class="unemph">Aw, looks like there are no answers yet.</span>
 {% endif %}
