@@ -181,8 +181,8 @@ $(document).ready(function() {
 	</div>
 </div>
 
+<h3>Answer</h3>
 {% if question.answer %}
-	<h3>Answer</h3>
 	{% if question.answer.submitter == user %}
 	<div class="box-static-blue row">
 	{% else %}
@@ -224,31 +224,34 @@ $(document).ready(function() {
       </span>
     </div>
 </form>
-<h3>Looks like there are no answers... submit an answer!</h3>
+<span class="unemph">Looks like there are no answers... submit an answer!</span>
 {% else %}
-<br>
-<h4>Looks like there are no answers... but you're not a lecturer... so you can't answer hahahaha</h4>
+<span class="unemph">Aw, looks like there are no answers yet.</span>
 {% endif %}
 {% endif %}
 
-<div class="bold">Comments:</div>
-<ul>
-{% for comment in question.comment_set.all %}
-	{% if comment.submitter == user %}
-	<div class="box-static-blue">
-	{% else %}
-	<div class="box-static-gray">
-	{% endif %}
-		<li>
-			{{ comment }}
-			<br>
-		<span class="unemph">Submitted on: {{ comment.created_on }}
-			{% if not user.is_student %}by {{ comment.submitter.first_name }} {{ comment.submitter.last_name }} {% endif %}
-			</span>
-		</li>
-	</div>
-{% endfor %}
-</ul>
+<h3>Comments</h3>
+{% if question.comment_set.all %}
+	<ul>
+	{% for comment in question.comment_set.all %}
+		{% if comment.submitter == user %}
+		<div class="box-static-blue">
+		{% else %}
+		<div class="box-static-gray">
+		{% endif %}
+			<li>
+				{{ comment }}
+				<br>
+			<span class="unemph">Submitted on: {{ comment.created_on }}
+				{% if not user.is_student %}by {{ comment.submitter.first_name }} {{ comment.submitter.last_name }} {% endif %}
+				</span>
+			</li>
+		</div>
+	{% endfor %}
+	</ul>
+{% else %}
+	<span class="unemph">Aw, looks like there are no comments yet.</span>
+{% endif %}
 
 <br>
 <form action="{% url 'quailapp:detail' question.id %}" method="post">

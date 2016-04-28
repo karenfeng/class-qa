@@ -325,7 +325,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						</span>
 					</p>
 					{% for tag in q.tags_as_list %}
-						<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
+						<span class="box-small">{{ tag }}</span>
 					{% endfor %}
 				</div>
 				<div class="col-xs-1">
@@ -488,9 +488,8 @@ No Questions Found
 							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
 						{% endif %}
 						</span>
-						<br>
 						{% for tag in q.tags_as_list %}
-							<small>{{ tag }} {% if not forloop.last %}// {% endif %}</small>
+							<span class="box-small">{{ tag }}</span>
 						{% endfor %}
 					</p>
 				</div>
