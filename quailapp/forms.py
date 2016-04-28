@@ -17,7 +17,7 @@ class QuestionForm(forms.Form):
 		self.fields['your_question'] = forms.CharField(label='Your question', max_length=100)
 
 class FeedbackForm(forms.Form):
-	feedback_choice = forms.ChoiceField(widget=forms.RadioSelect(), label='', choices=FEEDBACK_CHOICES, required=False)
+	feedback_choice = forms.ChoiceField(widget=forms.RadioSelect(), label='', choices=FEEDBACK_CHOICES, required=True)
 	your_feedback = forms.CharField(label='Your feedback', max_length=200, required=False)
 
 class AnswerForm(forms.Form):

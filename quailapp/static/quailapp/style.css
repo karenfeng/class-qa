@@ -280,6 +280,14 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #DCDCDC;
 }
 
+.box-small {
+  border: 50px 0px 0px 0px;
+  padding: 5px 5px 5px 5px;
+  background-color: #607D8B;
+  font-size: 9px;
+  color: #FFFFFF;
+}
+
 .question-box {
   color: #000000;
 }
@@ -303,6 +311,10 @@ fieldset[disabled] .btn-secondary.active {
 .unemph {
   font-style: italic;
   color: #7A7A7A;
+}
+
+.italic {
+  font-style: italic;
 }
 
 .red {
@@ -427,4 +439,13 @@ fieldset[disabled] .btn-secondary.active {
     color:white;
     text-decoration:none;
     font-weight:bold
+}
+
+.radio-group label {
+  display: inline-block;
+  text-align: center;
+  margin: 0 0.2em;
+}
+.radio-group label input[type="radio"] {
+  display: block;
 }

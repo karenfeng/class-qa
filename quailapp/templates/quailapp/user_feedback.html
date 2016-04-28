@@ -23,12 +23,36 @@
 On a scale of 1-5, how clear / helpful was lecture?
 <form action="{% url 'quailapp:user_feedback' course.id %}" method="post">
     {% csrf_token %}
-      {% bootstrap_form feedback_form %}
-      <span class="input-group-btn">
+    <div class="form-group radio-group">
+      	<label for="id_feedback_choice_0">
+      		<input class="" id="id_feedback_choice_0" name="feedback_choice" title="" type="radio" value="1" required>
+      		1
+      	</label>
+		<label for="id_feedback_choice_1">
+			<input class="" id="id_feedback_choice_1" name="feedback_choice" title="" type="radio" value="2" required>
+			2
+		</label>
+		<label for="id_feedback_choice_2">
+			<input class="" id="id_feedback_choice_2" name="feedback_choice" title="" type="radio" value="3" required>
+			3
+		</label>
+		<label for="id_feedback_choice_3">
+			<input class="" id="id_feedback_choice_3" name="feedback_choice" title="" type="radio" value="4" required>
+			4
+		</label>
+		<label for="id_feedback_choice_4">
+			<input class="" id="id_feedback_choice_4" name="feedback_choice" title="" type="radio" value="5" required>
+			5
+		</label>
+	</div>
+	<div class="form-group">
+		<input class="form-control" id="id_your_feedback" maxlength="200" name="your_feedback" placeholder="Your feedback" title="" type="text">
+	</div>
+    <span class="input-group-btn">
 		{% buttons %}
         	<button class="btn btn-secondary{% if user.provided_feedback %} disabled{% endif %}" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
 		{% endbuttons %}
-      </span>
+    </span>
 </form>
 {% endif %}
 
@@ -37,19 +61,30 @@ On a scale of 1-5, how clear / helpful was lecture?
 {% for feedback in user_feedback %}
 	<div class="box-static-blue">
 		<li>
-			
-			{{ feedback }}
-			<br>
-			<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
-			<span class="unemph">Submitted on: {{ feedback.created_on }} for lecture on {{feedback.lecture_date}}
-			</span>
-			
-			<form action="{% url 'quailapp:delete_feedback' feedback.id %}" method="POST">
-			{% csrf_token %}
-				<button type="submit" class="btn btn-link btn-link-red">
-				{% bootstrap_icon "remove" %}
-			</button>
-			</form>
+			<div class="row">
+				<div class="col-xs-1">
+					<span>
+					{% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}/5{% endif %}
+					</span>
+				</div>
+				<div class="col-xs-10">
+					<span>
+						{% if not feedback.text %}N/A{%else %}{{ feedback }}{% endif %}
+					</span>
+					<br>
+					<span class="unemph">Submitted on: {{ feedback.created_on }}
+							for lecture on {{ feedback.lecture_date }}
+					</span>
+				</div>
+				<div class="col-xs-1">
+					<form action="{% url 'quailapp:delete_feedback' feedback.id %}" method="POST">
+					{% csrf_token %}
+						<button type="submit" class="btn btn-link btn-link-red">
+						{% bootstrap_icon "remove" %}
+					</button>
+					</form>
+				</div>
+			<div>
 		</li>
 
 	</div>
