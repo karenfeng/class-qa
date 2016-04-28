@@ -119,10 +119,12 @@ def pin(request, question_id):
     else:
         question.is_pinned = False
     question.save()
-    if (question.is_live == True):
-        return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(question.course.id,)))
-    else:
-        return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(question.course.id,)))
+    return HttpResponse("success")
+    
+    # if (question.is_live == True):
+    #     return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(question.course.id,)))
+    # else:
+    #     return HttpResponseRedirect(reverse('quailapp:coursepage_archive', args=(question.course.id,)))
 
 def coursepage_live(request, course_id):
 

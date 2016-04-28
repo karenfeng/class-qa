@@ -325,6 +325,21 @@ $(document).ready(function() {
 			})
 		})
 
+		//  FOR AJAX UNPINNING
+		$(document).on('click', '[name=pin{{q.id}}]', function(event) {
+			event.preventDefault();
+			$.ajax({
+				type: 'post', 
+				url: "{% url 'quailapp:pin' q.id %}",
+				data: {'pin': $(this).attr('value')},
+				success: function(data) {
+					console.log(data);
+					reload_pages();
+				}
+			});
+		});
+
+
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
 	        var cookieValue = null;
@@ -449,23 +464,21 @@ $(document).ready(function() {
 					{% endif %}
 					{% if not user.is_student %}
 						{% if q.is_pinned %}
-							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
-								{% csrf_token %}
-								<button class="btn btn-link right" type="submit" name="pin" id="unpin" value="0">
-									<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
-									onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
-									src="{% static "quailapp/unpin.png" %}" alt="Pin">
-								</button>
-							</form>
+							
+							<button class="btn btn-link right" type="submit" name="pin{{q.id}}" id="unpin" value="0">
+								<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
+								onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
+								src="{% static "quailapp/unpin.png" %}" alt="Pin">
+							</button>
+
 							{% else %}
-							<form action="{% url 'quailapp:pin' q.id %}" method="POST">
-								{% csrf_token %}
-								<button class="btn btn-link right" type="submit" name="pin" id="pin" value="1">
-									<img onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
-									onmouseout="this.src='{% static "quailapp/pin.png" %}'"
-									src="{% static "quailapp/pin.png" %}" alt="Pin">
-								</button>
-							</form>
+							
+							<button class="btn btn-link right" type="submit" name="pin{{q.id}}" id="pin" value="1">
+								<img onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
+								onmouseout="this.src='{% static "quailapp/pin.png" %}'"
+								src="{% static "quailapp/pin.png" %}" alt="Pin">
+							</button>
+
 						{% endif %}
 					{% endif %}
 				</div>
@@ -561,6 +574,20 @@ $(document).ready(function() {
 					}
 				})
 			})
+
+			//  FOR AJAX UNPINNING
+			$(document).on('click', '[name=pin{{q.id}}]', function(event) {
+				event.preventDefault();
+				$.ajax({
+					type: 'post', 
+					url: "{% url 'quailapp:pin' q.id %}",
+					data: {'pin': $(this).attr('value')},
+					success: function(data) {
+						console.log(data);
+						reload_pages();
+					}
+				});
+			});
 
 		    // This function gets cookie with a given name
 		    function getCookie(name) {
@@ -683,23 +710,19 @@ $(document).ready(function() {
 						{% endif %}
 						{% if not user.is_student %}
 							{% if q.is_pinned %}
-								<form action="{% url 'quailapp:pin' q.id %}" method="POST">
-									{% csrf_token %}
-									<button class="btn btn-link right" type="submit" name="pin" id="unpin" value="0">
+
+									<button class="btn btn-link right" type="submit" name="pin{{q.id}}" id="unpin" value="0">
 										<img onmouseover="this.src='{% static "quailapp/unpin-active.png" %}'"
 										onmouseout="this.src='{% static "quailapp/unpin.png" %}'"
 										src="{% static "quailapp/unpin.png" %}" alt="Pin">
 									</button>
-								</form>
 								{% else %}
-								<form action="{% url 'quailapp:pin' q.id %}" method="POST">
-									{% csrf_token %}
-									<button class="btn btn-link right" type="submit" name="pin" id="pin" value="1">
+							
+									<button class="btn btn-link right" type="submit" name="pin{{q.id}}" id="pin" value="1">
 										<img onmouseover="this.src='{% static "quailapp/pin-active.png" %}'"
 										onmouseout="this.src='{% static "quailapp/pin.png" %}'"
 										src="{% static "quailapp/pin.png" %}" alt="Pin">
 									</button>
-								</form>
 							{% endif %}
 						{% endif %}
 					</div>
