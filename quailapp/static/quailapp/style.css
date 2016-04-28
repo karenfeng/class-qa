@@ -280,6 +280,12 @@ fieldset[disabled] .btn-secondary.active {
   background-color: #DCDCDC;
 }
 
+.box-static-dark-padded {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 10px 5px 10px;
+  background-color: #DCDCDC;
+}
+
 .box-small {
   border: 30px 0px 50px 0px;
   padding: 2px 2px 2px 2px;

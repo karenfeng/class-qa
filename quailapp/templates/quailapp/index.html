@@ -67,24 +67,24 @@
 		{% else %}
 		<div class="box-static-dark">
 			<h5 class="centered">
-				Feedback
+				Feedback <a href="{% url 'quailapp:archived_feedback' %}">(archived)</a>
 			</h5>
 		</div>
-		<div class="scrollbox" "box-static">
+		<div class="scrollbox box-static">
 			{% for course in courses %}
-				Feedback for {{course}}:<br>
+				<span class="italic">{{course}}</span>
+				<br>
 				{% if course.feedback_set.all|length == 0 %}
 					N/A<br>
 				{% else %}
 					{% for feedback in course.feedback_set.all %}
 						{% if feedback.is_live %}
 						<li>
-							<div class="box-static-blue">
-							{{ feedback }}
+							<div class="box-static-dark-padded">
+							{% if not feedback.text %}N/A{% else %}{{ feedback }}{% endif %}
 							<br>
-							<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
-							<span class="unemph">Submitted on: {{ feedback.created_on }}
-							for lecture on {{ feedback.lecture_date }}
+							<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}/5{% endif %}</span><br>
+							<span class="unemph">Lecture on {{ feedback.lecture_date }}
 							</span>
 							<br>
 							<small>
@@ -98,10 +98,8 @@
 						{% endif %}
 					{% endfor %}
 				{% endif %}
-				<br>
 			{% endfor %}
 		</div>
-		<a href="{% url 'quailapp:archived_feedback' %}"><h4>Archived feedback</h4></a>
 
 		{% endif %}
 
