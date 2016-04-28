@@ -282,6 +282,43 @@ $(document).ready(function() {
 		}
 	})
 	$(document).ready(function() {
+
+			//DROP DOWN ANSWER
+			var req; // global variable for the ajax request
+			//expand
+			$('#answers{{q.id}}').hover(function() {
+				event.preventDefault();
+
+			//extend div to fit answer
+			$(this).finish().animate({
+	        height: '150px'
+	    	}, 300);
+
+			//make the ajax request
+	    	req = $.ajax({
+				url : "{% url 'quailapp:answer' q.id %}",
+				type : "get",
+				data : {ans: $(this).attr("id_your_answer") },
+				async: true,
+				success: function (data) {
+				final_ans = "Answer: " + data;
+	    		// replace answer
+				$("#hide_ans{{q.id}}").html(final_ans);
+				$("#hide_ans{{q.id}}").show(data);
+			}
+		})
+	    	// hide the answer and shrink the div
+			}, function() {
+				// if the ajax request hasn't been completed yet, abort
+				if(req && req.readyState != 4) {
+            		req.abort();
+            	}
+				$("#hide_ans{{q.id}}").hide();
+	    		$(this).animate({
+	        		height: '75px'
+	    		}, 300);
+			});
+
 		var q_text = "{{q.text}}";
 
 		// click edit button
@@ -415,7 +452,7 @@ $(document).ready(function() {
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
-		<div class="box row">
+		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
 			<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 				<div class="col-xs-1">
@@ -434,8 +471,8 @@ $(document).ready(function() {
 						{% endbuttons %}
 					</form>
 				</div>
-				<div class="col-xs-10">
-					<p class="question">
+				<div id='answers{{q.id}}' class="col-xs-10">
+					<p id='answers{{q.id}}' class="question">
 						<span class="input-group">
 					      	<span id="question{{q.id}}">{{ q.text }}</span>
 					      	<span class="input-group-btn">
@@ -454,6 +491,8 @@ $(document).ready(function() {
 						{% endfor %}
 						{% endif %}
 					</p>
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
@@ -531,6 +570,43 @@ $(document).ready(function() {
 			}
 		})
 		$(document).ready(function() {
+
+			//DROP DOWN ANSWER
+			var req; // global variable for the ajax request
+			//expand
+			$('#answers{{q.id}}').hover(function() {
+				event.preventDefault();
+
+			//extend div to fit answer
+			$(this).finish().animate({
+	        height: '150px'
+	    	}, 300);
+
+			//make the ajax request
+	    	req = $.ajax({
+				url : "{% url 'quailapp:answer' q.id %}",
+				type : "get",
+				data : {ans: $(this).attr("id_your_answer") },
+				async: true,
+				success: function (data) {
+				final_ans = "Answer: " + data;
+	    		// replace answer
+				$("#hide_ans{{q.id}}").html(final_ans);
+				$("#hide_ans{{q.id}}").show(data);
+			}
+		})
+	    	// hide the answer and shrink the div
+			}, function() {
+				// if the ajax request hasn't been completed yet, abort
+				if(req && req.readyState != 4) {
+            		req.abort();
+            	}
+				$("#hide_ans{{q.id}}").hide();
+	    		$(this).animate({
+	        		height: '75px'
+	    		}, 300);
+			});
+
 
 			var q_text = "{{q.text}}";
 			// click edit button
@@ -662,7 +738,7 @@ $(document).ready(function() {
 			{% if q.submitter.netid == user.netid %}
 			<div class="box-blue row">
 			{% else %}
-			<div class="box row">
+			<div id='answers{{q.id}}' class="box row">
 			{% endif %}
 				<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 					<div class="col-xs-1">
@@ -681,8 +757,8 @@ $(document).ready(function() {
 							{% endbuttons %}
 						</form>
 					</div>
-					<div class="col-xs-10">
-						<p class="question">
+					<div id='answers{{q.id}}' class="col-xs-10">
+						<p id='answers{{q.id}}' class="question">
 							<span class="input-group">
 						      	<span id="question{{q.id}}">{{ q.text }}</span>
 						      	<span class="input-group-btn">
@@ -700,6 +776,8 @@ $(document).ready(function() {
 						{% for tag in q.tags_as_list %}
 							<span class="box-small">{{ tag }}</span>
 						{% endfor %}
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 					</div>
 					<div class="col-xs-1">
 						<form method="POST">

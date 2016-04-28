@@ -240,6 +240,43 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 				}
 			})
 		})
+
+			//DROP DOWN ANSWER
+			var req; // global variable for the ajax request
+			//expand
+			$('#answers{{q.id}}').hover(function() {
+				event.preventDefault();
+
+			//extend div to fit answer
+			$(this).finish().animate({
+	        height: '150px'
+	    	}, 300);
+
+			//make the ajax request
+	    	req = $.ajax({
+				url : "{% url 'quailapp:answer' q.id %}",
+				type : "get",
+				data : {ans: $(this).attr("id_your_answer") },
+				async: true,
+				success: function (data) {
+				final_ans = "Answer: " + data;
+	    		// replace answer
+				$("#hide_ans{{q.id}}").html(final_ans);
+				$("#hide_ans{{q.id}}").show(data);
+			}
+		})
+	    	// hide the answer and shrink the div
+			}, function() {
+				// if the ajax request hasn't been completed yet, abort
+				if(req && req.readyState != 4) {
+            		req.abort();
+            	}
+				$("#hide_ans{{q.id}}").hide();
+	    		$(this).animate({
+	        		height: '75px'
+	    		}, 300);
+			});
+
 		
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
@@ -297,7 +334,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
-		<div class="box row">
+		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
 			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
 				<div class="col-xs-1">
@@ -316,8 +353,8 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						{% endbuttons %}
 					</form>
 				</div>
-				<div class="col-xs-10">
-					<p class="question">
+				<div id='answers{{q.id}}' class="col-xs-10">
+					<p id='answers{{q.id}}' class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}
 						{% if not user.is_student %}
@@ -325,6 +362,8 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						{% endif %}
 						</span>
 					</p>
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 					{% if q.tags_as_list %}
 					{% for tag in q.tags_as_list %}
 						<span class="box-small">{{ tag }}</span>
@@ -408,6 +447,43 @@ No Questions Found
 			})
 		})
 		
+			//DROP DOWN ANSWER
+			var req; // global variable for the ajax request
+			//expand
+			$('#answers{{q.id}}').hover(function() {
+				event.preventDefault();
+
+			//extend div to fit answer
+			$(this).finish().animate({
+	        height: '150px'
+	    	}, 300);
+
+			//make the ajax request
+	    	req = $.ajax({
+				url : "{% url 'quailapp:answer' q.id %}",
+				type : "get",
+				data : {ans: $(this).attr("id_your_answer") },
+				async: true,
+				success: function (data) {
+				final_ans = "Answer: " + data;
+	    		// replace answer
+				$("#hide_ans{{q.id}}").html(final_ans);
+				$("#hide_ans{{q.id}}").show(data);
+			}
+		})
+	    	// hide the answer and shrink the div
+			}, function() {
+				// if the ajax request hasn't been completed yet, abort
+				if(req && req.readyState != 4) {
+            		req.abort();
+            	}
+				$("#hide_ans{{q.id}}").hide();
+	    		$(this).animate({
+	        		height: '75px'
+	    		}, 300);
+			});
+
+
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
 	        var cookieValue = null;
@@ -464,7 +540,7 @@ No Questions Found
 		{% if q.submitter.netid == user.netid %}
 		<div class="box-blue row">
 		{% else %}
-		<div class="box row">
+		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
 			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">	
 				<div class="col-xs-1">
@@ -483,8 +559,8 @@ No Questions Found
 						{% endbuttons %}
 					</form>
 				</div>
-				<div class="col-xs-10">
-					<p class="question">
+				<div id='answers{{q.id}}' class="col-xs-10">
+					<p id='answers{{q.id}}' class="question">
 						{{ q.text }}<br>
 						<span class="unemph">{{ q.created_on }}
 						{% if not user.is_student %}
@@ -492,6 +568,8 @@ No Questions Found
 						{% endif %}
 						</span>
 					</p>
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 					{% if q.tags_as_list %}
 					{% for tag in q.tags_as_list %}
 						<span class="box-small">{{ tag }}</span>
