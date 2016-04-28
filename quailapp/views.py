@@ -548,13 +548,18 @@ def archived_feedback(request):
 
     # counting the number of stars in each feedback
     counter = [0] * 6
+    percents = [0] * 6
+    total = 0.0
     for course in courses:
         for feedback in course.feedback_set.all():
             if feedback.feedback_choice != '' and not feedback.is_live:
                 count = int(feedback.feedback_choice)
                 counter[count] += 1
+                total += 1
+    for count in range(1,6):
+        percents[count] = int((counter[count]/total)*100)
     return render(request, 'quailapp/archived_feedback.html', {'archived_feedback': archived_feedback,
-        'counter': counter, 'user': user, 'courses': courses})
+        'counter': counter, 'percents': percents, 'total': int(total), 'user': user, 'courses': courses})
 
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):

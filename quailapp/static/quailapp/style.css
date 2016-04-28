@@ -455,3 +455,18 @@ fieldset[disabled] .btn-secondary.active {
 .radio-group label input[type="radio"] {
   display: block;
 }
+
+.chart {
+  background-color: #F5F5F5;
+  padding: 5px 5px 5px 5px;
+}
+
+.chart div {
+  display: inline-block;
+  background-color: #607D8B;
+  text-align: right;
+  padding: 6px;
+  margin: 1px;
+  font-size: 9px;
+  color: white;
+}

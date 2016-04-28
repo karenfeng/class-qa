@@ -15,16 +15,22 @@
 </a>
 
 <h2>Archived Feedback for Lectured Courses</h2>
-<h4>
-	{% for count in counter %}
+
+<h4>Stats</h4>
+<span>Total feedback given: {{ total }}</span>
+<br>
+<span>Score distribution:</span>
+<div class="chart">
+	{% for percent in percents %}
 		{% if not forloop.first %}
-		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
-		{% endif %}
-	{% endfor %}
-</h4>
+  		<div style="width: {{ percent }}%;">{{ forloop.counter0 }}</div> {{ percent }}%
+  		<br>
+  		{% endif %}
+  	{% endfor %}
+</div>
 
 {% for course in courses %}
-	Feedback for {{course}}:<br>
+	<h4>{{course}}</h4>
 	{% if course.feedback_set.all|length == 0 %}
 		N/A<br>
 	{% else %}
