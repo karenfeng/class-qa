@@ -784,15 +784,14 @@ $(document).ready(function() {
 function reload_pages() {
 
 	//console.log(editing);
-	if (!editing) {
-		console.log("reload");
-		if (tag_id == "") {
-			$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
-		}
-		else {
-			$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
-		}
+	console.log("reload");
+	if (tag_id == "") {
+		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
 	}
+	else {
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+	}
+
 	
 }
 function check_ifanswered() {
@@ -835,9 +834,10 @@ function check_ifanswered() {
 $(document).ready(function() {
 
 	setInterval(function() {
-		reload_pages();
-		check_ifanswered();
-		
+		if (!editing) {
+			reload_pages();
+			check_ifanswered();
+		}
 	}, 10000);
 
 })
