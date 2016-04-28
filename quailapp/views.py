@@ -179,7 +179,16 @@ def coursepage_live(request, course_id):
         int_days.append(10) # a buffer for the last day
         for i in range(len(int_days)-1):
             if now.weekday() == int_days[i]:
-                last_lecture = int_days[i]
+                if now.time() < course.starttime:
+                    if len(days) == 1:
+                        last_lecture = -1
+                    else:
+                        if i == 1:
+                            last_lecture = int_days[i-3]
+                        else:
+                            last_lecture = int_days[i-1]
+                elif now.time() > course.endtime:
+                    last_lecture = int_days[i]
                 break
             elif now.weekday() > int_days[i] and now.weekday() < int_days[i+1]:
                 if i == 0:
@@ -189,7 +198,10 @@ def coursepage_live(request, course_id):
                     last_lecture = int_days[i]
                     break
         diff = (now.weekday() - last_lecture) % 7
+        if last_lecture == -1:
+            diff = 7
         lecture_date = (now - datetime.timedelta(days=diff)).date()
+    
     # save the last lecture date to the course
     course.last_lecture = lecture_date
     course.save()
@@ -830,8 +842,6 @@ def edit_answer(request, question_id):
         question.answer.save()
 
         return HttpResponse(question.answer.text)
-
-
 
 
 def answered_questions(request, course_id):
