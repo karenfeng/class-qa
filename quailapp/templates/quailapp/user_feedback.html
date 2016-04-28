@@ -16,7 +16,7 @@
 
 
 <h3>Feedback for {{lecture_date}}</h3>
-{% if user.provided_feedback %}
+{% if provided_feedback %}
 <h5>You have already provided feedback for the last lecture, thank you!</h5>
 <br>
 {% else %}
@@ -50,7 +50,7 @@ On a scale of 1-5, how clear / helpful was lecture?
 	</div>
     <span class="input-group-btn">
 		{% buttons %}
-        	<button class="btn btn-secondary{% if user.provided_feedback %} disabled{% endif %}" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+        	<button class="btn btn-secondary{% if provided_feedback %} disabled{% endif %}" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
 		{% endbuttons %}
     </span>
 </form>

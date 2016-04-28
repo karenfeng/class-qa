@@ -547,35 +547,6 @@ No Questions Found
 </ul>
 </div>
 
-<h2 class="dark">Archived feedback</h2>
-<h4 class="dark">
-	{% for count in counter %}
-		{% if not forloop.first %}
-		{{ forloop.counter0 }} star: {{ count }}{% if not forloop.last %} // {% endif %}
-		{% endif %}
-	{% endfor %}
-</h4>
-<div class="scrollbox" id="feedback">
-<ul>
-{% for feedback in archived_feedback %}
-	{% if comment.submitter == user %}
-	<div class="box-static-blue">
-	{% else %}
-	<div class="box-static-gray">
-	{% endif %}
-		<li>
-			{{ feedback }}
-			<br>
-			<span class="bold">How helpful was lecture?: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
-			<span class="unemph">Submitted on: {{ feedback.created_on }}
-			{% if not feedback.is_live %}<br>Archived on: {{ feedback.archived_on }}{% endif %}
-			</span>
-		</li>
-	</div>
-{% endfor %}
-</ul>
-</div>
-
 <div class="pagination dark">
     <span class="step-links">
     	{% if questions.has_previous %}
