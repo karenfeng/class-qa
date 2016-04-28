@@ -31,13 +31,21 @@
 		{% for feedback in course.feedback_set.all %}
 			{% if not feedback.is_live %}
 			<li>
-				<div class="box-static-blue">
-				{{ feedback }}
-				<br>
-				<span class="bold">Quality of lecture: {% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}{% endif %}</span><br>
-				<span class="unemph">Submitted on: {{ feedback.created_on }}
-				for lecture on {{ feedback.lecture_date }}
-				</span>
+				<div class="box-static-gray row">
+					<div class="col-xs-1">
+						<span>
+						{% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}/5{% endif %}
+						</span>
+					</div>
+					<div class="col-xs-11">
+						<span>
+							{% if not feedback.text %}N/A{%else %}{{ feedback }}{% endif %}
+						</span>
+						<br>
+						<span class="unemph">Submitted on: {{ feedback.created_on }}
+								for lecture on {{ feedback.lecture_date }}
+						</span>
+					</div>
 				</div>
 			</li>
 			{% endif %}

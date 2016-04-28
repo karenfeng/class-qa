@@ -59,36 +59,32 @@ On a scale of 1-5, how clear / helpful was lecture?
 <h4>Your past feedback given for {{ course }}</h4>
 <ul>
 {% for feedback in user_feedback %}
-	<div class="box-static-blue">
-		<li>
-			<div class="row">
-				<div class="col-xs-1">
-					<span>
-					{% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}/5{% endif %}
-					</span>
-				</div>
-				<div class="col-xs-10">
-					<span>
-						{% if not feedback.text %}N/A{%else %}{{ feedback }}{% endif %}
-					</span>
-					<br>
-					<span class="unemph">Submitted on: {{ feedback.created_on }}
-							for lecture on {{ feedback.lecture_date }}
-					</span>
-				</div>
-				<div class="col-xs-1">
-					<form action="{% url 'quailapp:delete_feedback' feedback.id %}" method="POST">
-					{% csrf_token %}
-						<button type="submit" class="btn btn-link btn-link-red">
-						{% bootstrap_icon "remove" %}
-					</button>
-					</form>
-				</div>
-			<div>
-		</li>
-
-	</div>
-	
+	<li>
+		<div class="box-static-blue row">
+			<div class="col-xs-1">
+				<span>
+				{% if not feedback.feedback_choice %}N/A{%else %}{{ feedback.feedback_choice }}/5{% endif %}
+				</span>
+			</div>
+			<div class="col-xs-10">
+				<span>
+					{% if not feedback.text %}N/A{%else %}{{ feedback }}{% endif %}
+				</span>
+				<br>
+				<span class="unemph">Submitted on: {{ feedback.created_on }}
+						for lecture on {{ feedback.lecture_date }}
+				</span>
+			</div>
+			<div class="col-xs-1">
+				<form action="{% url 'quailapp:delete_feedback' feedback.id %}" method="POST">
+				{% csrf_token %}
+					<button type="submit" class="btn btn-link btn-link-red">
+					{% bootstrap_icon "remove" %}
+				</button>
+				</form>
+			</div>
+		</div>
+	</li>
 {% endfor %}
 </ul>
 {% endblock %}
