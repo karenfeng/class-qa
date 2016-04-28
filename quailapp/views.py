@@ -152,13 +152,9 @@ def coursepage_live(request, course_id):
         live_time = True
     if (live_month and live_day and live_time):
         lecture_date = now.date()
+        # update the provided feedback to False with new lecture
         feedback_for_course.provided_feedback = False
         feedback_for_course.save()
-        # for i in range(len(course_id_list)):
-        #     if course.courseid == course_id_list[i]:
-        #         new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
-        #         user.provided_feedback = new_provided_feedback
-        #         user.save()
         display_feedback = False
         if (course.archive_type == 'every_other_lecture'):
             weekday = now.weekday()
@@ -177,6 +173,7 @@ def coursepage_live(request, course_id):
             time_buffer = now - datetime.timedelta(hours=3)
             to_archive = True
     else:
+        # find out when the last lecture was
         last_lecture = -1
         int_days = [-1] # buffer for the first day
         for day in days:
@@ -203,6 +200,7 @@ def coursepage_live(request, course_id):
                     last_lecture = int_days[i]
                     break
         diff = (now.weekday() - last_lecture) % 7
+        # if the class only meets once a week, default to the last week's lecture
         if last_lecture == -1:
             diff = 7
         lecture_date = (now - datetime.timedelta(days=diff)).date()
@@ -210,6 +208,14 @@ def coursepage_live(request, course_id):
     # save the last lecture date to the course
     course.last_lecture = lecture_date
     course.save()
+
+    # check if the user has any feedback before the last lecture
+    if (len(user.feedback_set.filter(course=course, lecture_date__gte=lecture_date)) > 0):
+        feedback_for_course.provided_feedback = True
+        feedback_for_course.save()
+    else:
+        feedback_for_course.provided_feedback = False
+        feedback_for_course.save()
 
     # if course isn't currently live, check for other archive types   
     if (course.archive_type == 'every_week'):
@@ -308,7 +314,6 @@ def coursepage_live(request, course_id):
         else:
             form = QuestionForm(request.POST, tags=course.tag_set.all())
             tag_form = TagForm(request.POST)
-            #feedback_form = FeedbackForm(request.POST)
  
             if form.is_valid():
                 data = form.cleaned_data
@@ -327,21 +332,6 @@ def coursepage_live(request, course_id):
                 new_tag = Tag(text=data['your_tag'], course=course, submitter=request.user)
                 new_tag.save()
                 return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
-
-            # if feedback_form.is_valid():
-            #     data = feedback_form.cleaned_data
-                
-            #     choice = data['feedback_choice']
-            #     feedback = data['your_feedback']
-
-            #     if choice != '':
-            #         counter[int(choice)] += 1
-            #     new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice)  
-            #     new_feedback.save()
-            #     user.provided_feedback = True
-            #     user.save()
-            #     return HttpResponseRedirect(reverse('quailapp:coursepage_live', args=(course.id,))) 
-                
     else:
         form = QuestionForm(tags=course.tag_set.all())
         tag_form = TagForm()
@@ -367,45 +357,17 @@ def user_feedback(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
     user_feedback = user.feedback_set.all().filter(course=course)
-    course_id_list = user.courses_by_id.split('|')
     feedback_for_course = user.providedfeedback_set.all().get(course=course)
-
-    # now = datetime.datetime.now()
-
-    # live_month = False
-    # live_day = False
-    # live_time = False
-    # days = course.days
-
-    # if (now.month >= 1 and now.month < 6):
-    #     live_month = True
-    # if (re.search(str(now.weekday()), days)):
-    #     live_day = True
-    # if (now.time() < course.endtime and now.time() > course.starttime):
-    #     live_time = True
-    # if (live_month and live_day and live_time):
-    #     lecture_date = now.date()
-    # else:
-    #     last_lecture = -1
-    #     int_days = [-1] # buffer for the first day
-    #     for day in days:
-    #         int_days.append(int(day))
-    #     int_days.append(10) # a buffer for the last day
-    #     for i in range(len(int_days)-1):
-    #         if now.weekday() == int_days[i]:
-    #             last_lecture = int_days[i]
-    #             break
-    #         elif now.weekday() > int_days[i] and now.weekday() < int_days[i+1]:
-    #             if i == 0:
-    #                 last_lecture = int_days[i-2]
-    #                 break
-    #             else:
-    #                 last_lecture = int_days[i]
-    #                 break
-    #     diff = (now.weekday() - last_lecture) % 7
-    #     lecture_date = (now - datetime.timedelta(days=diff)).date()
-
     lecture_date = course.last_lecture
+
+    # check if the user has any feedback before the last lecture
+    if (len(user.feedback_set.filter(course=course, lecture_date__gte=lecture_date)) > 0):
+        feedback_for_course.provided_feedback = True
+        feedback_for_course.save()
+    else:
+        feedback_for_course.provided_feedback = False
+        feedback_for_course.save()
+
     if request.method == 'POST':
         feedback_form = FeedbackForm(request.POST)
         if feedback_form.is_valid():
@@ -417,15 +379,9 @@ def user_feedback(request, course_id):
             new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice, lecture_date=lecture_date)  
             new_feedback.save()
 
-            
+            # update the provided feedback to True
             feedback_for_course.provided_feedback = True
             feedback_for_course.save()
-
-            # for i in range(len(course_id_list)):
-            #     if course.courseid == course_id_list[i]:
-            #         new_provided_feedback = user.provided_feedback[:i] + '1' + user.provided_feedback[i+1:]
-            #         user.provided_feedback = new_provided_feedback
-            #         user.save()
 
             return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,))) 
     else:
@@ -437,12 +393,6 @@ def user_feedback(request, course_id):
         provided_feedback = True
     else:
         provided_feedback = False
-    # for i in range(len(course_id_list)):
-    #     if course.courseid == course_id_list[i]:
-    #         if user.provided_feedback[i] == '1':
-    #             provided_feedback = True
-    #         else:
-    #             provided_feedback = False
 
     return render(request, 'quailapp/user_feedback.html', {'course': course, 'lecture_date': lecture_date,
         'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback, 'provided_feedback': provided_feedback,
@@ -582,18 +532,12 @@ def delete_feedback(request, feedback_id):
     last_lecture = course.last_lecture
     lecture_date = feedback.lecture_date
 
-
-    course_id_list = user.courses_by_id.split('|')
+    # if the deleted feedback was for the last lecture, allow the user to submit feedback again
     if (last_lecture == lecture_date):
         feedback_for_course = user.providedfeedback_set.all().get(course=course)
         feedback_for_course.provided_feedback = False
         feedback_for_course.save()
 
-        # for i in range(len(course_id_list)):
-        #     if course.courseid == course_id_list[i]:
-        #         new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
-        #         user.provided_feedback = new_provided_feedback
-        #         user.save()
     feedback.delete()
     return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,)))
 
