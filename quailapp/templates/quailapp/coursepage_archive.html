@@ -5,7 +5,7 @@
 {% block classes %}
 {% for course in courses %}
 <li>
-	<a href="{% url 'quailapp:coursepage_archive' course.id %}">{{ course }}</a>
+	<a href="{% url 'quailapp:coursepage_live' course.id %}">{{ course }}</a>
 </li>
 {% endfor %}
 {% endblock %}
