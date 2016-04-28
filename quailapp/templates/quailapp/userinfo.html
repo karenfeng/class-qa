@@ -237,5 +237,33 @@ $(document).ready(function() {
 	</li>
 {% endfor %}
 </ul>
+<br>
+<br>
+<span class="bold">Your Answers:</span>
+<ul>
+{% for answer in user.answer_set.all %}
+	<li>
+		<div class="box row">
+			<a href="{% url 'quailapp:detail' answer.question.id %}" class="question-box">
+				<div class="col-xs-11">
+					<div id="answer"><h4>{{ answer }}</h4></div>
+					<span class="unemph">Submitted on: {{ answer.created_on }}
+					</span>
+				</div>
+				<div class="col-xs-1">
+					{% if answer.submitter == user %}
+						<form action="{% url 'quailapp:deleteans' answer.id %}" method="POST">
+							{% csrf_token %}
+								<button type="submit" class="btn btn-link btn-link-red right">
+									{% bootstrap_icon "remove" %}
+								</button>
+						</form>
+					{% endif %}
+				</div>
+			</a>
+		</div>
+	</li>
+{% endfor %}
+</ul>
 
 {% endblock %}

@@ -246,13 +246,7 @@ def coursepage_live(request, course_id):
     if feedback_for_course.provided_feedback == True:
         provided_feedback = True
     else:
-        provided_feedback = False
-    # for i in range(len(course_id_list)):
-    #     if course.courseid == course_id_list[i]:
-    #         if user.provided_feedback[i] == '1':
-    #             provided_feedback = True
-    #         else:
-    #             provided_feedback = False      
+        provided_feedback = False   
 
     # search functionality for questions
     if ('q' in request.GET) and request.GET['q'].strip():

@@ -26,6 +26,7 @@
 			<span>{{ user.netid }}: {{ user.first_name }} {{ user.last_name }}</span><br>
 			<span>Enrolled in {{ courses|length }} courses</span><br>
 			<span>Asked {{ user.question_set.all|length }} questions<span><br>
+			<span>Answered {{ user.answer_set.all|length }} questions<span><br>
 			<span>Made {{ user.comment_set.all|length }} comments<span>
 		</div>
 		<br>
@@ -65,13 +66,6 @@
 								<br>
 								<span class="unemph">Lecture on {{ feedback.lecture_date }}
 								</span>
-								<br>
-								<small>
-									<form action="{% url 'quailapp:index' %}" method="post">
-									{% csrf_token %}
-							  			<button type="submit" name="feedback" value="{{feedback.id}}" class="btn-link btn-link-gray">Archive</button>
-									</form> 
-								</small>
 							</div>
 						</li>
 						{% endif %}
