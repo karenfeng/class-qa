@@ -34,7 +34,7 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
   chosen_filter = models.CharField(default='-votes', max_length=10)
-  provided_feedback = models.CharField(default="0000000000", max_length=10)
+  #provided_feedback = models.CharField(default="0000000000", max_length=10)
 
   courses_by_id = models.TextField(max_length=10)
 
@@ -127,6 +127,15 @@ class Course(models.Model):
       name += depts[i] + " " + nums[i] + '/'
     name = name[:len(name)-1]
     return '%s: %s' % (name, self.title)  
+
+class ProvidedFeedback(models.Model):
+  provided_feedback = models.BooleanField(default=False)
+  submitter = models.ForeignKey(QuailUser, null=True)
+  course = models.OneToOneField(Course, null=True, on_delete=models.CASCADE)
+
+  def __unicode__(self):
+    feedback = '%s for %s: %s' % (self.submitter.netid, self.course, self.provided_feedback)
+    return feedback
 
 class Tag(models.Model):
   text = models.TextField() # the actual tag name itself

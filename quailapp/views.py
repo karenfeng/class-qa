@@ -21,7 +21,7 @@ import json
 from django.core import serializers
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm, FeedbackForm
-from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback, AllNetids
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback, AllNetids, ProvidedFeedback
 
 def index(request):
     try:
@@ -133,6 +133,7 @@ def coursepage_live(request, course_id):
     user = request.user
     now = datetime.datetime.now()
     course_id_list = user.courses_by_id.split('|')
+    feedback_for_course = user.providedfeedback_set.all().get(course=course)
     display_feedback = True
 
     to_archive = False
@@ -151,11 +152,13 @@ def coursepage_live(request, course_id):
         live_time = True
     if (live_month and live_day and live_time):
         lecture_date = now.date()
-        for i in range(len(course_id_list)):
-            if course.courseid == course_id_list[i]:
-                new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
-                user.provided_feedback = new_provided_feedback
-                user.save()
+        feedback_for_course.provided_feedback = False
+        feedback_for_course.save()
+        # for i in range(len(course_id_list)):
+        #     if course.courseid == course_id_list[i]:
+        #         new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
+        #         user.provided_feedback = new_provided_feedback
+        #         user.save()
         display_feedback = False
         if (course.archive_type == 'every_other_lecture'):
             weekday = now.weekday()
@@ -189,7 +192,7 @@ def coursepage_live(request, course_id):
                             last_lecture = int_days[i-3]
                         else:
                             last_lecture = int_days[i-1]
-                elif now.time() > course.endtime:
+                else:
                     last_lecture = int_days[i]
                 break
             elif now.weekday() > int_days[i] and now.weekday() < int_days[i+1]:
@@ -234,12 +237,16 @@ def coursepage_live(request, course_id):
 
     # checking if user has already submitted feedback for this course
     provided_feedback = False
-    for i in range(len(course_id_list)):
-        if course.courseid == course_id_list[i]:
-            if user.provided_feedback[i] == '1':
-                provided_feedback = True
-            else:
-                provided_feedback = False      
+    if feedback_for_course.provided_feedback == True:
+        provided_feedback = True
+    else:
+        provided_feedback = False
+    # for i in range(len(course_id_list)):
+    #     if course.courseid == course_id_list[i]:
+    #         if user.provided_feedback[i] == '1':
+    #             provided_feedback = True
+    #         else:
+    #             provided_feedback = False      
 
     # search functionality for questions
     if ('q' in request.GET) and request.GET['q'].strip():
@@ -361,6 +368,8 @@ def user_feedback(request, course_id):
     user = request.user
     user_feedback = user.feedback_set.all().filter(course=course)
     course_id_list = user.courses_by_id.split('|')
+    feedback_for_course = user.providedfeedback_set.all().get(course=course)
+
     # now = datetime.datetime.now()
 
     # live_month = False
@@ -408,12 +417,15 @@ def user_feedback(request, course_id):
             new_feedback = Feedback(text=feedback, course=course, submitter=user, is_live=True, feedback_choice=choice, lecture_date=lecture_date)  
             new_feedback.save()
 
-            index = -1
-            for i in range(len(course_id_list)):
-                if course.courseid == course_id_list[i]:
-                    new_provided_feedback = user.provided_feedback[:i] + '1' + user.provided_feedback[i+1:]
-                    user.provided_feedback = new_provided_feedback
-                    user.save()
+            
+            feedback_for_course.provided_feedback = True
+            feedback_for_course.save()
+
+            # for i in range(len(course_id_list)):
+            #     if course.courseid == course_id_list[i]:
+            #         new_provided_feedback = user.provided_feedback[:i] + '1' + user.provided_feedback[i+1:]
+            #         user.provided_feedback = new_provided_feedback
+            #         user.save()
 
             return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,))) 
     else:
@@ -421,12 +433,16 @@ def user_feedback(request, course_id):
 
     # checking if user has already submitted feedback for this course
     provided_feedback = False
-    for i in range(len(course_id_list)):
-        if course.courseid == course_id_list[i]:
-            if user.provided_feedback[i] == '1':
-                provided_feedback = True
-            else:
-                provided_feedback = False
+    if feedback_for_course.provided_feedback == True:
+        provided_feedback = True
+    else:
+        provided_feedback = False
+    # for i in range(len(course_id_list)):
+    #     if course.courseid == course_id_list[i]:
+    #         if user.provided_feedback[i] == '1':
+    #             provided_feedback = True
+    #         else:
+    #             provided_feedback = False
 
     return render(request, 'quailapp/user_feedback.html', {'course': course, 'lecture_date': lecture_date,
         'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback, 'provided_feedback': provided_feedback,
@@ -565,13 +581,19 @@ def delete_feedback(request, feedback_id):
     course = feedback.course
     last_lecture = course.last_lecture
     lecture_date = feedback.lecture_date
+
+
     course_id_list = user.courses_by_id.split('|')
     if (last_lecture == lecture_date):
-        for i in range(len(course_id_list)):
-            if course.courseid == course_id_list[i]:
-                new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
-                user.provided_feedback = new_provided_feedback
-                user.save()
+        feedback_for_course = user.providedfeedback_set.all().get(course=course)
+        feedback_for_course.provided_feedback = False
+        feedback_for_course.save()
+
+        # for i in range(len(course_id_list)):
+        #     if course.courseid == course_id_list[i]:
+        #         new_provided_feedback = user.provided_feedback[:i] + '0' + user.provided_feedback[i+1:]
+        #         user.provided_feedback = new_provided_feedback
+        #         user.save()
     feedback.delete()
     return HttpResponseRedirect(reverse('quailapp:user_feedback', args=(course.id,)))
 
@@ -728,6 +750,11 @@ def user_info(request):
         new_course_ids = ''
         course_list = user.courses_by_id.split('|')
         course_to_unenroll = Course.objects.get(pk=request.POST['courseid'])
+
+        # delete the feedback for that course
+        feedback_for_course = user.providedfeedback_set.all().get(course=course_to_unenroll)
+        feedback_for_course.delete()
+
         for course in course_list:
             if (course != course_to_unenroll.courseid):
                 new_course_ids += course + '|'
@@ -779,6 +806,9 @@ def enroll(request):
             courses = user.courses_by_id + '|'
             for course in data['courses']:
                 courses = courses + course.courseid + '|'
+                # add provided_feedback
+                new_provided_feedback = ProvidedFeedback(submitter=user, provided_feedback=False, course=course)
+                new_provided_feedback.save()
             user.courses_by_id = courses[:len(courses)-1]
             user.save()
             return HttpResponseRedirect(reverse('quailapp:userinfo'))
