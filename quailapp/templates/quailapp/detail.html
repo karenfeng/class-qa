@@ -30,9 +30,9 @@ $(document).ready(function() {
 		$('#edit_question{{question.id}}').show();
 	}
 	else {
-		$('#edit_question').hide(); 
+		$('#edit_question{{question.id}}').hide(); 
 	}
-	$('#submit_edit_button{{question.id}}').hide();
+	// $('#submit_edit_button{{question.id}}').hide();
 
 	// click edit button
 	$(document).on('click', '#edit_question{{question.id}}', function(event) {
@@ -45,7 +45,7 @@ $(document).ready(function() {
 			event.preventDefault();
 		})
 		$('#edit_question{{question.id}}').hide();
-		$('#submit_edit_button{{question.id}}').show();
+		$('#submit_edit_button{{question.id}}').css('visibility', 'visible');
 	})
 
 	// click submit button
@@ -56,7 +56,7 @@ $(document).ready(function() {
 			url: "{% url 'quailapp:edit_question' question.id %}",
 			data: {text: $("#submit_edit{{question.id}}").val() },
 			success: function(data) {
-				$('#submit_edit_button{{question.id}}').hide();
+				$('#submit_edit_button{{question.id}}').css('visibility', 'hidden');
 				$('#edit_question{{question.id}}').show();
 				$("#question{{question.id}}").html(data);
 				q_text = data;
