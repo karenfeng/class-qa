@@ -20,6 +20,11 @@
 
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<a href="{% url 'quailapp:social_home' %}">
+{% bootstrap_icon "arrow-left"%} Social Home
+</a>
+
 <h1>{{ category }}</h1>
 
 <script>
@@ -472,7 +477,9 @@ $(document).ready(function() {
 					    </span>
 						<span class="unemph">{{ q.created_on }}
 						</span>
+						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
+						<br>
 						{% if q.tags_as_list %}
 						{% for tag in q.tags_as_list %}
 							<span class="box-small">{{ tag }}</span>

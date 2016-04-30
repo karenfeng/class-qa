@@ -135,6 +135,18 @@ def coursepage_live(request, course_id):
     now = datetime.datetime.now()
     course_id_list = user.courses_by_id.split('|')
     feedback_for_course = user.providedfeedback_set.all().get(course=course)
+
+    # check if all the question ids in the tags are valid
+    for tag in course.tag_set.all():
+        questions = tag.questions.split('|')
+        for q in questions:
+            if q != '':
+                question_exists = Question.objects.filter(pk=q).exists()
+                if not question_exists:
+                    t_questions = t.questions.replace("|"+q, "")
+                    t.questions = t_questions
+                    t.save()
+
     display_feedback = True
 
     to_archive = False
@@ -869,12 +881,24 @@ def social_home(request):
     categories = Category.objects.all()
     recent_questions = Question.objects.filter(is_social=True).order_by('-created_on')[:10]
 
-    return render(request, 'quailapp/social.html', {'user':user, 'categories':categories, 'recent_questions':recent_questions})
+    return render(request, 'quailapp/social.html', {'user':user, 'categories':categories, 'recent_questions':recent_questions,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 def social_category(request, category_id):
     user = request.user
     category = Category.objects.get(pk=category_id)
     social_questions = category.question_set.all()
+
+    # check if all the question ids in the tags are valid
+    for tag in category.tag_set.all():
+        questions = tag.questions.split('|')
+        for q in questions:
+            if q != '':
+                question_exists = Question.objects.filter(pk=q).exists()
+                if not question_exists:
+                    t_questions = t.questions.replace("|"+q, "")
+                    t.questions = t_questions
+                    t.save()
     
     # pinned and unpinned questions to display on the social category page
     questions_pinned = social_questions.filter(is_pinned=True).order_by(user.chosen_filter)
