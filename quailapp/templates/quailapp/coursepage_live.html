@@ -28,18 +28,16 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 
 <script>
 	var editing = false;
+	var search_query = ""; 
 </script>
 <script>
 $(document).ready(function() {
 	$('#id_your_question').keyup(function() {
-		editing = true; 
 		$.ajax({
 			url : "/similar_question",
 			type : "get",
 			data : {simQ: $('#id_your_question').val(), course: '{{course.id}}'},
 			success: function (data) {
-				editing = false;
-				//console.log(data);
 				var seperator = data.lastIndexOf("\n");
 				var simQuestion = data.substring(0, seperator);
 				var ID = data.substring(seperator + 1, data.length);
@@ -58,6 +56,12 @@ $(document).ready(function() {
 		})
 
 	});
+	$(document).on('click', '#search_button', function(event) {
+		event.preventDefault();
+		search_query = $('#id_q').val(); 
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
+		console.log("searched");
+	})
 
 });
 </script>
@@ -101,11 +105,10 @@ $(document).ready(function() {
 	<div class="col-xs-8">
 		<span class="right">
 			<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-				{% csrf_token %}
 				<div class="input-group">
 				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
 				 	<span class="input-group-btn">
-						<button type="submit" class="btn btn-secondary" value="Submit">
+						<button type="submit" id="search_button" class="btn btn-secondary" value="Submit">
 							{% bootstrap_icon "search" %}
 						</button>
 					</span>
@@ -945,11 +948,15 @@ function reload_pages() {
 
 	//console.log(editing);
 	console.log("reload");
-	if (tag_id == "") {
+	if (tag_id == "" && search_query == "") {
 		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
 	}
-	else {
+	else if (search_query == "")
+	{
 		$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+	}
+	else {
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
 	}
 
 	
