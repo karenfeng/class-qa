@@ -43,6 +43,18 @@
 									{% block classes %}{% endblock %}
 								</ul>
 							</li>
+							<li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			  						{% bootstrap_icon "comment" %} Social
+			  						<span class="caret"></span>
+			  					</a>
+			  					<ul class="dropdown-menu">
+			  						<li>
+			  							<a href="{% url 'quailapp:social_home' %}"> All</a>
+			  						</li>
+									{% block social %}{% endblock %}
+								</ul>
+							</li>
 							<li><a href="{% url 'quailapp:logout' %}">{% bootstrap_icon "lock" %} Logout</a></li>
 						</ul>
 					</div>

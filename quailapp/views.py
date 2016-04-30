@@ -39,7 +39,8 @@ def index(request):
         feedback.save()
         return HttpResponseRedirect(reverse('quailapp:index'))
 
-    return render(request, 'quailapp/index.html', {'user':user, 'courses':courses, 'starred_questions':starredQuestions})
+    return render(request, 'quailapp/index.html', {'user':user, 'courses':courses, 'starred_questions':starredQuestions,
+        'categories': Category.objects.all()})
 
 # handles what happens when a user uses the vote form on a question
 def vote(request, question_id):
@@ -345,7 +346,8 @@ def coursepage_live(request, course_id):
 
     return render(request, 'quailapp/coursepage_live.html', {'course': course, 'form': form, 'tag_form': tag_form,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user, 'display_feedback': display_feedback,
-        'provided_feedback': provided_feedback, 'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'provided_feedback': provided_feedback, 'courses': Course.objects.filter(courseid__in=user.course_id_list),
+        'categories': Category.objects.all()})
 
 def user_feedback(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
@@ -390,7 +392,7 @@ def user_feedback(request, course_id):
 
     return render(request, 'quailapp/user_feedback.html', {'course': course, 'lecture_date': lecture_date,
         'feedback_form': feedback_form, 'user': request.user, 'user_feedback': user_feedback, 'provided_feedback': provided_feedback,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list), 'categories': Category.objects.all()})
 
 def coursepage_archive(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
@@ -475,7 +477,7 @@ def coursepage_archive(request, course_id):
         questions = paginator.page(paginator.num_pages)
     return render(request, 'quailapp/coursepage_archive.html', {'course': course, 'archived_feedback': archived_feedback,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user, 'counter': counter,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list), 'categories': Category.objects.all()})
 
 def delete_tag_from_coursepage(request, tag_id):
     tag = get_object_or_404(Tag, pk=tag_id)
@@ -553,7 +555,8 @@ def archived_feedback(request):
     for count in range(1,6):
         percents[count] = int((counter[count]/total)*100)
     return render(request, 'quailapp/archived_feedback.html', {'archived_feedback': archived_feedback,
-        'counter': counter, 'percents': percents, 'total': int(total), 'user': user, 'courses': courses})
+        'counter': counter, 'percents': percents, 'total': int(total), 'user': user, 'courses': courses,
+        'categories': Category.objects.all()})
 
 # detail view = what you see when you click on a question (its answers, votes, etc)
 def question_detail(request, question_id):
@@ -578,7 +581,7 @@ def question_detail(request, question_id):
         form = AnswerForm()
         comment_form = CommentForm()
     return render(request, 'quailapp/detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list), 'categories': Category.objects.all()})
 
 # def get_question(request):
 #     # otherwise can post a question
@@ -715,7 +718,8 @@ def user_info(request):
         return HttpResponse("success")
         return HttpResponseRedirect(reverse('quailapp:userinfo'))
     return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses, 'questions':questions,
-        'social_questions':social_questions, 'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'social_questions':social_questions, 'courses': Course.objects.filter(courseid__in=user.course_id_list),
+        'categories': Category.objects.all()})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
@@ -767,7 +771,8 @@ def enroll(request):
         courses_enrolled = Course.objects.filter(courseid__in=request.user.course_id_list)
         courses_available = Course.objects.exclude(courseid__in=request.user.course_id_list)
         form = EnrollForm(courses_available=courses_available)
-        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled})
+        return render(request, 'quailapp/enroll.html', {'form':form, 'courses_enrolled':courses_enrolled,
+            'categories': Category.objects.all()})
 
 def similar_question(request):
     if request.is_ajax():
@@ -965,7 +970,7 @@ def social_category(request, category_id):
 
     return render(request, 'quailapp/social_category.html', {'category': category, 'form': form, 'tag_form': tag_form,
         'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list), 'categories': Category.objects.all()})
 
 def social_detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -989,7 +994,7 @@ def social_detail(request, question_id):
         form = AnswerForm()
         comment_form = CommentForm()
     return render(request, 'quailapp/social_detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+        'courses': Course.objects.filter(courseid__in=user.course_id_list), 'categories': Category.objects.all()})
 
 def delete_from_social(request, question_id):
     question = get_object_or_404(Question, pk=question_id)

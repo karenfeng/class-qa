@@ -9,6 +9,14 @@
 {% endfor %}
 {% endblock %}
 
+{% block social %}
+{% for category in categories %}
+<li>
+	<a href="{% url 'quailapp:social_category' category.id %}">{{ category }}</a>
+</li>
+{% endfor %}
+{% endblock %}
+
 {% block content %}
 <a href="{% url 'quailapp:coursepage_live' course.id %}">
 {% bootstrap_icon "arrow-left"%} {{course}}
