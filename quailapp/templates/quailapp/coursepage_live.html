@@ -291,15 +291,22 @@ $(document).ready(function() {
 	})
 	$(document).ready(function() {
 
+		// some constants
+		var tagAndEdit = 114;
+		var tag = 96;
+		var edit = 98;
+		var none = 80; 
+
 		//DROP DOWN ANSWER
 		var req; // global variable for the ajax request
 		//expand
 		$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
-			event.preventDefault();
 
+			event.preventDefault();
+			var height = $('#answers{{q.id}}').height(); 
 			//extend div to fit answer
 			$(this).finish().animate({
-	        height: '150px'
+	        height: ($(this).height()+75).toString()+'px'
 	    	}, 300);
 
 			//make the ajax request
@@ -317,8 +324,9 @@ $(document).ready(function() {
 					}
 				}
 			});
+			
 	    });
-    	// hide the answer and shrink the div
+	    // hide the answer and shrink the div
 		$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
 			// if the ajax request hasn't been completed yet, abort
 			if(req && req.readyState != 4) {
@@ -326,17 +334,34 @@ $(document).ready(function() {
         	}
 			$("#hide_ans{{q.id}}").hide();
 			// if no tags
-			if ("{{q.tags}}" == "") {
+		
+			// if tag and editable
+			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
 	    		$(this).animate({
-	        		height: '85px'
+	        		height: tagAndEdit.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// if just a tag
+	    	else if (("{{q.tags}}" != "")) {
+	    		$(this).animate({
+	        		height: tag.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// editable
+	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+	    		$(this).animate({
+	        		height: edit.toString()+'px'
 	    		}, 300);
 	    	}
 	    	else {
 	    		$(this).animate({
-	    			height: '100px'
+	        		height: none.toString()+'px'
 	    		}, 300);
 	    	}
+	    	
 		});
+
+    	
 
 		var q_text = "{{q.text}}";
 
@@ -589,15 +614,22 @@ $(document).ready(function() {
 		})
 		$(document).ready(function() {
 
+				// some constants
+			var tagAndEdit = 114;
+			var tag = 96;
+			var edit = 98;
+			var none = 80; 
+
 			//DROP DOWN ANSWER
 			var req; // global variable for the ajax request
 			//expand
 			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
-				event.preventDefault();
 
+				event.preventDefault();
+				var height = $('#answers{{q.id}}').height(); 
 				//extend div to fit answer
 				$(this).finish().animate({
-		        height: '150px'
+		        height: ($(this).height()+75).toString()+'px'
 		    	}, 300);
 
 				//make the ajax request
@@ -615,25 +647,41 @@ $(document).ready(function() {
 						}
 					}
 				});
+				
 		    });
-	    	// hide the answer and shrink the div
+		    // hide the answer and shrink the div
 			$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
 				// if the ajax request hasn't been completed yet, abort
 				if(req && req.readyState != 4) {
-            		req.abort();
-            	}
+	        		req.abort();
+	        	}
 				$("#hide_ans{{q.id}}").hide();
 				// if no tags
-				if ("{{q.tags}}" == "") {
+			
+				// if tag and editable
+				if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
 		    		$(this).animate({
-		        		height: '75px'
+		        		height: tagAndEdit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// if just a tag
+		    	else if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: tag.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// editable
+		    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: edit.toString()+'px'
 		    		}, 300);
 		    	}
 		    	else {
 		    		$(this).animate({
-		    			height: '100px'
+		        		height: none.toString()+'px'
 		    		}, 300);
 		    	}
+		    	
 			});
 
 
