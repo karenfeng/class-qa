@@ -846,10 +846,13 @@ def edit_answer(request, question_id):
 def get_answer(request, question_id):
     if request.is_ajax():
         question = get_object_or_404(Question, pk=question_id)     
-        if not question.answer:
+        try:
+            answer = question.answer
+            return HttpResponse(answer)
+        except:
             return HttpResponse("")
-        else:
-            return HttpResponse(question.answer)
+
+    
 
 def answered_questions(request, course_id):
 
