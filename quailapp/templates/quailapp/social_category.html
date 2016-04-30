@@ -33,6 +33,7 @@
 <script>
 $(document).ready(function() {
 	$('#id_your_question').keyup(function() {
+		console.log("hi");
 		editing = true; 
 		$.ajax({
 			url : "/similar_question",
@@ -279,15 +280,21 @@ $(document).ready(function() {
 	})
 	$(document).ready(function() {
 
-			//DROP DOWN ANSWER
-			var req; // global variable for the ajax request
-			//expand
-			$('#answers{{q.id}}').hover(function() {
-				event.preventDefault();
+		var tagAndEdit = 114;
+		var tag = 96;
+		var edit = 98;
+		var none = 80; 
 
+		//DROP DOWN ANSWER
+		var req; // global variable for the ajax request
+		//expand
+		$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+
+			event.preventDefault();
+			var height = $('#answers{{q.id}}').height(); 
 			//extend div to fit answer
 			$(this).finish().animate({
-	        height: '150px'
+	        height: ($(this).height()+75).toString()+'px'
 	    	}, 300);
 
 			//make the ajax request
@@ -297,23 +304,50 @@ $(document).ready(function() {
 				data : {ans: $(this).attr("id_your_answer") },
 				async: true,
 				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
-			}
-		})
-	    	// hide the answer and shrink the div
-			}, function() {
-				// if the ajax request hasn't been completed yet, abort
-				if(req && req.readyState != 4) {
-            		req.abort();
-            	}
-				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+					if (data) {
+						final_ans = "Answer: " + data;
+			    		// replace answer
+						$("#hide_ans{{q.id}}").html(final_ans);
+						$("#hide_ans{{q.id}}").show(data);
+					}
+				}
 			});
+			
+	    });
+	    // hide the answer and shrink the div
+		$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
+			// if the ajax request hasn't been completed yet, abort
+			if(req && req.readyState != 4) {
+        		req.abort();
+        	}
+			$("#hide_ans{{q.id}}").hide();
+			// if no tags
+		
+			// if tag and editable
+			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+	    		$(this).animate({
+	        		height: tagAndEdit.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// if just a tag
+	    	else if (("{{q.tags}}" != "")) {
+	    		$(this).animate({
+	        		height: tag.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// editable
+	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+	    		$(this).animate({
+	        		height: edit.toString()+'px'
+	    		}, 300);
+	    	}
+	    	else {
+	    		$(this).animate({
+	        		height: none.toString()+'px'
+	    		}, 300);
+	    	}
+	    	
+		});
 
 		var q_text = "{{q.text}}";
 
@@ -357,6 +391,7 @@ $(document).ready(function() {
 				url: "{% url 'quailapp:vote' q.id %}",
 				data : {vote : $(this).attr("value") },
 				success: function (data) {
+					console.log('clicked');
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{category.id}}/social/" + " #voting{{q.id}}");
 				}
@@ -446,11 +481,11 @@ $(document).ready(function() {
 	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
-		<div class="box-blue row">
+		<div id='answers{{q.id}}' class="box-blue row">
 		{% else %}
 		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
-			<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box" id="detail{{q.id}}">	
+			<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 				<div class="col-xs-1">
 					<form method="POST">
 						{% csrf_token %}
@@ -467,8 +502,8 @@ $(document).ready(function() {
 						{% endbuttons %}
 					</form>
 				</div>
-				<div id='answers{{q.id}}' class="col-xs-10">
-					<p id='answers{{q.id}}' class="question">
+				<div class="col-xs-10">
+					<p class="question">
 						<span class="input-group">
 					      	<span id="question{{q.id}}">{{ q.text }}</span>
 					      	<span class="input-group-btn">
@@ -476,15 +511,16 @@ $(document).ready(function() {
 					      </span>
 					    </span>
 						<span class="unemph">{{ q.created_on }}
+						{% if not user.is_student %}
+							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
+						{% endif %}
 						</span>
 						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
-						<br>
-						{% if q.tags_as_list %}
-						{% for tag in q.tags_as_list %}
-							<span class="box-small">{{ tag }}</span>
-						{% endfor %}
-						{% endif %}
+					</p>
+					{% for tag in q.tags_as_list %}
+						<span class="box-small">{{ tag }}</span>
+					{% endfor %}
 					</p>
 					<div id="hide_ans{{q.id}}" class="dropdown_answer">
 					</div>
@@ -564,42 +600,75 @@ $(document).ready(function() {
 		})
 		$(document).ready(function() {
 
+			// some constants
+			var tagAndEdit = 114;
+			var tag = 96;
+			var edit = 98;
+			var none = 80; 
+
 			//DROP DOWN ANSWER
 			var req; // global variable for the ajax request
 			//expand
-			$('#answers{{q.id}}').hover(function() {
+			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+
 				event.preventDefault();
+				var height = $('#answers{{q.id}}').height(); 
+				//extend div to fit answer
+				$(this).finish().animate({
+		        height: ($(this).height()+75).toString()+'px'
+		    	}, 300);
 
-			//extend div to fit answer
-			$(this).finish().animate({
-	        height: '150px'
-	    	}, 300);
-
-			//make the ajax request
-	    	req = $.ajax({
-				url : "{% url 'quailapp:answer' q.id %}",
-				type : "get",
-				data : {ans: $(this).attr("id_your_answer") },
-				async: true,
-				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
-			}
-		})
-	    	// hide the answer and shrink the div
-			}, function() {
+				//make the ajax request
+		    	req = $.ajax({
+					url : "{% url 'quailapp:answer' q.id %}",
+					type : "get",
+					data : {ans: $(this).attr("id_your_answer") },
+					async: true,
+					success: function (data) {
+						if (data) {
+							final_ans = "Answer: " + data;
+				    		// replace answer
+							$("#hide_ans{{q.id}}").html(final_ans);
+							$("#hide_ans{{q.id}}").show(data);
+						}
+					}
+				});
+				
+		    });
+		    // hide the answer and shrink the div
+			$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
 				// if the ajax request hasn't been completed yet, abort
 				if(req && req.readyState != 4) {
-            		req.abort();
-            	}
+	        		req.abort();
+	        	}
 				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+				// if no tags
+			
+				// if tag and editable
+				if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: tagAndEdit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// if just a tag
+		    	else if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: tag.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// editable
+		    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: edit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	else {
+		    		$(this).animate({
+		        		height: none.toString()+'px'
+		    		}, 300);
+		    	}
+		    	
 			});
-
 
 			var q_text = "{{q.text}}";
 			// click edit button
@@ -729,11 +798,11 @@ $(document).ready(function() {
 		</script>
 		<li>
 			{% if q.submitter.netid == user.netid %}
-			<div class="box-blue row">
+			<div id='answers{{q.id}}' class="box-blue row">
 			{% else %}
 			<div id='answers{{q.id}}' class="box row">
 			{% endif %}
-				<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box" id="detail{{q.id}}">	
+				<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 					<div class="col-xs-1">
 						<form method="POST">
 							{% csrf_token %}
@@ -750,8 +819,8 @@ $(document).ready(function() {
 							{% endbuttons %}
 						</form>
 					</div>
-					<div id='answers{{q.id}}' class="col-xs-10">
-						<p id='answers{{q.id}}' class="question">
+					<div class="col-xs-10">
+						<p class="question">
 							<span class="input-group">
 						      	<span id="question{{q.id}}">{{ q.text }}</span>
 						      	<span class="input-group-btn">
@@ -759,6 +828,9 @@ $(document).ready(function() {
 						      </span>
 						    </span>
 							<span class="unemph">{{ q.created_on }}
+							{% if not user.is_student %}
+								by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
+							{% endif %}
 							</span>
 							<br>
 							<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
@@ -845,4 +917,30 @@ $(document).ready(function() {
 </div>
 
 </ul>
+
+<script>
+// simple script to reload page every 5 seconds, as long as a question isn't being edited or a question isn't being posted 
+function reload_pages() {
+
+	//console.log(editing);
+	console.log("reload");
+	if (tag_id == "") {
+		$('#all_questions').load("/{{category.id}}/social/" + " #all_questions");
+	}
+	else {
+		$('#all_questions').load("/{{course.id}}/social/?tag=" + tag_id + " #all_questions");
+	}
+
+	
+}
+
+$(document).ready(function() {
+
+	setInterval(function() {
+		if (!editing) {
+			reload_pages();
+		}
+	}, 10000);
+})
+</script>
 {% endblock %}
