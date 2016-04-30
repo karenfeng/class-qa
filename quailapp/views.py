@@ -21,7 +21,7 @@ import json
 from django.core import serializers
 
 from .forms import QuestionForm, AnswerForm, RegisterForm, EnrollForm, CommentForm, TagForm, FeedbackForm
-from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback, AllNetids, ProvidedFeedback
+from .models import Question, CASClient, Answer, QuailUser, Course, Comment, Tag, Feedback, AllNetids, ProvidedFeedback, Category
 
 def index(request):
     try:
@@ -512,7 +512,7 @@ def delete_from_userinfo(request, question_id):
     tags = question.tags.split('|')
     for tag in tags:
         if tag != '':
-            t = Tag.objects.get(pk=tag.id)
+            t = Tag.objects.get(pk=tag)
             t_questions = t.questions.replace("|"+question.id, "")
             t.questions = t_questions
             t.save()
@@ -601,8 +601,12 @@ def question_detail(request, question_id):
 def delete_answer(request, answer_id):
     answer = get_object_or_404(Answer, pk=answer_id)
     question = answer.question
+    is_social = question.is_social
     answer.delete()
-    return HttpResponseRedirect(reverse('quailapp:detail',args=(question.id,)))
+    if is_social == True:
+        return HttpResponseRedirect(reverse('quailapp:social_detail',args=(question.id,)))
+    else:
+        return HttpResponseRedirect(reverse('quailapp:detail',args=(question.id,)))
 
 def login_CAS(request):
 
@@ -688,6 +692,10 @@ def user_info(request):
     # course list as query set
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
 
+    # course questions
+    questions = Question.objects.exclude(is_social=True)
+    social_questions = Question.objects.filter(is_social=True)
+
     # handle unenroll requests
     if request.method == 'POST' and request.is_ajax():
         new_course_ids = ''
@@ -706,8 +714,8 @@ def user_info(request):
         user.save()
         return HttpResponse("success")
         return HttpResponseRedirect(reverse('quailapp:userinfo'))
-    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses,
-        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+    return render(request, 'quailapp/userinfo.html', {'user':user, 'courses':courses, 'questions':questions,
+        'social_questions':social_questions, 'courses': Course.objects.filter(courseid__in=user.course_id_list)})
 
 # this is a bit messy.. combining raw html with django forms, should stick with one or the other? 
 def enroll(request):
@@ -847,6 +855,167 @@ def answered_questions(request, course_id):
         questions_answered = Question.objects.filter(pk__in=q_ids)
         data = serializers.serialize('json', questions_answered)
         return HttpResponse(data, content_type='application/json')
+
+def social_home(request):
+    try:
+        user = QuailUser.objects.get(netid=request.user.netid)
+    except ObjectDoesNotExist:
+        return redirect('/login')
+    categories = Category.objects.all()
+    recent_questions = Question.objects.filter(is_social=True).order_by('-created_on')[:10]
+
+    return render(request, 'quailapp/social.html', {'user':user, 'categories':categories, 'recent_questions':recent_questions})
+
+def social_category(request, category_id):
+    user = request.user
+    category = Category.objects.get(pk=category_id)
+    social_questions = category.question_set.all()
+    
+    # pinned and unpinned questions to display on the social category page
+    questions_pinned = social_questions.filter(is_pinned=True).order_by(user.chosen_filter)
+    questions_unpinned = social_questions.exclude(is_pinned=True).order_by(user.chosen_filter)
+
+    # search functionality for questions
+    if ('q' in request.GET) and request.GET['q'].strip():
+         query_string = request.GET['q']
+         terms = query_string.split()
+         questions_found = social_questions
+         for term in terms:
+             question_ids_found = []
+             for question in questions_found:
+                if (re.search(re.escape(term), question.text, re.I)):
+                     question_ids_found.append(question.id)
+             questions_found = questions_found.filter(pk__in=question_ids_found)
+ 
+         found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+         questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+         questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter) 
+
+    if ('tag' in request.GET):
+        tag = request.GET['tag']
+        questions_found = social_questions
+        question_ids_found = []
+        for question in questions_found:
+            if (re.search(re.escape(tag), question.tags)):
+                question_ids_found.append(question.id)
+        found_entries = Question.objects.all().filter(pk__in=question_ids_found)
+        questions_pinned = found_entries.filter(is_pinned=True).order_by(user.chosen_filter)
+        questions_unpinned = found_entries.exclude(is_pinned=True).order_by(user.chosen_filter)
+
+    # if a question is posted
+    if request.method == 'POST':
+        # if the user chooses a filter
+        if ('filter' in request.POST):
+            form = QuestionForm(tags=category.tag_set.all())
+            tag_form = TagForm()
+            #feedback_form = FeedbackForm()
+            chosen_filter = request.POST['filter']
+            if (chosen_filter == 'newest'):
+                user.chosen_filter = '-created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-created_on')
+                questions_unpinned = questions_unpinned.order_by('-created_on')
+            elif (chosen_filter == 'oldest'):
+                user.chosen_filter = 'created_on'
+                user.save()
+                questions_pinned = questions_pinned.order_by('created_on')
+                questions_unpinned = questions_unpinned.order_by('created_on')
+            else:
+                user.chosen_filter = '-votes'
+                user.save()
+                questions_pinned = questions_pinned.order_by('-votes')
+                questions_unpinned = questions_unpinned.order_by('-votes')  
+
+        else:
+            form = QuestionForm(request.POST, tags=category.tag_set.all())
+            tag_form = TagForm(request.POST)
+ 
+            if form.is_valid():
+                data = form.cleaned_data
+                tags = ''
+                for tag in data['tags']:
+                    tags = tags + '|' + tag.id
+                new_question = Question(text=data['your_question'], category=category, submitter=user, votes=0, tags=tags, is_social=True)
+                new_question.save()
+                for tag in data['tags']:
+                    tag.questions = tag.questions + '|' + new_question.id
+                    tag.save()
+                return HttpResponseRedirect(reverse('quailapp:social_category', args=(category.id,)))
+
+            if tag_form.is_valid():
+                data = tag_form.cleaned_data
+                new_tag = Tag(text=data['your_tag'], category=category, submitter=request.user)
+                new_tag.save()
+                return HttpResponseRedirect(reverse('quailapp:social_category', args=(category.id,))) 
+    else:
+        form = QuestionForm(tags=category.tag_set.all())
+        tag_form = TagForm()
+
+     # view (unpinned) questions 5 at a time
+    paginator = Paginator(questions_unpinned, 5) # Show 5 questions per page
+    page = request.GET.get('page')
+    try:
+        questions = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        questions = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        questions = paginator.page(paginator.num_pages)
+
+    return render(request, 'quailapp/social_category.html', {'category': category, 'form': form, 'tag_form': tag_form,
+        'questions_pinned': questions_pinned, 'questions': questions, 'user': request.user,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+
+def social_detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    user = request.user
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        comment_form = CommentForm(request.POST)
+        # if an answer is posted
+        if form.is_valid():
+            data = form.cleaned_data
+            new_answer = Answer(text=data['your_answer'], question=question, submitter=request.user)
+            new_answer.save()
+            return HttpResponseRedirect(reverse('quailapp:social_detail', args=(question.id,)))
+        # if a comment is posted
+        if comment_form.is_valid():
+            data = comment_form.cleaned_data
+            new_comment = Comment(text=data['your_comment'], question=question, submitter=request.user)
+            new_comment.save()
+            return HttpResponseRedirect(reverse('quailapp:social_detail', args=(question.id,)))
+    else:
+        form = AnswerForm()
+        comment_form = CommentForm()
+    return render(request, 'quailapp/social_detail.html', {'question': question, 'form': form, 'comment_form': comment_form, 'user': user,
+        'courses': Course.objects.filter(courseid__in=user.course_id_list)})
+
+def delete_from_social(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    category = question.category
+    tags = question.tags.split('|')
+    for tag in tags:
+        if tag != '':
+            t = Tag.objects.get(pk=tag)
+            t_questions = t.questions.replace("|"+question.id, "")
+            t.questions = t_questions
+            t.save()
+    question.delete()
+    return HttpResponseRedirect(reverse('quailapp:social_category', args=(category.id,)))
+
+def delete_tag_from_social(request, tag_id):
+    tag = get_object_or_404(Tag, pk=tag_id)
+    category = tag.category
+    questions = tag.questions.split('|')
+    for q in questions:
+        if q != '':
+            question = Question.objects.get(pk=q)
+            question_tags = question.tags.replace("|"+tag.id, "")
+            question.tags = question_tags
+            question.save()
+    tag.delete()
+    return HttpResponseRedirect(reverse('quailapp:social_category', args=(category.id,)))
 
 def home(request):
     return render(request, 'quailapp/home.html')

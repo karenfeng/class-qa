@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 # Register your models here
-from .models import Question, Answer, QuailUser, Course, Tag, Feedback, AllNetids, ProvidedFeedback
+from .models import Question, Answer, QuailUser, Course, Tag, Feedback, AllNetids, ProvidedFeedback, Category
 
 
 class UserCreationForm(forms.ModelForm):
@@ -104,3 +104,6 @@ admin.site.register(Feedback, FeedbackAdmin)
 
 class ProvidedFeedbackAdmin(admin.ModelAdmin): pass
 admin.site.register(ProvidedFeedback, ProvidedFeedbackAdmin)
+
+class CategoryAdmin(admin.ModelAdmin): pass
+admin.site.register(Category, CategoryAdmin)

@@ -199,71 +199,121 @@ $(document).ready(function() {
 </div>
 <h4><a href="{% url 'quailapp:enroll' %}">Enroll in more courses</a></h4>
 <br>
-<span class="bold">Your Questions:</span>
-<ul>
-{% for q in user.question_set.all %}
-	<li>
-		<div class="box row">
-			<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
-				<div class="col-xs-1">
-					{% buttons %}
-					<div class="btn-group-vertical btn-group-sm" role="group">
-						<button class="btn btn-link disabled" name="vote" id="upvote">
-							{% bootstrap_icon "chevron-up" %}
-						</button>
-						<div class="centered votes">{{ q.votes }}</div>
-						<button class="btn btn-link disabled" name="vote" id="downvote">
-							{% bootstrap_icon "chevron-down" %}
-						</button>
-					</div>
-					{% endbuttons %}
-				</div>
-				<div class="col-xs-10">
-					<p class="question">
-						{{ q.text }}<br>
-						<span class="unemph">{{ q.created_on }}</span>
-					</p>
-				</div>
-				<div class="col-xs-1">
-					<form action="{% url 'quailapp:delete_from_userinfo' q.id %}" method="POST">
-						{% csrf_token %}
-							<button type="submit" class="btn btn-link btn-link-red right">
-								{% bootstrap_icon "remove" %}
+
+<span class="bold">Your Lecture Questions:</span>
+<div class="scrollbox">
+	<ul>
+	{% for q in questions %}
+		<li>
+			<div class="box row">
+				<a href="{% url 'quailapp:detail' q.id %}" class="question-box">
+					<div class="col-xs-1">
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button class="btn btn-link disabled" name="vote" id="upvote">
+								{% bootstrap_icon "chevron-up" %}
 							</button>
-					</form>
-				</div>
-			</a>
-		</div>
-	</li>
-{% endfor %}
-</ul>
-<br>
-<br>
-<span class="bold">Your Answers:</span>
-<ul>
-{% for answer in user.answer_set.all %}
-	<li>
-		<div class="box row">
-			<a href="{% url 'quailapp:detail' answer.question.id %}" class="question-box">
-				<div class="col-xs-11">
-					<div id="answer"><h4>{{ answer }}</h4></div>
-					<span class="unemph">Submitted on: {{ answer.created_on }}
-					</span>
-				</div>
-				<div class="col-xs-1">
-					{% if answer.submitter == user %}
-						<form action="{% url 'quailapp:deleteans' answer.id %}" method="POST">
+							<div class="centered votes">{{ q.votes }}</div>
+							<button class="btn btn-link disabled" name="vote" id="downvote">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</div>
+					<div class="col-xs-10">
+						<p class="question">
+							{{ q.text }}<br>
+							<span class="unemph">{{ q.created_on }}</span>
+						</p>
+					</div>
+					<div class="col-xs-1">
+						<form action="{% url 'quailapp:delete_from_userinfo' q.id %}" method="POST">
 							{% csrf_token %}
 								<button type="submit" class="btn btn-link btn-link-red right">
 									{% bootstrap_icon "remove" %}
 								</button>
 						</form>
-					{% endif %}
-				</div>
-			</a>
-		</div>
-	</li>
-{% endfor %}
-</ul>
+					</div>
+				</a>
+			</div>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
+<br>
+<span class="bold">Your Social Questions:</span>
+<div class="scrollbox">
+	<ul>
+	{% for q in social_questions %}
+		<li>
+			<div class="box row">
+				<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box">
+					<div class="col-xs-1">
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button class="btn btn-link disabled" name="vote" id="upvote">
+								{% bootstrap_icon "chevron-up" %}
+							</button>
+							<div class="centered votes">{{ q.votes }}</div>
+							<button class="btn btn-link disabled" name="vote" id="downvote">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</div>
+					<div class="col-xs-10">
+						<p class="question">
+							{{ q.text }}<br>
+							<span class="unemph">{{ q.created_on }}</span>
+						</p>
+					</div>
+					<div class="col-xs-1">
+						<form action="{% url 'quailapp:delete_from_userinfo' q.id %}" method="POST">
+							{% csrf_token %}
+								<button type="submit" class="btn btn-link btn-link-red right">
+									{% bootstrap_icon "remove" %}
+								</button>
+						</form>
+					</div>
+				</a>
+			</div>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
+<br>
+
+<span class="bold">Your Answers:</span>
+<div class="scrollbox">
+<ul>
+	{% for answer in user.answer_set.all %}
+		<li>
+			<div class="box row">
+				{% if answer.question.is_social %}
+				<a href="{% url 'quailapp:social_detail' answer.question.id %}" class="question-box">
+				{% else %}
+				<a href="{% url 'quailapp:detail' answer.question.id %}" class="question-box">
+				{% endif %}
+					<div class="col-xs-11">
+						<div id="answer">{{ answer }}</div>
+						<span class="unemph">Submitted on: {{ answer.created_on }}
+						</span>
+					</div>
+					<div class="col-xs-1">
+						{% if answer.submitter == user %}
+							<form action="{% url 'quailapp:deleteans' answer.id %}" method="POST">
+								{% csrf_token %}
+									<button type="submit" class="btn btn-link btn-link-red right">
+										{% bootstrap_icon "remove" %}
+									</button>
+							</form>
+						{% endif %}
+					</div>
+				</a>
+			</div>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
 
 {% endblock %}

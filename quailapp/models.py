@@ -34,7 +34,6 @@ class QuailUser(AbstractBaseUser, PermissionsMixin):
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
   chosen_filter = models.CharField(default='-votes', max_length=10)
-  #provided_feedback = models.CharField(default="0000000000", max_length=10)
 
   courses_by_id = models.TextField(max_length=10)
 
@@ -137,15 +136,30 @@ class ProvidedFeedback(models.Model):
     feedback = '%s for %s: %s' % (self.submitter.netid, self.course, self.provided_feedback)
     return feedback
 
+class Category(models.Model):
+  text = models.TextField() # name of the social category
+
+  def __unicode__(self):
+    return self.text
+
 class Tag(models.Model):
   text = models.TextField() # the actual tag name itself
   course = models.ForeignKey(Course, null=True) # tags associated with a course
+  category = models.ForeignKey(Category, null=True) # tags associated with a course
+
   questions = models.TextField(default="")  # question ids under this tag
   submitter = models.ForeignKey(QuailUser, null=True)
 
   def __unicode__(self):
     return self.text
-    
+
+# # allow tags to be associated with social categories
+# class SocialTag(models.Model):
+#   text = models.TextField() # the actual tag name itself
+#   category = models.ForeignKey(Category, null=True) # tags associated with a course
+#   questions = models.TextField(default="")  # question ids under this tag
+#   submitter = models.ForeignKey(QuailUser, null=True)
+
 class Question(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
@@ -157,6 +171,8 @@ class Question(models.Model):
     is_pinned = models.BooleanField(default=False)
     is_live = models.BooleanField(default=True)
     tags = models.TextField(null=True, default="") # allow tags (separated by '|')
+    category = models.ForeignKey(Category, null=True) # allow social categorization
+    is_social = models.BooleanField(default=False) # allow social filter
 
     users_upvoted = models.TextField(null=True, blank=True, default="")
     users_downvoted = models.TextField(null=True, blank=True, default="")

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block classes %}
+{% for course in courses %}
+<li>
+	<a href="{% url 'quailapp:coursepage_live' course.id %}">{{ course }}</a>
+</li>
+{% endfor %}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="centered">Welcome, {{ user.first_name }}</h1>
+
+<div class="row">
+	<div class="col-xs-4">
+		{% for category in categories %}
+			<div class="box-static-dark">
+				<a href="{% url 'quailapp:social_category' category.id %}">
+					<h5>{{ category }}</h5>
+				</a>
+			</div>
+			<br>
+		{% endfor %}
+	</div>
+
+	<div class="col-xs-8 box-static-dark">
+		<h5 class="centered">
+			Recent Questions
+		</h5>
+	</div>
+
+	<div class="col-xs-8">
+	{% for q in recent_questions %}
+		
+		<li>
+			<div class="box row">
+				<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box">
+					<div class="col-xs-1">
+						{% buttons %}
+						<div class="btn-group-vertical btn-group-sm" role="group">
+							<button class="btn btn-link disabled" name="vote" id="upvote">
+								{% bootstrap_icon "chevron-up" %}
+							</button>
+							<div class="centered votes">{{ q.votes }}</div>
+							<button class="btn btn-link disabled" name="vote" id="downvote">
+								{% bootstrap_icon "chevron-down" %}
+							</button>
+						</div>
+						{% endbuttons %}
+					</div>
+					<div class="col-xs-10">
+						<p class="question">
+							{{ q.text }}<br>
+							<span class="unemph">{{ q.created_on }}</span>
+						</p>
+					</div>
+					<div class="col-xs-1">
+						<form action="{% url 'quailapp:delete_from_userinfo' q.id %}" method="POST">
+							{% csrf_token %}
+								<button type="submit" class="btn btn-link btn-link-red right">
+									{% bootstrap_icon "remove" %}
+								</button>
+						</form>
+					</div>
+				</a>
+			</div>
+		</li>
+	
+	{% endfor %}
+	</div>
+</div>
+
+{% endblock %}

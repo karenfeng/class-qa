@@ -11,12 +11,8 @@
 
 {% block content %}
 
-{% if question.is_live %}
-<a href="{% url 'quailapp:coursepage_live' question.course.id %}">
-{% else %}
-<a href="{% url 'quailapp:coursepage_archive' question.course.id %}">
-{% endif %}
-{% bootstrap_icon "arrow-left"%} {{question.course}}
+<a href="{% url 'quailapp:social_category' question.category.id %}">
+{% bootstrap_icon "arrow-left"%} {{question.category}}
 </a>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -74,7 +70,7 @@ $(document).ready(function() {
 			data : {vote : $(this).attr("value") },
 			success: function (data) {
 				//$('#numvotes{{question.id}}').html(data);
-				$('#voting{{question.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{question.id}}");
+				$('#voting{{question.id}}').load("/{{category.id}}/social_category/" + " #voting{{question.id}}");
 			}
 		})
 	})
@@ -162,17 +158,14 @@ $(document).ready(function() {
 		      </span>
 		    </span>
 			<span class="unemph">{{ question.created_on }}
-			{% if not user.is_student %}
-				by {{ question.submitter.first_name }} {{ question.submitter.last_name }}
-			{% endif %}
 			</span>
 			<br>
 			<button id="edit_question{{question.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
 		</p>
 	</div>
 	<div class="col-xs-1">
-		{% if question.submitter.netid == user.netid or not user.is_student %}
-		<form action="{% url 'quailapp:delete_from_coursepage' question.id %}" method="POST">
+		{% if question.submitter.netid == user.netid %}
+		<form action="{% url 'quailapp:delete_from_social' question.id %}" method="POST">
 			{% csrf_token %}
 				<button type="submit" class="btn btn-link btn-link-red right">
 					{% bootstrap_icon "remove" %}
@@ -193,7 +186,6 @@ $(document).ready(function() {
 			<div id="answer"><h4>{{ question.answer }}</h4></div>
 			<button id="submit_edit" type="submit" class="btn btn-secondary btn-sm" >Submit</button>
 			<span class="unemph">Submitted on: {{ question.answer.created_on }}
-			{% if not user.is_student %}by {{ question.answer.submitter.first_name }} {{ question.answer.submitter.last_name }} {% endif %}
 			</span>
 			{% if question.answer.submitter == user %}
 				<button id="edit_answer" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
@@ -213,9 +205,8 @@ $(document).ready(function() {
 
 
 {% else %}
-{% if not user.is_student %}
 <span class="unemph">Looks like there are no answers... submit an answer!</span>
-<form action="{% url 'quailapp:detail' question.id %}" method="post">
+<form action="{% url 'quailapp:social_detail' question.id %}" method="post">
     {% csrf_token %}
     <div class="input-group">
       <input id="id_your_answer" name="your_answer" type="text" class="form-control" placeholder="Your answer">
@@ -226,9 +217,6 @@ $(document).ready(function() {
       </span>
     </div>
 </form>
-{% else %}
-<span class="unemph">Aw, looks like there are no answers yet.</span>
-{% endif %}
 {% endif %}
 
 <h3>Comments</h3>
@@ -244,7 +232,6 @@ $(document).ready(function() {
 				{{ comment }}
 				<br>
 			<span class="unemph">Submitted on: {{ comment.created_on }}
-				{% if not user.is_student %}by {{ comment.submitter.first_name }} {{ comment.submitter.last_name }} {% endif %}
 				</span>
 			</li>
 		</div>
@@ -255,7 +242,7 @@ $(document).ready(function() {
 {% endif %}
 
 <br>
-<form action="{% url 'quailapp:detail' question.id %}" method="post">
+<form action="{% url 'quailapp:social_detail' question.id %}" method="post">
     {% csrf_token %}
     <div class="input-group">
       <input id="id_your_comment" name="your_comment" type="text" class="form-control" placeholder="Comment here">
