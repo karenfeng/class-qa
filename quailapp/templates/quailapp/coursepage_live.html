@@ -60,6 +60,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		search_query = $('#id_q').val(); 
 		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
+		$('#id_q').attr('placeholder', search_query);
 		console.log("searched");
 	})
 
@@ -150,8 +151,9 @@ $(document).ready(function() {
 						// filter by tag
 						$(document).on('click','#id_tag{{tag.id}}', function(event) {
 							console.log('clicked');
-						$('#all_questions').load("/{{course.id}}/coursepage_live/?tag={{tag.id}}" + " #all_questions");
 						tag_id = "{{tag.id}}";
+						$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+						
 						});
 
 						// delete tag 
@@ -597,7 +599,6 @@ $(document).ready(function() {
 	<br>
 	{% endif %}
 	<ul>
-		{{ sortby_form }}
 		{% for q in questions %}
 		
 		<script>
@@ -630,6 +631,7 @@ $(document).ready(function() {
 			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
 
 				event.preventDefault();
+				console.log("{{q.text}}");
 				var height = $('#answers{{q.id}}').height(); 
 				//extend div to fit answer
 				$(this).finish().animate({

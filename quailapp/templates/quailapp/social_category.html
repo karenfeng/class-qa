@@ -485,7 +485,7 @@ $(document).ready(function() {
 		{% else %}
 		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
-			<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
+			<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 				<div class="col-xs-1">
 					<form method="POST">
 						{% csrf_token %}
@@ -802,7 +802,7 @@ $(document).ready(function() {
 			{% else %}
 			<div id='answers{{q.id}}' class="box row">
 			{% endif %}
-				<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
+				<a href="{% url 'quailapp:social_detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 					<div class="col-xs-1">
 						<form method="POST">
 							{% csrf_token %}
@@ -928,7 +928,7 @@ function reload_pages() {
 		$('#all_questions').load("/{{category.id}}/social/" + " #all_questions");
 	}
 	else {
-		$('#all_questions').load("/{{course.id}}/social/?tag=" + tag_id + " #all_questions");
+		$('#all_questions').load("/{{category.id}}/social/?tag=" + tag_id + " #all_questions");
 	}
 
 	
