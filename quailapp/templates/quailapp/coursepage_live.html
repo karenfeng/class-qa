@@ -127,101 +127,23 @@ $(document).ready(function() {
 				<div id="display_tags">	
 				{% for tag in course.tag_set.all %}
 					<li>
-					<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-						{{ tag }}
-					</button>
+					<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+						{% csrf_token %}
+						<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+							{{ tag }}
+						</button>
+					</form>
 					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">{% bootstrap_icon "remove" %}</button><br>
+					<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
+						{% csrf_token %}
+							<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
+								{% bootstrap_icon "remove" %}
+							</button>
+					</form>
 					{% endif %}
 					</li>
 
-					<script>
-						var tag_id = "";
-					</script>
-
-					<script>
-					// ajax for tags
-					$(document).ready(function() {
-
-						// filter by tag
-						$(document).on('click','#id_tag{{tag.id}}', function(event) {
-							console.log('clicked');
-						$('#all_questions').load("/{{course.id}}/coursepage_live/?tag={{tag.id}}" + " #all_questions");
-						tag_id = "{{tag.id}}";
-						});
-
-						// delete tag 
-						$(document).on('click', '#delete_tag{{tag.id}}', function(event) {
-							$.ajax({
-								type: 'post',
-								url: "{% url 'quailapp:delete_tag_from_coursepage' tag.id %}",
-								success: function(data) {
-									if (tag_id == "") {
-										$('#display_tags').load("/{{course.id}}/coursepage_live/" + " #display_tags");
-										$('#post_question').load("/{{course.id}}/coursepage_live/" + " #post_question");
-									}
-									else {
-										$('#display_tags').load("/{{course.id}}/coursepage_live/?tag="+tag_id + " #display_tags");
-										$('#post_question').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #post_question");
-									}
-									reload_pages();
-								}
-
-							});
-						});
-						// This function gets cookie with a given name
-					    function getCookie(name) {
-					        var cookieValue = null;
-					        if (document.cookie && document.cookie != '') {
-					            var cookies = document.cookie.split(';');
-					            for (var i = 0; i < cookies.length; i++) {
-					                var cookie = jQuery.trim(cookies[i]);
-					                // Does this cookie string begin with the name we want?
-					                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-					                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					                    break;
-					                }
-					            }
-					        }
-					        return cookieValue;
-					    }
-					    var csrftoken = getCookie('csrftoken');
-
-					    /*
-					    The functions below will create a header with csrftoken
-					    */
-
-					    function csrfSafeMethod(method) {
-					        // these HTTP methods do not require CSRF protection
-					        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-					    }
-					    function sameOrigin(url) {
-					        // test that a given url is a same-origin URL
-					        // url could be relative or scheme relative or absolute
-					        var host = document.location.host; // host + port
-					        var protocol = document.location.protocol;
-					        var sr_origin = '//' + host;
-					        var origin = protocol + sr_origin;
-					        // Allow absolute or scheme relative URLs to same origin
-					        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-					            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-					            // or any other URL that isn't scheme relative or absolute i.e relative.
-					            !(/^(\/\/|http:|https:).*/.test(url));
-					    }
-
-					    $.ajaxSetup({
-					        beforeSend: function(xhr, settings) {
-					            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-					                // Send the token to same-origin, relative URLs only.
-					                // Send the token only if the method warrants CSRF protection
-					                // Using the CSRFToken value acquired earlier
-					                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-					            }
-					        }
-					    });
-						
-					})
-					</script>
+					
 				{% endfor %}
 			</ul>
 		</span>
@@ -269,7 +191,7 @@ $(document).ready(function() {
 	</div>
 </div>
 
-<div id="all_questions">
+
 	{% if questions_pinned|length > 0 %}
 <h4>Pinned questions</h4>
 {% endif %}
@@ -367,7 +289,7 @@ $(document).ready(function() {
 			$.ajax({
 				type: 'post',
 				url: "{% url 'quailapp:vote' q.id %}",
-				data : {vote : $(this).attr("value") },
+				data : {vote : $(this).attr("value")},
 				success: function (data) {
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{q.id}}");
@@ -862,7 +784,7 @@ $(document).ready(function() {
 	        {% endif %}
 	    </span>
 	</div>
-</div>
+
 
 
 <script>
@@ -875,12 +797,12 @@ function reload_pages() {
 
 	//console.log(editing);
 	console.log("reload");
-	if (tag_id == "") {
+	//if (tag_id == "") {
 		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
-	}
-	else {
-		$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
-	}
+	//}
+	//else {
+	//	$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+	//}
 
 	
 }
