@@ -28,18 +28,16 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 
 <script>
 	var editing = false;
+	var search_query = ""; 
 </script>
 <script>
 $(document).ready(function() {
 	$('#id_your_question').keyup(function() {
-		editing = true; 
 		$.ajax({
 			url : "/similar_question",
 			type : "get",
 			data : {simQ: $('#id_your_question').val(), course: '{{course.id}}'},
 			success: function (data) {
-				editing = false;
-				//console.log(data);
 				var seperator = data.lastIndexOf("\n");
 				var simQuestion = data.substring(0, seperator);
 				var ID = data.substring(seperator + 1, data.length);
@@ -53,10 +51,18 @@ $(document).ready(function() {
 				else {
 					$('#sim_question').attr('style', 'display: none;');
 				}
+				console.log(data);
 			}
 		})
 
 	});
+	$(document).on('click', '#search_button', function(event) {
+		event.preventDefault();
+		search_query = $('#id_q').val(); 
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
+		$('#id_q').attr('placeholder', search_query);
+		console.log("searched");
+	})
 
 });
 </script>
@@ -100,11 +106,10 @@ $(document).ready(function() {
 	<div class="col-xs-8">
 		<span class="right">
 			<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-				{% csrf_token %}
 				<div class="input-group">
 				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
 				 	<span class="input-group-btn">
-						<button type="submit" class="btn btn-secondary" value="Submit">
+						<button type="submit" id="search_button" class="btn btn-secondary" value="Submit">
 							{% bootstrap_icon "search" %}
 						</button>
 					</span>
@@ -142,8 +147,6 @@ $(document).ready(function() {
 					</form>
 					{% endif %}
 					</li>
-
-					
 				{% endfor %}
 			</ul>
 		</span>
@@ -213,15 +216,22 @@ $(document).ready(function() {
 	})
 	$(document).ready(function() {
 
-			//DROP DOWN ANSWER
-			var req; // global variable for the ajax request
-			//expand
-			$('#answers{{q.id}}').hover(function() {
-				event.preventDefault();
+		// some constants
+		var tagAndEdit = 114;
+		var tag = 96;
+		var edit = 98;
+		var none = 80; 
 
+		//DROP DOWN ANSWER
+		var req; // global variable for the ajax request
+		//expand
+		$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+
+			event.preventDefault();
+			var height = $('#answers{{q.id}}').height(); 
 			//extend div to fit answer
 			$(this).finish().animate({
-	        height: '150px'
+	        height: ($(this).height()+75).toString()+'px'
 	    	}, 300);
 
 			//make the ajax request
@@ -231,23 +241,52 @@ $(document).ready(function() {
 				data : {ans: $(this).attr("id_your_answer") },
 				async: true,
 				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
-			}
-		})
-	    	// hide the answer and shrink the div
-			}, function() {
-				// if the ajax request hasn't been completed yet, abort
-				if(req && req.readyState != 4) {
-            		req.abort();
-            	}
-				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+					if (data) {
+						final_ans = "Answer: " + data;
+			    		// replace answer
+						$("#hide_ans{{q.id}}").html(final_ans);
+						$("#hide_ans{{q.id}}").show(data);
+					}
+				}
 			});
+			
+	    });
+	    // hide the answer and shrink the div
+		$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
+			// if the ajax request hasn't been completed yet, abort
+			if(req && req.readyState != 4) {
+        		req.abort();
+        	}
+			$("#hide_ans{{q.id}}").hide();
+			// if no tags
+		
+			// if tag and editable
+			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+	    		$(this).animate({
+	        		height: tagAndEdit.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// if just a tag
+	    	else if (("{{q.tags}}" != "")) {
+	    		$(this).animate({
+	        		height: tag.toString()+'px'
+	    		}, 300);
+	    	}
+	    	// editable
+	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+	    		$(this).animate({
+	        		height: edit.toString()+'px'
+	    		}, 300);
+	    	}
+	    	else {
+	    		$(this).animate({
+	        		height: none.toString()+'px'
+	    		}, 300);
+	    	}
+	    	
+		});
+
+    	
 
 		var q_text = "{{q.text}}";
 
@@ -380,7 +419,7 @@ $(document).ready(function() {
 	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
-		<div class="box-blue row">
+		<div id='answers{{q.id}}' class="box-blue row">
 		{% else %}
 		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
@@ -401,8 +440,8 @@ $(document).ready(function() {
 						{% endbuttons %}
 					</form>
 				</div>
-				<div id='answers{{q.id}}' class="col-xs-10">
-					<p id='answers{{q.id}}' class="question">
+				<div class="col-xs-10">
+					<p class="question">
 						<span class="input-group">
 					      	<span id="question{{q.id}}">{{ q.text }}</span>
 					      	<span class="input-group-btn">
@@ -414,15 +453,14 @@ $(document).ready(function() {
 							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
 						{% endif %}
 						</span>
+						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
-						{% if q.tags_as_list %}
-						{% for tag in q.tags_as_list %}
-							<span class="box-small">{{ tag }}</span>
-						{% endfor %}
-						{% endif %}
 					</p>
-					<div id="hide_ans{{q.id}}" class="dropdown_answer">
-					</div>
+					{% for tag in q.tags_as_list %}
+						<span class="box-small">{{ tag }}</span>
+					{% endfor %}
+				<div id="hide_ans{{q.id}}" class="dropdown_answer">
+				</div>
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
@@ -480,7 +518,6 @@ $(document).ready(function() {
 	<br>
 	{% endif %}
 	<ul>
-		{{ sortby_form }}
 		{% for q in questions %}
 		
 		<script>
@@ -501,40 +538,75 @@ $(document).ready(function() {
 		})
 		$(document).ready(function() {
 
+				// some constants
+			var tagAndEdit = 114;
+			var tag = 96;
+			var edit = 98;
+			var none = 80; 
+
 			//DROP DOWN ANSWER
 			var req; // global variable for the ajax request
 			//expand
-			$('#answers{{q.id}}').hover(function() {
+			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+
 				event.preventDefault();
+				console.log("{{q.text}}");
+				var height = $('#answers{{q.id}}').height(); 
+				//extend div to fit answer
+				$(this).finish().animate({
+		        height: ($(this).height()+75).toString()+'px'
+		    	}, 300);
 
-			//extend div to fit answer
-			$(this).finish().animate({
-	        height: '150px'
-	    	}, 300);
-
-			//make the ajax request
-	    	req = $.ajax({
-				url : "{% url 'quailapp:answer' q.id %}",
-				type : "get",
-				data : {ans: $(this).attr("id_your_answer") },
-				async: true,
-				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
-			}
-		})
-	    	// hide the answer and shrink the div
-			}, function() {
+				//make the ajax request
+		    	req = $.ajax({
+					url : "{% url 'quailapp:answer' q.id %}",
+					type : "get",
+					data : {ans: $(this).attr("id_your_answer") },
+					async: true,
+					success: function (data) {
+						if (data) {
+							final_ans = "Answer: " + data;
+				    		// replace answer
+							$("#hide_ans{{q.id}}").html(final_ans);
+							$("#hide_ans{{q.id}}").show(data);
+						}
+					}
+				});
+				
+		    });
+		    // hide the answer and shrink the div
+			$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
 				// if the ajax request hasn't been completed yet, abort
 				if(req && req.readyState != 4) {
-            		req.abort();
-            	}
+	        		req.abort();
+	        	}
 				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+				// if no tags
+			
+				// if tag and editable
+				if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: tagAndEdit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// if just a tag
+		    	else if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: tag.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// editable
+		    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: edit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	else {
+		    		$(this).animate({
+		        		height: none.toString()+'px'
+		    		}, 300);
+		    	}
+		    	
 			});
 
 
@@ -666,7 +738,7 @@ $(document).ready(function() {
 		</script>
 		<li>
 			{% if q.submitter.netid == user.netid %}
-			<div class="box-blue row">
+			<div id='answers{{q.id}}' class="box-blue row">
 			{% else %}
 			<div id='answers{{q.id}}' class="box row">
 			{% endif %}
@@ -687,8 +759,8 @@ $(document).ready(function() {
 							{% endbuttons %}
 						</form>
 					</div>
-					<div id='answers{{q.id}}' class="col-xs-10">
-						<p id='answers{{q.id}}' class="question">
+					<div class="col-xs-10">
+						<p class="question">
 							<span class="input-group">
 						      	<span id="question{{q.id}}">{{ q.text }}</span>
 						      	<span class="input-group-btn">
@@ -797,12 +869,17 @@ function reload_pages() {
 
 	//console.log(editing);
 	console.log("reload");
-	//if (tag_id == "") {
+
+	if (search_query == "") {
 		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
-	//}
-	//else {
-	//	$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
-	//}
+	}
+	// else if (search_query == "")
+	// {
+	// 	$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
+	// }
+	else {
+		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
+	}
 
 	
 }
@@ -815,7 +892,7 @@ function check_ifanswered() {
 		success: function(data) {
 			if (data) {
 				$('#notification').html("");
-				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pagek+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
 				$(".dismiss").click(function(){
        				$("#notification").fadeOut("slow");
 				});

@@ -46,7 +46,6 @@ $(document).ready(function() {
 	// click edit button
 	$(document).on('click', '#edit_question{{question.id}}', function(event) {
 		event.preventDefault();
-		console.log("CLICK");
 		$("#question{{question.id}}").html('<input id="submit_edit{{question.id}}" type="text" class="form-control" value="">');
 		$("#submit_edit{{question.id}}").attr("value", q_text);
 		// disable link temporarily while user edits
@@ -82,7 +81,8 @@ $(document).ready(function() {
 			data : {vote : $(this).attr("value") },
 			success: function (data) {
 				//$('#numvotes{{question.id}}').html(data);
-				$('#voting{{question.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{question.id}}");
+				$('#voting{{question.id}}').load("/{{question.id}}/" + " #voting{{question.id}}");
+					
 			}
 		})
 	})

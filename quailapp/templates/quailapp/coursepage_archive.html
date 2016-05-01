@@ -268,10 +268,12 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 				data : {ans: $(this).attr("id_your_answer") },
 				async: true,
 				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
+				if (data) {
+					final_ans = "Answer: " + data;
+		    		// replace answer
+					$("#hide_ans{{q.id}}").html(final_ans);
+					$("#hide_ans{{q.id}}").show(data);
+				}
 			}
 		})
 	    	// hide the answer and shrink the div
@@ -474,10 +476,12 @@ No Questions Found
 				data : {ans: $(this).attr("id_your_answer") },
 				async: true,
 				success: function (data) {
-				final_ans = "Answer: " + data;
-	    		// replace answer
-				$("#hide_ans{{q.id}}").html(final_ans);
-				$("#hide_ans{{q.id}}").show(data);
+				if (data) {
+					final_ans = "Answer: " + data;
+	    			// replace answer
+					$("#hide_ans{{q.id}}").html(final_ans);
+					$("#hide_ans{{q.id}}").show(data);
+				}
 			}
 		})
 	    	// hide the answer and shrink the div

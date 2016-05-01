@@ -788,11 +788,18 @@ def enroll(request):
 
 def similar_question(request):
     if request.is_ajax():
-        target_question = request.GET['simQ']
-        course_id = request.GET['course']
 
-        course = get_object_or_404(Course, pk=course_id)
-        questions = Question.objects.filter(course=course)
+        target_question = request.GET['simQ']
+        if 'course' in request.GET:
+            course_id = request.GET['course']
+            course = get_object_or_404(Course, pk=course_id)
+            questions = Question.objects.filter(course=course)
+        else:
+            category_id = request.GET['category']
+            category = get_object_or_404(Category, pk=category_id)
+            questions = Question.objects.filter(category=category)
+
+        
         questions_text_lower = [] # questions with all lower case text
         questions_text_upper = [] # questions as they were submitted with upper case text with their id
 
@@ -810,9 +817,10 @@ def similar_question(request):
         pairwise_similarity = (tfidf * tfidf.T).A[len(questions_text_lower)-1] 
         max_similarity = max(np.delete(pairwise_similarity, len(questions_text_lower)-1))
         max_index = np.where(pairwise_similarity == max_similarity)[0]
-
+        
         #corner case for if there are no similar questions
-        if(max_similarity == 0.0): return HttpResponse("")
+        if not max_similarity or max_similarity == 0.0: 
+            return HttpResponse("")
 
         best_match = questions_text_upper[max_index]
         return HttpResponse(best_match)
@@ -846,10 +854,13 @@ def edit_answer(request, question_id):
 def get_answer(request, question_id):
     if request.is_ajax():
         question = get_object_or_404(Question, pk=question_id)     
-        if not question.answer:
+        try:
+            answer = question.answer
+            return HttpResponse(answer)
+        except:
             return HttpResponse("")
-        else:
-            return HttpResponse(question.answer)
+
+    
 
 def answered_questions(request, course_id):
 
