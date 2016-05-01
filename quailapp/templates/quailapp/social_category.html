@@ -137,8 +137,8 @@ $(document).ready(function() {
 						// filter by tag
 						$(document).on('click','#id_tag{{tag.id}}', function(event) {
 							console.log('clicked');
-						$('#all_questions').load("/{{category.id}}/social/?tag={{tag.id}}" + " #all_questions");
 						tag_id = "{{tag.id}}";
+						$('#all_questions').load("/{{category.id}}/social/?tag=" + tag_id + " #all_questions");
 						});
 
 						// delete tag 
