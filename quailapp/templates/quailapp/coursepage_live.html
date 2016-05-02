@@ -51,7 +51,6 @@ $(document).ready(function() {
 				else {
 					$('#sim_question').attr('style', 'display: none;');
 				}
-				console.log(data);
 			}
 		})
 
@@ -61,7 +60,6 @@ $(document).ready(function() {
 		search_query = $('#id_q').val(); 
 		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
 		$('#id_q').attr('placeholder', search_query);
-		console.log("searched");
 	})
 
 });
@@ -155,7 +153,6 @@ $(document).ready(function() {
 
 						// filter by tag
 						$(document).on('click','#id_tag{{tag.id}}', function(event) {
-							console.log('clicked');
 							tag_id = "{{tag.id}}";
 							$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
 						
@@ -446,7 +443,6 @@ $(document).ready(function() {
 				url: "{% url 'quailapp:pin' q.id %}",
 				data: {'pin': $(this).attr('value')},
 				success: function(data) {
-					console.log(data);
 					reload_pages();
 				}
 			});
@@ -636,7 +632,7 @@ $(document).ready(function() {
 			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
 
 				event.preventDefault();
-				console.log("{{q.text}}");
+
 				var height = $('#answers{{q.id}}').height(); 
 				//extend div to fit answer
 				$(this).finish().animate({
@@ -764,7 +760,6 @@ $(document).ready(function() {
 					url: "{% url 'quailapp:pin' q.id %}",
 					data: {'pin': $(this).attr('value')},
 					success: function(data) {
-						console.log(data);
 						reload_pages();
 					}
 				});
@@ -954,7 +949,6 @@ $(document).ready(function() {
 function reload_pages() {
 
 	//console.log(editing);
-	console.log("reload");
 
 	if (search_query == "" && tag_id == "") {
 		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
@@ -985,7 +979,6 @@ function check_ifanswered() {
 			}
 
 			else {
-				console.log("no questions answered in last X seconds");
 				changed = false;
 			}
 		}

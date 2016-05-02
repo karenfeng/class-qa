@@ -137,7 +137,6 @@ $(document).ready(function() {
 
 						// filter by tag
 						$(document).on('click','#id_tag{{tag.id}}', function(event) {
-							console.log('clicked');
 						$('#all_questions').load("/{{course.id}}/coursepage_archive/?tag={{tag.id}}" + " #all_questions");
 						tag_id = "{{tag.id}}";
 						});
@@ -283,7 +282,6 @@ $(document).ready(function() {
 				data : {ans: $(this).attr("id_your_answer") },
 				//async: true,
 				success: function (data) {
-					console.log('ajax complete');
 					if (data) {
 						final_ans = "Answer: " + data;
 			    		// replace answer
@@ -351,14 +349,11 @@ $(document).ready(function() {
 				url: "{% url 'quailapp:pin' q.id %}",
 				data: {'pin': $(this).attr('value')},
 				success: function(data) {
-					console.log(data);
 					reload_pages();
 
 				}
 			});
 		});
-
-
 
 		
 	    // This function gets cookie with a given name
@@ -461,7 +456,6 @@ $(document).ready(function() {
 
 						// filter by tag
 						$(document).on('click','#id_tag{{tag.id}}', function(event) {
-							console.log('clicked');
 							tag_id = "{{tag.id}}";
 							$('#all_questions').load("/{{course.id}}/courepage_archive/?tag=" + tag_id + " #all_questions");
 						
@@ -614,7 +608,6 @@ No Questions Found
 		$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
 
 			event.preventDefault();
-			console.log("{{q.text}}");
 			var height = $('#answers{{q.id}}').height(); 
 			//extend div to fit answer
 			$(this).finish().animate({
@@ -674,14 +667,12 @@ No Questions Found
 		});
 		//  FOR AJAX UNPINNING
 		$(document).on('click', '[name=pin{{q.id}}]', function(event) {
-			console.log('pinning');
 			event.preventDefault();
 			$.ajax({
 				type: 'post', 
 				url: "{% url 'quailapp:pin' q.id %}",
 				data: {'pin': $(this).attr('value')},
 				success: function(data) {
-					console.log(data);
 					reload_pages();
 				}
 			});
@@ -876,7 +867,6 @@ No Questions Found
 function reload_pages() {
 
 	//console.log(editing);
-	console.log("reload");
 
 	if (search_query == "" && tag_id == "") {
 		$('#all_questions').load("/{{course.id}}/coursepage_archive/" + " #all_questions");
