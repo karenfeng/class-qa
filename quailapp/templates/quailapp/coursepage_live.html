@@ -77,18 +77,20 @@ $(document).ready(function() {
 	</a>
 </div>
 
-<h4>Post a question!</h4>
-<div id="post_question">
-	<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
-	    {% csrf_token %}
-	      {% bootstrap_form form %}
-	      <span class="input-group-btn">
-			{% buttons %}
-	        	<button class="btn btn-primary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-			{% endbuttons %}
-	      </span>
-	    </div>
-	</form>
+<div class="box-static">
+	<h4>Post a question!</h4>
+	<div id="post_question">
+		<form action="{% url 'quailapp:coursepage_live' course.id %}" method="post">
+		    {% csrf_token %}
+		      {% bootstrap_form form %}
+		      <span class="input-group-btn">
+				{% buttons %}
+		        	<button class="btn btn-primary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+				{% endbuttons %}
+		      </span>
+		    </div>
+		</form>
+	</div>
 </div>
 
 <br>
@@ -129,19 +131,19 @@ $(document).ready(function() {
 						(All tags)
 					</button>
 				</li>
-				<div id="display_tags">	
+				<div id="display_tags">
 				{% for tag in course.tag_set.all %}
 					<li>
-					
-						<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-							{{ tag }}
-						</button>
-					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					
-							<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
+						<span>
+							<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+								{{ tag }}
+							</button>
+							{% if tag.submitter.netid == user.netid or not user.is_student %}
+							<button type="submit" class="btn btn-link btn-link-red no-pad" id="delete_tag{{tag.id}}">
 								{% bootstrap_icon "remove" %}
 							</button>
-					{% endif %}
+							{% endif %}
+						</span>
 					</li>
 				<script>
 						var tag_id = "";
