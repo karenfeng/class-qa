@@ -32,10 +32,14 @@
 		</div>
 		<div class="box-static">
 			<span>{{ user.netid }}: {{ user.first_name }} {{ user.last_name }}</span><br>
-			<span>Enrolled in {{ courses|length }} courses</span><br>
-			<span>Asked {{ user.question_set.all|length }} questions<span><br>
-			<span>Answered {{ user.answer_set.all|length }} questions<span><br>
-			<span>Made {{ user.comment_set.all|length }} comments<span>
+			<span>Courses enrolled: {{ courses|length }} </span><br>
+			<span>Questions asked: {{ user.question_set.all|length }} </span><br>
+			<span>Questions answered: {{ user.answer_set.all|length }} </span><br>
+			<span>Comments made: {{ user.comment_set.all|length }} </span>
+			{% if user.is_student %}
+			<br>
+			<span>Feedback provided: {{ user.feedback_set.all|length }} </span>
+			{% endif %}
 		</div>
 		<br>
 		<div class="box-static-dark">

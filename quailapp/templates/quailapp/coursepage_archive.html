@@ -104,7 +104,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 						{{ tag }}
 					</button>
 					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">{% bootstrap_icon "remove" %}</button><br>
+					<button type="submit" class="btn btn-link btn-link-red no-pad" id="delete_tag{{tag.id}}">{% bootstrap_icon "remove" %}</button><br>
 					{% endif %}
 					</li>
 
