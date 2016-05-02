@@ -143,9 +143,20 @@ def coursepage_live(request, course_id):
             if q != '':
                 question_exists = Question.objects.filter(pk=q).exists()
                 if not question_exists:
-                    t_questions = t.questions.replace("|"+q, "")
-                    t.questions = t_questions
-                    t.save()
+                    t_questions = tag.questions.replace("|"+q, "")
+                    tag.questions = t_questions
+                    tag.save()
+
+    # check if all the tag ids in the questions are valid
+    for question in course.question_set.all():
+        tags = question.tags.split('|')
+        for t in tags:
+            if t != '':
+                tag_exists = Tag.objects.filter(pk=t).exists()
+                if not tag_exists:
+                    q_tags = question.tags.replace("|"+t, "")
+                    question.tags = q_tags
+                    question.save()
 
     display_feedback = True
 
