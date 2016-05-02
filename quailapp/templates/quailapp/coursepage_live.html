@@ -303,7 +303,7 @@ $(document).ready(function() {
 	$(document).ready(function() {
 
 		// some constants
-		var tagAndEdit = 114;
+		var tagAndEdit = 109;
 		var tag = 96;
 		var edit = 98;
 		var none = 80; 
@@ -511,8 +511,6 @@ $(document).ready(function() {
 		{% endif %}
 			<a href="{% url 'quailapp:detail' q.id %}" class="question-box" id="detail{{q.id}}">	
 				<div class="col-xs-1">
-					<form method="POST">
-						{% csrf_token %}
 						{% buttons %}
 						<div class="btn-group-vertical btn-group-sm" role="group" id="voting{{q.id}}">
 							<button type="submit" class="btn btn-link{% if q.submitter.netid == user.netid %} disabled{% elif user.netid in q.users_upvoted %} disabled{% endif %}" name="vote{{q.id}}" id="upvote" value="1" {% if q.submitter.netid == user.netid %}disabled{% endif %}>
@@ -625,7 +623,7 @@ $(document).ready(function() {
 		$(document).ready(function() {
 
 				// some constants
-			var tagAndEdit = 114;
+			var tagAndEdit = 109;
 			var tag = 96;
 			var edit = 98;
 			var none = 80; 
