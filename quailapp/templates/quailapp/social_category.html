@@ -519,9 +519,6 @@ $(document).ready(function() {
 					      </span>
 					    </span>
 						<span class="unemph">{{ q.created_on }}
-						{% if not user.is_student %}
-							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
-						{% endif %}
 						</span>
 						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
@@ -836,9 +833,6 @@ $(document).ready(function() {
 						      </span>
 						    </span>
 							<span class="unemph">{{ q.created_on }}
-							{% if not user.is_student %}
-								by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
-							{% endif %}
 							</span>
 							<br>
 							<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
