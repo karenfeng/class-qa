@@ -708,8 +708,10 @@ def user_info(request):
     courses = Course.objects.filter(courseid__in=request.user.course_id_list)
 
     # course questions
-    questions = Question.objects.exclude(is_social=True)
-    social_questions = Question.objects.filter(is_social=True)
+    user_questions = user.question_set.all()
+    questions = user_questions.exclude(is_social=True)
+    user_social_questions = user.question_set.all()
+    social_questions = user_social_questions.filter(is_social=True)
 
     # handle unenroll requests
     if request.method == 'POST' and request.is_ajax():

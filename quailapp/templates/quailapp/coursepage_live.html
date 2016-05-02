@@ -102,6 +102,8 @@ $(document).ready(function() {
 <br>
 {% endif %}
 
+{% if searched_for_questions %}<a href="{% url 'quailapp:coursepage_live' course.id %}">Go back</a>{% endif %}
+
 <div class="row">
 	<div class="col-xs-8">
 		<span class="right">
