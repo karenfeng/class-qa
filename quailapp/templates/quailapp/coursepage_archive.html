@@ -258,10 +258,8 @@ $(document).ready(function() {
 	$(document).ready(function() {
 
 		// some constants
-		var tagAndEdit = 109;
 		var tag = 96;
-		var edit = 98;
-		var none = 80; 
+		var none = 96; 
 
 		//DROP DOWN ANSWER
 		var req; // global variable for the ajax request
@@ -301,24 +299,13 @@ $(document).ready(function() {
 			$("#hide_ans{{q.id}}").hide();
 			// if no tags
 		
-			// if tag and editable
-			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: tagAndEdit.toString()+'px'
-	    		}, 300);
-	    	}
 	    	// if just a tag
-	    	else if (("{{q.tags}}" != "")) {
+	    	if (("{{q.tags}}" != "")) {
 	    		$(this).animate({
 	        		height: tag.toString()+'px'
 	    		}, 300);
 	    	}
-	    	// editable
-	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: edit.toString()+'px'
-	    		}, 300);
-	    	}
+	    	
 	    	else {
 	    		$(this).animate({
 	        		height: none.toString()+'px'
@@ -597,10 +584,8 @@ No Questions Found
 	$(document).ready(function() {
 
 		// some constants
-		var tagAndEdit = 109;
 		var tag = 96;
-		var edit = 98;
-		var none = 80; 
+		var none = 96; 
 
 		//DROP DOWN ANSWER
 		var req; // global variable for the ajax request
@@ -640,24 +625,14 @@ No Questions Found
 			$("#hide_ans{{q.id}}").hide();
 			// if no tags
 		
-			// if tag and editable
-			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: tagAndEdit.toString()+'px'
-	    		}, 300);
-	    	}
+		
 	    	// if just a tag
-	    	else if (("{{q.tags}}" != "")) {
+	    	if (("{{q.tags}}" != "")) {
 	    		$(this).animate({
 	        		height: tag.toString()+'px'
 	    		}, 300);
 	    	}
-	    	// editable
-	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: edit.toString()+'px'
-	    		}, 300);
-	    	}
+	    	
 	    	else {
 	    		$(this).animate({
 	        		height: none.toString()+'px'
