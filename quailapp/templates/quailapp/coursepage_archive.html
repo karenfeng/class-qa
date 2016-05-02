@@ -258,7 +258,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 
 			//extend div to fit answer
 			$(this).finish().animate({
-	        height: '150px'
+	        height: ($(this).height()+75).toString()+'px'
 	    	}, 300);
 
 			//make the ajax request
@@ -283,9 +283,16 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
             		req.abort();
             	}
 				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+				if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: 106+'px'
+		    		}, 300);
+		    	}
+	    		else {
+	    			$(this).animate({
+		        		height: '90px'
+		    		}, 300);
+	    		}
 			});
 
 		
@@ -343,7 +350,7 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
-		<div class="box-blue row">
+		<div id='answers{{q.id}}' class="box-blue row">
 		{% else %}
 		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
@@ -466,7 +473,7 @@ No Questions Found
 
 			//extend div to fit answer
 			$(this).finish().animate({
-	        height: '150px'
+	        height: ($(this).height()+75).toString()+'px'
 	    	}, 300);
 
 			//make the ajax request
@@ -478,7 +485,7 @@ No Questions Found
 				success: function (data) {
 				if (data) {
 					final_ans = "Answer: " + data;
-	    			// replace answer
+		    		// replace answer
 					$("#hide_ans{{q.id}}").html(final_ans);
 					$("#hide_ans{{q.id}}").show(data);
 				}
@@ -491,11 +498,17 @@ No Questions Found
             		req.abort();
             	}
 				$("#hide_ans{{q.id}}").hide();
-	    		$(this).animate({
-	        		height: '75px'
-	    		}, 300);
+				if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: 106+'px'
+		    		}, 300);
+		    	}
+	    		else {
+	    			$(this).animate({
+		        		height: '90px'
+		    		}, 300);
+	    		}
 			});
-
 
 	    // This function gets cookie with a given name
 	    function getCookie(name) {
@@ -551,7 +564,7 @@ No Questions Found
 	</script>
 	<li>
 		{% if q.submitter.netid == user.netid %}
-		<div class="box-blue row">
+		<div id='answers{{q.id}}' class="box-blue row">
 		{% else %}
 		<div id='answers{{q.id}}' class="box row">
 		{% endif %}
