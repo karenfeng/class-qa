@@ -947,10 +947,10 @@ function check_ifanswered() {
 		url: "{% url 'quailapp:answered_questions_social' category.id %}",
 		dataType: 'json',
 		success: function(data) {
-			console.log(data);
+			console.log(data[0]);
 			if (data) {
 				$('#notification').html("");
-				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pagek+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pk +'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
 				$(".dismiss").click(function(){
        				$("#notification").fadeOut("slow");
 				});
