@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_question/$', login_required(views.edit_question), name='edit_question'),
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/edit_answer/$', login_required(views.edit_answer), name='edit_answer'),
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/answered_questions/$', login_required(views.answered_questions), name='answered_questions'),
+    url(r'^(?P<category_id>[a-zA-Z0-9]+)/answered_questions_social/$', login_required(views.answered_questions_social), name='answered_questions_social'),
     url(r'^(?P<course_id>[a-zA-Z0-9]+)/feedback/$', login_required(views.user_feedback), name='user_feedback'),
     url(r'^(?P<feedback_id>[a-zA-Z0-9]+)/feedback/delete$', login_required(views.delete_feedback), name='delete_feedback'),
     url(r'^archived_feedback$', login_required(views.archived_feedback), name='archived_feedback'),

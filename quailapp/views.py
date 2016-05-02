@@ -884,6 +884,30 @@ def answered_questions(request, course_id):
         data = serializers.serialize('json', questions_answered)
         return HttpResponse(data, content_type='application/json')
 
+
+def answered_questions_social(request, category_id):
+
+    if request.is_ajax():
+        category = get_object_or_404(Category, pk=category_id)
+        questions = Question.objects.filter(submitter=request.user, category=category)
+        
+        # all questions that have been answered in the last X seconds... 
+        q_ids = []
+        now = datetime.datetime.now()
+        for q in questions:
+            try:
+                if (q.answer.created_on + timedelta(seconds=10) >= now):
+                    q_ids.append(q.id)
+            except:
+                pass
+        if not q_ids:
+            return HttpResponse("")
+        # serialize into json response
+        questions_answered = Question.objects.filter(pk__in=q_ids)
+        data = serializers.serialize('json', questions_answered)
+        return HttpResponse(data, content_type='application/json')
+
+
 def social_home(request):
     try:
         user = QuailUser.objects.get(netid=request.user.netid)

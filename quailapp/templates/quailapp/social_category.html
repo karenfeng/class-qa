@@ -29,6 +29,7 @@
 
 <script>
 	var editing = false;
+	var search_query = "";
 </script>
 <script>
 $(document).ready(function() {
@@ -58,6 +59,13 @@ $(document).ready(function() {
 			}
 		})
 
+	});
+	$(document).on('click', '#search_button', function(event) {
+		event.preventDefault();
+		search_query = $('#id_q').val(); 
+		$('#all_questions').load("/{{category.id}}/social/?q=" + search_query + " #all_questions");
+		$('#id_q').attr('placeholder', search_query);
+		console.log("searched");
 	});
 
 });
@@ -90,17 +98,15 @@ $(document).ready(function() {
 <div class="row">
 	<div class="col-xs-8">
 		<span class="right">
-			<form method="get" action="{% url 'quailapp:social_category' category.id %}">
-				{% csrf_token %}
-				<div class="input-group">
-				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
-				 	<span class="input-group-btn">
-						<button type="submit" class="btn btn-secondary" value="Submit">
-							{% bootstrap_icon "search" %}
-						</button>
-					</span>
-				</div>
-			</form>
+		
+			<div class="input-group">
+			 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
+			 	<span class="input-group-btn">
+					<button type="submit" id='search_button' class="btn btn-secondary" value="Submit">
+						{% bootstrap_icon "search" %}
+					</button>
+				</span>
+			</div>
 		</span>
 	</div>
 	<div class="col-xs-4">
@@ -280,7 +286,7 @@ $(document).ready(function() {
 	})
 	$(document).ready(function() {
 
-		var tagAndEdit = 109;
+		var tagAndEdit = 114;
 		var tag = 96;
 		var edit = 98;
 		var none = 80; 
@@ -601,7 +607,7 @@ $(document).ready(function() {
 		$(document).ready(function() {
 
 			// some constants
-			var tagAndEdit = 109;
+			var tagAndEdit = 114;
 			var tag = 96;
 			var edit = 98;
 			var none = 80; 
@@ -933,14 +939,51 @@ function reload_pages() {
 
 	
 }
+function check_ifanswered() {
+
+	console.log('check if answered');
+	$.ajax({
+		type : 'get',
+		url: "{% url 'quailapp:answered_questions_social' category.id %}",
+		dataType: 'json',
+		success: function(data) {
+			console.log(data);
+			if (data) {
+				$('#notification').html("");
+				$("#notification").fadeIn("slow").append('<a href="/' + data[0].pagek+'">Your question was answered: '+data[0].fields.text+'</a><span class="dismiss"><a title="dismiss this notification">x</a></span>');
+				$(".dismiss").click(function(){
+       				$("#notification").fadeOut("slow");
+				});
+			}
+
+			else {
+				console.log("no questions answered in last X seconds");
+				changed = false;
+			}
+		}
+
+	})
+
+	
+	
+}
 
 $(document).ready(function() {
 
 	setInterval(function() {
 		if (!editing) {
 			reload_pages();
+			check_ifanswered(); 
 		}
 	}, 10000);
 })
 </script>
+
+<div id="notification" style="display: none;">
+	<span class="dismiss">
+		<a title="dismiss this notification">x</a>
+	</span>
+</div>
+
+</ul>
 {% endblock %}
