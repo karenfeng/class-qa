@@ -73,7 +73,7 @@ $(document).ready(function() {
 	}
 
 	$('#id_your_question').keyup(function() {
-		console.log("hi");
+		//console.log("hi");
 		editing = true; 
 		$.ajax({
 			url : "/similar_question",
@@ -367,7 +367,7 @@ $(document).ready(function() {
 				url: "{% url 'quailapp:vote' q.id %}",
 				data : {vote : $(this).attr("value") },
 				success: function (data) {
-					console.log('clicked');
+					//console.log('clicked');
 					//$('#numvotes{{q.id}}').html(data);
 					$('#voting{{q.id}}').load("/{{category.id}}/social/" + " #voting{{q.id}}");
 				}
@@ -685,7 +685,7 @@ $(document).ready(function() {
 					data : {vote : $(this).attr("value") },
 					success: function (data) {
 						//$('#numvotes{{q.id}}').html(data);
-						console.log(page + " " + search_query + " " + tag_id);
+						//console.log(page + " " + search_query + " " + tag_id);
 						$('#voting{{q.id}}').load("/{{category.id}}/social/" + page + search_query + tag_id + " #voting{{q.id}}");
 					}
 				})
@@ -899,7 +899,6 @@ function reload_pages() {
 }
 function check_ifanswered() {
 
-	console.log('check if answered');
 	$.ajax({
 		type : 'get',
 		url: "{% url 'quailapp:answered_questions_social' category.id %}",

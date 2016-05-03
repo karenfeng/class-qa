@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^archived_feedback$', login_required(views.archived_feedback), name='archived_feedback'),
     url(r'^social$', login_required(views.social_home), name='social_home'),
     url(r'^(?P<category_id>[a-zA-Z0-9]+)/social/$', login_required(views.social_category), name='social_category'),
-    url(r'^(?P<question_id>[0-9][a-zA-Z0-9]+)/social$', login_required(views.social_detail), name='social_detail'), # messy solution; question ids too long
+    url(r'^(?P<question_id>[0-9][a-zA-Z0-9]+)/social$', login_required(views.social_detail), name='social_detail'), # messy solution; there CANNOT be a trailing slash, otherwise will confuse w/ social category link
     url(r'^(?P<question_id>[a-zA-Z0-9]+)/delete_from_social/$', login_required(views.delete_from_social), name='delete_from_social'), # a little hacky.
     url(r'^(?P<tag_id>[a-zA-Z0-9]+)/delete_tag_from_social/$', login_required(views.delete_tag_from_social), name='delete_tag_from_social'), # a little hacky.
 

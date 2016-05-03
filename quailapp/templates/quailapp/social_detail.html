@@ -78,7 +78,7 @@ $(document).ready(function() {
 			data : {vote : $(this).attr("value") },
 			success: function (data) {
 				//$('#numvotes{{question.id}}').html(data);
-				$('#voting{{question.id}}').load("/{{category.id}}/social_category/" + " #voting{{question.id}}");
+				$('#voting{{question.id}}').load("/{{question.id}}/social" + " #voting{{question.id}}");
 			}
 		})
 	})

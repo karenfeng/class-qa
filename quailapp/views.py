@@ -134,7 +134,12 @@ def coursepage_live(request, course_id):
     user = request.user
     now = datetime.datetime.now()
     course_id_list = user.courses_by_id.split('|')
-    feedback_for_course = user.providedfeedback_set.all().get(course=course)
+
+    feedback_exists = user.providedfeedback_set.filter(course=course).exists()
+    if feedback_exists:
+        feedback_for_course = user.providedfeedback_set.all().get(course=course)
+    else:
+        return HttpResponse("You are not enrolled in this course")
 
     # check if all the question ids in the tags are valid
     for tag in course.tag_set.all():
