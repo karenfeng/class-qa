@@ -46,7 +46,7 @@ function getParameterByName(name, url) {
 
 
 $(document).ready(function() {
-	
+
 	page = getParameterByName('page'); 
 	tag_id = getParameterByName('tag');
 	search_query = getParameterByName('q');
@@ -133,7 +133,7 @@ $(document).ready(function() {
 
 <br>
 
-{% if display_feedback and not provided_feedback and is_student %}
+{% if display_feedback and not provided_feedback and user.is_student %}
 <div class="box-red">
 	<a href="{% url 'quailapp:user_feedback' course.id %}" class="question-box">
 		<h4 class="question">Provide feedback for the last lecture!</h4>
