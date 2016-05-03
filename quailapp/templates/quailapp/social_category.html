@@ -169,19 +169,25 @@ $(document).ready(function() {
 				<div id="display_tags">	
 				{% for tag in category.tag_set.all %}
 					<li>
-					<form method="get" action="{% url 'quailapp:social_category' category.id %}">
-						<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-							{{ tag }}
-						</button>
-					</form>
-					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					<form action="{% url 'quailapp:delete_tag_from_social' tag.id %}" method="POST">
-						{% csrf_token %}
-							<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
-								{% bootstrap_icon "remove" %}
-							</button>
-					</form>
+					<div>
+						<div class="col-xs-9 no-pad">
+							<form method="get" action="{% url 'quailapp:social_category' category.id %}">
+								<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+									{{ tag }}
+								</button>
+							</form>
+						</div>
+						<div class="col-xs-3 no-pad">
+							{% if tag.submitter.netid == user.netid or not user.is_student %}
+							<form action="{% url 'quailapp:delete_tag_from_social' tag.id %}" method="POST">
+								{% csrf_token %}
+									<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
+										{% bootstrap_icon "remove" %}
+									</button>
+							</form>
+						</div>
 					{% endif %}
+					</div>
 					</li>
 
 					
@@ -280,7 +286,7 @@ $(document).ready(function() {
 					async: true,
 					success: function (data) {
 						if (data) {
-							final_ans = "Answer: " + data;
+							final_ans = "<br>Answer: " + data;
 				    		// replace answer
 							$("#hide_ans{{q.id}}").html(final_ans);
 							$("#hide_ans{{q.id}}").show(data);
@@ -600,7 +606,7 @@ $(document).ready(function() {
 						async: true,
 						success: function (data) {
 							if (data) {
-								final_ans = "Answer: " + data;
+								final_ans = "<br>Answer: " + data;
 					    		// replace answer
 								$("#hide_ans{{q.id}}").html(final_ans);
 								$("#hide_ans{{q.id}}").show(data);

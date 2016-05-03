@@ -150,7 +150,7 @@ $(document).ready(function() {
 
 			<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
 				<div class="input-group">
-				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
+				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Search">
 				 	<span class="input-group-btn">
 						<button type="submit" class="btn btn-secondary" value="Submit">
 							{% bootstrap_icon "search" %}
@@ -295,7 +295,7 @@ $(document).ready(function() {
 					async: true,
 					success: function (data) {
 						if (data) {
-							final_ans = "Answer: " + data;
+							final_ans = "<br>Answer: " + data;
 				    		// replace answer
 							$("#hide_ans{{q.id}}").html(final_ans);
 							$("#hide_ans{{q.id}}").show(data);
@@ -617,7 +617,7 @@ $(document).ready(function() {
 						async: true,
 						success: function (data) {
 							if (data) {
-								final_ans = "Answer: " + data;
+								final_ans = "<br>Answer: " + data;
 					    		// replace answer
 								$("#hide_ans{{q.id}}").html(final_ans);
 								$("#hide_ans{{q.id}}").show(data);

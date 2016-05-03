@@ -226,7 +226,7 @@ $(document).ready(function() {
 					//async: true,
 					success: function (data) {
 						if (data) {
-							final_ans = "Answer: " + data;
+							final_ans = "<br>Answer: " + data;
 				    		// replace answer
 							$("#hide_ans{{q.id}}").html(final_ans);
 							$("#hide_ans{{q.id}}").show(data);
@@ -470,7 +470,7 @@ No Questions Found
 					async: true,
 					success: function (data) {
 						if (data) {
-							final_ans = "Answer: " + data;
+							final_ans = "<br>Answer: " + data;
 				    		// replace answer
 							$("#hide_ans{{q.id}}").html(final_ans);
 							$("#hide_ans{{q.id}}").show(data);
