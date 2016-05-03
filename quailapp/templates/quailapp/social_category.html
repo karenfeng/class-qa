@@ -682,8 +682,8 @@ $(document).ready(function() {
 					data : {vote : $(this).attr("value") },
 					success: function (data) {
 						//$('#numvotes{{q.id}}').html(data);
-						
-						$('#voting{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag_id + " #voting{{q.id}}");
+						console.log(page + " " + search_query + " " + tag_id);
+						$('#voting{{q.id}}').load("/{{category.id}}/social/" + page + search_query + tag_id + " #voting{{q.id}}");
 					}
 				})
 			})
@@ -696,7 +696,7 @@ $(document).ready(function() {
 					url: "{% url 'quailapp:star' q.id %}",
 					data : {star : $(this).attr("value") },
 					success: function (data) {
-						$('#starring{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag_id +  " #starring{{q.id}}");
+						$('#starring{{q.id}}').load("/{{category.id}}/social/" + page + search_query + tag_id +  " #starring{{q.id}}");
 					}
 				})
 			})
@@ -890,7 +890,7 @@ $(document).ready(function() {
 // simple script to reload page every 5 seconds, as long as a question isn't being edited or a question isn't being posted 
 function reload_pages() {
 
-	$('#all_questions').load("/{{category.id}}/social_category/" + page + search_query + tag_id +  " #all_questions");
+	$('#all_questions').load("/{{category.id}}/social/" + page + search_query + tag_id +  " #all_questions");
 
 	
 }
