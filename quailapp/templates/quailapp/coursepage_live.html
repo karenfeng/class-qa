@@ -133,7 +133,7 @@ $(document).ready(function() {
 
 <br>
 
-{% if display_feedback and not provided_feedback %}
+{% if display_feedback and not provided_feedback and is_student %}
 <div class="box-red">
 	<a href="{% url 'quailapp:user_feedback' course.id %}" class="question-box">
 		<h4 class="question">Provide feedback for the last lecture!</h4>
@@ -175,19 +175,25 @@ $(document).ready(function() {
 				<div id="display_tags">	
 				{% for tag in course.tag_set.all %}
 					<li>
-					<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
-						<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-							{{ tag }}
-						</button>
-					</form>
-					{% if tag.submitter.netid == user.netid or not user.is_student %}
-					<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
-						{% csrf_token %}
-							<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
-								{% bootstrap_icon "remove" %}
-							</button>
-					</form>
-					{% endif %}
+					<div>
+						<div class="col-xs-9 no-pad">
+							<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+								<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+									{{ tag }}
+								</button>
+							</form>
+						</div>
+						{% if tag.submitter.netid == user.netid or not user.is_student %}
+						<div class="col-xs-3 no-pad">
+							<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
+								{% csrf_token %}
+									<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
+										{% bootstrap_icon "remove" %}
+									</button>
+							</form>
+						</div>
+						{% endif %}
+					</div>
 					</li>
 
 					
