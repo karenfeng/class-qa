@@ -385,7 +385,7 @@ $(document).ready(function() {
 				success: function (data) {
 					$('#numvotes{{q.id}}').html(data);
 					
-					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{q.id}}");
+					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag_id + " #voting{{q.id}}");
 				}
 			})
 		})

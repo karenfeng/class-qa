@@ -371,7 +371,7 @@ $(document).ready(function() {
 				success: function (data) {
 					//console.log('clicked');
 					//$('#numvotes{{q.id}}').html(data);
-					$('#voting{{q.id}}').load("/{{category.id}}/social/" + " #voting{{q.id}}");
+					$('#voting{{q.id}}').load("/{{category.id}}/social/" + page + search_query + tag_id + " #voting{{q.id}}");
 				}
 			})
 		})
@@ -385,7 +385,7 @@ $(document).ready(function() {
 				data : {star : $(this).attr("value") },
 				success: function (data) {
 					//$('#numstars{{q.id}}').html(data);
-					$('#starring{{q.id}}').load("/{{category.id}}/social/" + " #starring{{q.id}}");
+					$('#starring{{q.id}}').load("/{{category.id}}/social/" + page + search_query+ tag_id + " #starring{{q.id}}");
 				}
 			})
 		})
