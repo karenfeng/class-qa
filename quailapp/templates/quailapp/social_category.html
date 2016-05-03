@@ -262,66 +262,68 @@ $(document).ready(function() {
 		//DROP DOWN ANSWER
 		var req; // global variable for the ajax request
 		//expand
-		$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+		if ('{{q.answer}}' != "") {
+			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
 
-			event.preventDefault();
-			var height = $('#answers{{q.id}}').height(); 
-			//extend div to fit answer
-			$(this).finish().animate({
-	        height: ($(this).height()+75).toString()+'px'
-	    	}, 300);
+				event.preventDefault();
+				var height = $('#answers{{q.id}}').height(); 
+				//extend div to fit answer
+				$(this).finish().animate({
+		        height: ($(this).height()+75).toString()+'px'
+		    	}, 300);
 
-			//make the ajax request
-	    	req = $.ajax({
-				url : "{% url 'quailapp:answer' q.id %}",
-				type : "get",
-				data : {ans: $(this).attr("id_your_answer") },
-				async: true,
-				success: function (data) {
-					if (data) {
-						final_ans = "Answer: " + data;
-			    		// replace answer
-						$("#hide_ans{{q.id}}").html(final_ans);
-						$("#hide_ans{{q.id}}").show(data);
+				//make the ajax request
+		    	req = $.ajax({
+					url : "{% url 'quailapp:answer' q.id %}",
+					type : "get",
+					data : {ans: $(this).attr("id_your_answer") },
+					async: true,
+					success: function (data) {
+						if (data) {
+							final_ans = "Answer: " + data;
+				    		// replace answer
+							$("#hide_ans{{q.id}}").html(final_ans);
+							$("#hide_ans{{q.id}}").show(data);
+						}
 					}
-				}
-			});
+				});
+				
+		    });
+		    // hide the answer and shrink the div
+			$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
+				// if the ajax request hasn't been completed yet, abort
+				if(req && req.readyState != 4) {
+	        		req.abort();
+	        	}
+				$("#hide_ans{{q.id}}").hide();
+				// if no tags
 			
-	    });
-	    // hide the answer and shrink the div
-		$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
-			// if the ajax request hasn't been completed yet, abort
-			if(req && req.readyState != 4) {
-        		req.abort();
-        	}
-			$("#hide_ans{{q.id}}").hide();
-			// if no tags
-		
-			// if tag and editable
-			if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: tagAndEdit.toString()+'px'
-	    		}, 300);
-	    	}
-	    	// if just a tag
-	    	else if (("{{q.tags}}" != "")) {
-	    		$(this).animate({
-	        		height: tag.toString()+'px'
-	    		}, 300);
-	    	}
-	    	// editable
-	    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
-	    		$(this).animate({
-	        		height: edit.toString()+'px'
-	    		}, 300);
-	    	}
-	    	else {
-	    		$(this).animate({
-	        		height: none.toString()+'px'
-	    		}, 300);
-	    	}
-	    	
-		});
+				// if tag and editable
+				if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: tagAndEdit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// if just a tag
+		    	else if (("{{q.tags}}" != "")) {
+		    		$(this).animate({
+		        		height: tag.toString()+'px'
+		    		}, 300);
+		    	}
+		    	// editable
+		    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+		    		$(this).animate({
+		        		height: edit.toString()+'px'
+		    		}, 300);
+		    	}
+		    	else {
+		    		$(this).animate({
+		        		height: none.toString()+'px'
+		    		}, 300);
+		    	}
+		    	
+			});
+		}
 
 		var q_text = "{{q.text}}";
 
@@ -580,67 +582,68 @@ $(document).ready(function() {
 			//DROP DOWN ANSWER
 			var req; // global variable for the ajax request
 			//expand
-			$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
+			if ('{{q.answer}}' != "") {
+				$(document).on('mouseenter', '#answers{{q.id}}', function(event) {
 
-				event.preventDefault();
-				var height = $('#answers{{q.id}}').height(); 
-				//extend div to fit answer
-				$(this).finish().animate({
-		        height: ($(this).height()+75).toString()+'px'
-		    	}, 300);
+					event.preventDefault();
+					var height = $('#answers{{q.id}}').height(); 
+					//extend div to fit answer
+					$(this).finish().animate({
+			        height: ($(this).height()+75).toString()+'px'
+			    	}, 300);
 
-				//make the ajax request
-		    	req = $.ajax({
-					url : "{% url 'quailapp:answer' q.id %}",
-					type : "get",
-					data : {ans: $(this).attr("id_your_answer") },
-					async: true,
-					success: function (data) {
-						if (data) {
-							final_ans = "Answer: " + data;
-				    		// replace answer
-							$("#hide_ans{{q.id}}").html(final_ans);
-							$("#hide_ans{{q.id}}").show(data);
+					//make the ajax request
+			    	req = $.ajax({
+						url : "{% url 'quailapp:answer' q.id %}",
+						type : "get",
+						data : {ans: $(this).attr("id_your_answer") },
+						async: true,
+						success: function (data) {
+							if (data) {
+								final_ans = "Answer: " + data;
+					    		// replace answer
+								$("#hide_ans{{q.id}}").html(final_ans);
+								$("#hide_ans{{q.id}}").show(data);
+							}
 						}
-					}
-				});
+					});
+					
+			    });
+			    // hide the answer and shrink the div
+				$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
+					// if the ajax request hasn't been completed yet, abort
+					if(req && req.readyState != 4) {
+		        		req.abort();
+		        	}
+					$("#hide_ans{{q.id}}").hide();
+					// if no tags
 				
-		    });
-		    // hide the answer and shrink the div
-			$(document).on('mouseleave', '#answers{{q.id}}', function(event) {
-				// if the ajax request hasn't been completed yet, abort
-				if(req && req.readyState != 4) {
-	        		req.abort();
-	        	}
-				$("#hide_ans{{q.id}}").hide();
-				// if no tags
-			
-				// if tag and editable
-				if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
-		    		$(this).animate({
-		        		height: tagAndEdit.toString()+'px'
-		    		}, 300);
-		    	}
-		    	// if just a tag
-		    	else if (("{{q.tags}}" != "")) {
-		    		$(this).animate({
-		        		height: tag.toString()+'px'
-		    		}, 300);
-		    	}
-		    	// editable
-		    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
-		    		$(this).animate({
-		        		height: edit.toString()+'px'
-		    		}, 300);
-		    	}
-		    	else {
-		    		$(this).animate({
-		        		height: none.toString()+'px'
-		    		}, 300);
-		    	}
-		    	
-			});
-
+					// if tag and editable
+					if (("{{q.tags}}" != "") && ("{{q.submitter.netid}}" == "{{user.netid}}")) {
+			    		$(this).animate({
+			        		height: tagAndEdit.toString()+'px'
+			    		}, 300);
+			    	}
+			    	// if just a tag
+			    	else if (("{{q.tags}}" != "")) {
+			    		$(this).animate({
+			        		height: tag.toString()+'px'
+			    		}, 300);
+			    	}
+			    	// editable
+			    	else if (("{{q.submitter.netid}}" == "{{user.netid}}")) {
+			    		$(this).animate({
+			        		height: edit.toString()+'px'
+			    		}, 300);
+			    	}
+			    	else {
+			    		$(this).animate({
+			        		height: none.toString()+'px'
+			    		}, 300);
+			    	}
+			    	
+				});
+			}
 			var q_text = "{{q.text}}";
 			// click edit button
 			$(document).on('click', '#edit_question{{q.id}}', function(event) {
