@@ -102,8 +102,6 @@ $(document).ready(function() {
 <br>
 {% endif %}
 
-{% if searched_for_questions %}<a href="{% url 'quailapp:coursepage_live' course.id %}">Go back</a>{% endif %}
-
 <div class="row">
 	<div class="col-xs-8">
 		<span class="right">
@@ -131,7 +129,7 @@ $(document).ready(function() {
 						(All tags)
 					</button>
 				</li>
-				<div id="display_tags">
+				<div id="display_tags">	
 				{% for tag in course.tag_set.all %}
 					<li>
 						<span>
@@ -142,7 +140,7 @@ $(document).ready(function() {
 							<button type="submit" class="btn btn-link btn-link-red no-pad" id="delete_tag{{tag.id}}">
 								{% bootstrap_icon "remove" %}
 							</button>
-							{% endif %}
+						{% endif %}
 						</span>
 					</li>
 				<script>

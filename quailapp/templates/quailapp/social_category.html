@@ -80,18 +80,20 @@ $(document).ready(function() {
 	</a>
 </div>
 
+<div class="box-static">
 <h4>Post a question!</h4>
-<div id="post_question">
-	<form action="{% url 'quailapp:social_category' category.id %}" method="post">
-	    {% csrf_token %}
-	      {% bootstrap_form form %}
-	      <span class="input-group-btn">
-			{% buttons %}
-	        	<button class="btn btn-primary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
-			{% endbuttons %}
-	      </span>
-	    </div>
-	</form>
+	<div id="post_question">
+		<form action="{% url 'quailapp:social_category' category.id %}" method="post">
+		    {% csrf_token %}
+		      {% bootstrap_form form %}
+		      <span class="input-group-btn">
+				{% buttons %}
+		        	<button class="btn btn-primary" type="submit" value="Unregister" onclick="this.disabled=true,this.form.submit();">Submit</button>
+				{% endbuttons %}
+		      </span>
+		    </div>
+		</form>
+	</div>
 </div>
 
 <br>
@@ -517,9 +519,6 @@ $(document).ready(function() {
 					      </span>
 					    </span>
 						<span class="unemph">{{ q.created_on }}
-						{% if not user.is_student %}
-							by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
-						{% endif %}
 						</span>
 						<br>
 						<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
@@ -834,9 +833,6 @@ $(document).ready(function() {
 						      </span>
 						    </span>
 							<span class="unemph">{{ q.created_on }}
-							{% if not user.is_student %}
-								by {{ q.submitter.first_name }} {{ q.submitter.last_name }}
-							{% endif %}
 							</span>
 							<br>
 							<button id="edit_question{{q.id}}" type="submit" class="btn btn-link btn-sm no-pad" >Edit</button>
