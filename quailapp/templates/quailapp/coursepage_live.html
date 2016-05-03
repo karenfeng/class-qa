@@ -29,9 +29,49 @@ Meets every {{ course.days_as_string }} {{ course.starttime }} - {{ course.endti
 <script>
 	var editing = false;
 	var search_query = ""; 
+	var tag_id = "";
+	var page = ""; 
 </script>
 <script>
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+
 $(document).ready(function() {
+	
+	page = getParameterByName('page'); 
+	tag_id = getParameterByName('tag');
+	search_query = getParameterByName('q');
+
+	if (page) {
+		page = "?page=" + page + "&";
+	}
+	else {
+		page = "";
+	}
+
+	if (tag_id) {
+		tag_id = "?tag_id=" + tag_id + "&";
+	}
+	else {
+		tag_id = "";
+	}
+
+	if (search_query) {
+		search_query = "?q=" + search_query + "&";
+	}
+	else {
+		search_query = "";
+	}
+
 	$('#id_your_question').keyup(function() {
 		$.ajax({
 			url : "/similar_question",
@@ -55,12 +95,12 @@ $(document).ready(function() {
 		})
 
 	});
-	$(document).on('click', '#search_button', function(event) {
-		event.preventDefault();
-		search_query = $('#id_q').val(); 
-		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
-		$('#id_q').attr('placeholder', search_query);
-	})
+	// $(document).on('click', '#search_button', function(event) {
+	// 	event.preventDefault();
+	// 	search_query = $('#id_q').val(); 
+	// 	$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
+	// 	$('#id_q').attr('placeholder', search_query);
+	// })
 
 });
 </script>
@@ -105,11 +145,14 @@ $(document).ready(function() {
 <div class="row">
 	<div class="col-xs-8">
 		<span class="right">
+
+
+
 			<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
 				<div class="input-group">
 				 	<input type="text" name="q" id="id_q" class="form-control" placeholder="Kernighan is cool">
 				 	<span class="input-group-btn">
-						<button type="submit" id="search_button" class="btn btn-secondary" value="Submit">
+						<button type="submit" class="btn btn-secondary" value="Submit">
 							{% bootstrap_icon "search" %}
 						</button>
 					</span>
@@ -132,104 +175,22 @@ $(document).ready(function() {
 				<div id="display_tags">	
 				{% for tag in course.tag_set.all %}
 					<li>
-						<span>
-							<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
-								{{ tag }}
-							</button>
-							{% if tag.submitter.netid == user.netid or not user.is_student %}
-							<button type="submit" class="btn btn-link btn-link-red no-pad" id="delete_tag{{tag.id}}">
+					<form method="get" action="{% url 'quailapp:coursepage_live' course.id %}">
+						<button type="submit" name="tag" id="id_tag{{ tag.id}}" value= "{{ tag.id }}" class="btn-link btn-link-gray">
+							{{ tag }}
+						</button>
+					</form>
+					{% if tag.submitter.netid == user.netid or not user.is_student %}
+					<form action="{% url 'quailapp:delete_tag_from_coursepage' tag.id %}" method="POST">
+						{% csrf_token %}
+							<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
 								{% bootstrap_icon "remove" %}
 							</button>
-						{% endif %}
-						</span>
+					</form>
+					{% endif %}
 					</li>
-				<script>
-						var tag_id = "";
-					</script>
 
-					<script>
-					// ajax for tags
-					$(document).ready(function() {
-
-						// filter by tag
-						$(document).on('click','#id_tag{{tag.id}}', function(event) {
-							tag_id = "{{tag.id}}";
-							$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
-						
-						});
-
-						// delete tag 
-						$(document).on('click', '#delete_tag{{tag.id}}', function(event) {
-							$.ajax({
-								type: 'post',
-								url: "{% url 'quailapp:delete_tag_from_coursepage' tag.id %}",
-								success: function(data) {
-									if (tag_id == "") {
-										$('#display_tags').load("/{{course.id}}/coursepage_live/" + " #display_tags");
-										$('#post_question').load("/{{course.id}}/coursepage_live/" + " #post_question");
-									}
-									else {
-										$('#display_tags').load("/{{course.id}}/coursepage_live/?tag="+tag_id + " #display_tags");
-										$('#post_question').load("/{{couse.id}}/coursepage_live/?tag=" + tag_id + " #post_question");
-									}
-									reload_pages();
-								}
-
-							});
-						});
-						// This function gets cookie with a given name
-					    function getCookie(name) {
-					        var cookieValue = null;
-					        if (document.cookie && document.cookie != '') {
-					            var cookies = document.cookie.split(';');
-					            for (var i = 0; i < cookies.length; i++) {
-					                var cookie = jQuery.trim(cookies[i]);
-					                // Does this cookie string begin with the name we want?
-					                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-					                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					                    break;
-					                }
-					            }
-					        }
-					        return cookieValue;
-					    }
-					    var csrftoken = getCookie('csrftoken');
-
-					    /*
-					    The functions below will create a header with csrftoken
-					    */
-
-					    function csrfSafeMethod(method) {
-					        // these HTTP methods do not require CSRF protection
-					        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-					    }
-					    function sameOrigin(url) {
-					        // test that a given url is a same-origin URL
-					        // url could be relative or scheme relative or absolute
-					        var host = document.location.host; // host + port
-					        var protocol = document.location.protocol;
-					        var sr_origin = '//' + host;
-					        var origin = protocol + sr_origin;
-					        // Allow absolute or scheme relative URLs to same origin
-					        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-					            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-					            // or any other URL that isn't scheme relative or absolute i.e relative.
-					            !(/^(\/\/|http:|https:).*/.test(url));
-					    }
-
-					    $.ajaxSetup({
-					        beforeSend: function(xhr, settings) {
-					            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-					                // Send the token to same-origin, relative URLs only.
-					                // Send the token only if the method warrants CSRF protection
-					                // Using the CSRFToken value acquired earlier
-					                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-					            }
-					        }
-					    });
-						
-					})
-					</script>
+					
 				{% endfor %}
 			</ul>
 		</span>
@@ -303,9 +264,9 @@ $(document).ready(function() {
 
 		// some constants
 		var tagAndEdit = 114;
-		var tag = 96;
-		var edit = 98;
-		var none = 80; 
+		var tag = 101;
+		var edit = 103;
+		var none = 90;
 
 		//DROP DOWN ANSWER
 		var req; // global variable for the ajax request
@@ -415,7 +376,8 @@ $(document).ready(function() {
 				url: "{% url 'quailapp:vote' q.id %}",
 				data : {vote : $(this).attr("value")},
 				success: function (data) {
-					//$('#numvotes{{q.id}}').html(data);
+					$('#numvotes{{q.id}}').html(data);
+					
 					$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{q.id}}");
 				}
 			})
@@ -622,9 +584,9 @@ $(document).ready(function() {
 
 				// some constants
 			var tagAndEdit = 114;
-			var tag = 96;
-			var edit = 98;
-			var none = 80; 
+			var tag = 101;
+			var edit = 103;
+			var none = 90;
 
 			//DROP DOWN ANSWER
 			var req; // global variable for the ajax request
@@ -733,7 +695,9 @@ $(document).ready(function() {
 					data : {vote : $(this).attr("value") },
 					success: function (data) {
 						//$('#numvotes{{q.id}}').html(data);
-						$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #voting{{q.id}}");
+						
+						$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag + " #voting{{q.id}}");
+						
 					}
 				})
 			})
@@ -747,7 +711,10 @@ $(document).ready(function() {
 					data : {star : $(this).attr("value") },
 					success: function (data) {
 						//$('#numstars{{q.id}}').html(data);
-						$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + " #starring{{q.id}}");
+					
+						$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag +  " #starring{{q.id}}");
+						
+						
 					}
 				})
 			})
@@ -950,17 +917,8 @@ function reload_pages() {
 
 	//console.log(editing);
 
-	if (search_query == "" && tag_id == "") {
-		$('#all_questions').load("/{{course.id}}/coursepage_live/" + " #all_questions");
-	}
-	else if (search_query == "")
-	{
-		$('#all_questions').load("/{{course.id}}/coursepage_live/?tag=" + tag_id + " #all_questions");
-	}
-	else {
-		$('#all_questions').load("/{{course.id}}/coursepage_live/?q=" + search_query + " #all_questions");
-	}
-
+	$('#all_questions').load("/{{course.id}}/coursepage_live/" + page + search_query + tag_id +  " #all_questions");
+	
 	
 }
 function check_ifanswered() {
