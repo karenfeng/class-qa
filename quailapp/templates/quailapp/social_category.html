@@ -178,7 +178,6 @@ $(document).ready(function() {
 							</form>
 						</div>
 						<div class="col-xs-3 no-pad">
-							{% if tag.submitter.netid == user.netid or not user.is_student %}
 							<form action="{% url 'quailapp:delete_tag_from_social' tag.id %}" method="POST">
 								{% csrf_token %}
 									<button type="submit" class="btn btn-link btn-link-red" id="delete_tag{{tag.id}}">
@@ -186,7 +185,6 @@ $(document).ready(function() {
 									</button>
 							</form>
 						</div>
-					{% endif %}
 					</div>
 					</li>
 
@@ -222,7 +220,6 @@ $(document).ready(function() {
 		  </ul>
 		</span>
 
-		{% if not user.is_student %}
 		<form action="{% url 'quailapp:social_category' category.id %}" method="post">
 		    {% csrf_token %}
 		    <div class="input-group">
@@ -234,7 +231,6 @@ $(document).ready(function() {
 		      </span>
 		    </div>
 		</form>
-		{% endif %}
 	</div>
 </div>
 
