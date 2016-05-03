@@ -374,8 +374,7 @@ $(document).ready(function() {
 						{% endif %}
 						</span>
 					</p>
-					<div id="hide_ans{{q.id}}" class="dropdown_answer">
-					</div>
+					
 					{% if q.tags_as_list %}
 					{% for tag in q.tags_as_list %}
 						<span class="box-small">{{ tag }}</span>
@@ -383,6 +382,8 @@ $(document).ready(function() {
 					
 
 					{% endif %}
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
@@ -614,13 +615,14 @@ No Questions Found
 						{% endif %}
 						</span>
 					</p>
-					<div id="hide_ans{{q.id}}" class="dropdown_answer">
-					</div>
+					
 					{% if q.tags_as_list %}
 					{% for tag in q.tags_as_list %}
 						<span class="box-small">{{ tag }}</span>
 					{% endfor %}
 					{% endif %}
+					<div id="hide_ans{{q.id}}" class="dropdown_answer">
+					</div>
 				</div>
 				<div class="col-xs-1">
 					<form method="POST">
