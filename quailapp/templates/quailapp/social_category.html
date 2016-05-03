@@ -683,7 +683,7 @@ $(document).ready(function() {
 					success: function (data) {
 						//$('#numvotes{{q.id}}').html(data);
 						
-						$('#voting{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag + " #voting{{q.id}}");
+						$('#voting{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag_id + " #voting{{q.id}}");
 					}
 				})
 			})
@@ -696,7 +696,7 @@ $(document).ready(function() {
 					url: "{% url 'quailapp:star' q.id %}",
 					data : {star : $(this).attr("value") },
 					success: function (data) {
-						$('#starring{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag +  " #starring{{q.id}}");
+						$('#starring{{q.id}}').load("/{{category.id}}/social_category/" + page + search_query + tag_id +  " #starring{{q.id}}");
 					}
 				})
 			})

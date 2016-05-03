@@ -696,7 +696,7 @@ $(document).ready(function() {
 					success: function (data) {
 						//$('#numvotes{{q.id}}').html(data);
 						
-						$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag + " #voting{{q.id}}");
+						$('#voting{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag_id + " #voting{{q.id}}");
 						
 					}
 				})
@@ -712,7 +712,7 @@ $(document).ready(function() {
 					success: function (data) {
 						//$('#numstars{{q.id}}').html(data);
 					
-						$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag +  " #starring{{q.id}}");
+						$('#starring{{q.id}}').load("/{{course.id}}/coursepage_live/" + page + search_query + tag_id +  " #starring{{q.id}}");
 						
 						
 					}
